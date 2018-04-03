@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.GsxxMapper">
+
+	<select id="findOneByParams" parameterType="map" resultType="gsxx">
+		select * from t_gsxx where 1=1
+		<if test="gsdm != null and gsdm !=''">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="appkey != null and appkey !=''">
+			and appkey = #{appkey}
+		</if>
+		<if test="corpId != null and corpId !=''">
+			and dingcorpid = #{corpId}
+		</if>
+		limit 1
+	</select>
+	<select id="findOneByGsdm" parameterType="map" resultType="gsxx">
+		select * from t_gsxx where 1=1
+		<if test="gsdm != null and gsdm !=''">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="appkey != null and appkey !=''">
+			and appkey = #{appkey}
+		</if>
+		<if test="corpId != null and corpId !=''">
+			and dingcorpid = #{corpId}
+		</if>
+		limit 1
+	</select>
+	<select id="findOneByDingCorpid" parameterType="map" resultType="gsxx">
+		select * from t_gsxx where 1=1
+		<if test="gsdm != null and gsdm !=''">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="corpId != null and corpId !=''">
+			and dingcorpid = #{corpId}
+		</if>
+		limit 1
+	</select>
+	
+   <select id="findOneByAppkey" parameterType="map" resultType="gsxx">
+		select * from t_gsxx where 1=1
+		<if test="appkey != null and appkey !=''">
+			and appkey = #{appkey}
+		</if>
+		limit 1
+	</select>
+   
+	<select id="findAllByParams" parameterType="map" resultType="gsxx">
+		select * from t_gsxx where 1 = 1
+		<if test="orderBy != null">
+			order by #{orderBy}
+		</if>
+	</select>
+
+	<select id="findByPage" parameterType="pagination" resultType="gsxx">
+		select * from t_gsxx where yxbz = '1'
+		<if test="params.orderBy != null">
+			order by #{params.orderBy}
+		</if>
+	</select>
+	<select id="findOneByDjh" parameterType="map" resultType="gsxx">
+		select * from t_gsxx where 1=1 and gsdm = (select gsdm from t_jyls where djh=#{djh})
+		
+		limit 1
+	</select>
+
+</mapper>
+

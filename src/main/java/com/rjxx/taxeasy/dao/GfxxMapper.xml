@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.GfxxMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="gfxx">
+        select * from t_gfxx where yxbz = '1'
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+        <if test="gfsh != null">
+            gfsh = #{gfsh}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="gfxx">
+        select * from t_gfxx where yxbz = '1'
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+
+    <select id="findByPage" parameterType="pagination" resultType="gfxx">
+        select * from t_gfxx where yxbz = '1' 
+        
+        <if test="params.gsdm !=null and params.gsdm !=''">
+			and gsdm = #{params.gsdm}
+		</if>
+		<if test="params.gfmc !=null and params.gfmc !=''">
+			and gfmc = #{params.gfmc}
+		</if>
+		<if test="params.nsrsbh !=null and params.nsrsbh !=''">
+			and gfsh = #{params.nsrsbh}
+		</if>
+		
+		order by xgsj desc
+    </select>
+
+    <update id="deleteById" parameterType="map" >
+        update t_gfxx t set t.yxbz='0' where t.id = #{id}
+     </update>
+     
+</mapper>
+

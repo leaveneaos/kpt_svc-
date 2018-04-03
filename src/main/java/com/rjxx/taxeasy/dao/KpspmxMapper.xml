@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.KpspmxMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="kpspmx">
+        select * from t_kpspmx where yxbz = '1'
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="kpspmxvo">
+        select *,(spje+spse) jshj from v_kpspmx where kplsh = #{id} and (khcje !=0 or khcje is null) order by spmxxh
+        
+    </select>
+
+    <select id="findFphccxByParams" parameterType="map" resultType="kpspmxvo">
+        select *,(spje+spse) jshj from v_kpspmx where kplsh = #{id}  order by spmxxh
+    </select>
+
+
+    <select id="findByPage" parameterType="pagination" resultType="kpspmx">
+        select * from t_kpspmx where yxbz = '1'
+        <if test="params.orderBy != null">
+            order by #{params.orderBy}
+        </if>
+    </select>
+ <!--    根据kplsh及spmxxh查询开票商品明细 -->
+    <select id="findMxByParams" parameterType="map" resultType="kpspmxvo">
+       select *,(spje+spse) jshj from t_kpspmx where kplsh = #{kplsh} and id = #{xh}
+    </select>
+   <!--  更新发票的红冲金额 -->
+   <update id="update" parameterType="map">
+        update t_kpspmx set khcje = #{khcje},yhcje = #{yhcje} where kplsh = #{kplsh} and spmxxh=#{xh}
+   </update>
+   <!--    查询可红冲金额 -->
+   <select id="findKhcje" parameterType="map" resultType="kpspmxvo">
+        select sum(khcje) khcje from t_kpspmx where kplsh = #{kplsh}
+   </select>
+  <!--  根据kplsh查询明细 -->
+  <select id="findMxList" parameterType="map" resultType="kpspmx">
+       select * from t_kpspmx where kplsh = #{kplsh} order by spmxxh
+  </select>
+    <!--  根据kplsh查询明细,拼接新的商品名称 -->
+    <select id="findMx2List" parameterType="map" resultType="kpspmx">
+        select * from v_kpspmx where kplsh = #{kplsh}
+    </select>
+    <!--  根据kplsh查询明细 -->
+    <select id="findSkMxList" parameterType="map" resultType="kpspmxvo">
+        select * from t_kpspmx where kplsh = #{kplsh} order by spmxxh asc,fphxz desc
+    </select>
+   <select id="findMxNewList" parameterType="map" resultType="kpspmx">
+       select * from t_kpspmx where 1 = 1 
+        <if test="kplsh != null and kplsh != ''">
+          and  kplsh = #{kplsh}
+        </if>
+       <if test="kplsh ==null or kplsh == ''">
+          and  kplsh = '-1'
+        </if>
+   </select>
+   
+    <select id="findMxNewByParams" parameterType="map" resultType="kpspmx">
+       select t.kplsh,t.djh,t.spmxxh,t.fphxz,t.spdm,t.spmc,SUM(t.sps) sps,SUM(t.spje) spje,SUM(t.spse) spse,SUM(t.khcje) khcje,sum(t.yhcje) yhcje from t_kpspmx t where  t.kplsh=#{kplsh} GROUP BY t.spdm,spmc
+    </select>
+</mapper>
+

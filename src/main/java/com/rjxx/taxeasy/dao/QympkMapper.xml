@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.QympkMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="qympk">
+        select * from t_qympk where yxbz = '1'
+        <if test="orderBy != null">
+            order by ${orderBy}
+        </if>
+        limit 1
+    </select>
+    
+    
+    <select id="findAllByParams" parameterType="map" resultType="qympk">
+        select * from t_qympk where yxbz = '1'
+        
+        <if test="gsdm !=null and gsdm !=''">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="gfmc !=null and gfmc !=''">
+			and dwmc like CONCAT('%',#{dwmc},'%')
+		</if>
+		<if test="nsrsbh !=null and nsrsbh !=''">
+			and nsrsbh = #{nsrsbh}
+		</if>
+        order by lrsj DESC
+    </select>
+
+	<select id="findAll" parameterType="map" resultType="qympk">
+		select * from t_qympk where yxbz = '1'
+
+		<if test="dwmc !=null and dwmc !=''">
+			and dwmc =#{dwmc}
+		</if>
+		<if test="nsrsbh !=null and nsrsbh !=''">
+			and nsrsbh = #{nsrsbh}
+		</if>
+		order by lrsj DESC
+	</select>
+    
+
+    <select id="findByPage" parameterType="pagination" resultType="qympk">
+        select * from t_qympk where yxbz = '1'
+        <if test="params.text !=null and params.text !=''">
+			and dwmc like CONCAT('%',#{params.text},'%') or  nsrsbh = #{params.text}
+		</if>
+		 <if test="params.gsdm !=null and params.gsdm !=''">
+			and gsdm = #{params.gsdm}
+		</if>
+		<if test="params.gfmc !=null and params.gfmc !=''">
+			and dwmc  like CONCAT('%',#{params.gfmc},'%')
+		</if>
+		<if test="params.nsrsbh !=null and params.nsrsbh !=''">
+			and nsrsbh = #{params.nsrsbh}
+		</if>
+		
+        order by nsrsbh
+    </select>
+
+	<insert id="saveQympk" parameterType="qympk" useGeneratedKeys="true">
+		replace into t_qympk(dwmc,nsrsbh,frmc,clrq,qyzt,qyzch,yxbz,lrsj) VALUES (#{dwmc}, #{nsrsbh}, #{frmc}, #{clrq},
+		#{qyzt}, #{qyzch}, #{yxbz}, #{lrsj})
+	</insert>
+
+</mapper>
+

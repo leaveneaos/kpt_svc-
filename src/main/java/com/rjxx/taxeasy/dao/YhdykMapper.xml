@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.YhdykMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="yhdyk">
+        select * from t_yhdyk where yxbz = '1'
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="yhdyk">
+        select * from t_yhdyk where yxbz = '1'
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+
+    <select id="findByPage" parameterType="pagination" resultType="yhdykvo">
+       select a.dybt,b.id,b.dyfs,b.sjhm,b.email,b.openid,b.xfid,b.skpid,c.xfmc,d.kpdmc 
+       from t_yhdyk b join  t_dyzl a on a.id=b.dybtid
+       left join t_xf c on (b.xfid = c.id and c.yxbz='1')
+       left join t_skp d on (b.skpid = d.id and d.yxbz='1')
+       where  b.yxbz='1' and a.yxbz='1' 
+           and b.yhid=#{params.yhid}
+           <if test="params.btmc !=null and params.btmc !=''">
+               and a.dybt like CONCAT('%',#{params.btmc},'%')
+           </if>
+    </select>
+    
+    <select id="findDyxx" parameterType="map" resultType="yhdyk">
+        select * from t_yhdyk where yhid=#{yhid} and yxbz='1'
+        <if test="dybtid !=null and dybtid !=''">
+             and dybtid=#{dybtid}
+        </if>
+        <if test="xfid !=null and xfid !=''">
+            and xfid = #{xfid}
+        </if>
+        <if test="skpid !=null and skpid !=''">
+            and skpid = #{skpid}
+        </if>
+        <if test="id !=null and id !=''">
+        and id !=#{id}
+        </if>
+    </select>
+    
+    <update id="updateYxbz" parameterType="map">
+         update t_yhdyk set yxbz='0' where id=#{id}
+    </update>
+    
+    <select id="findYhdy" parameterType="map" resultType="yhdykvo">
+            SELECT
+	a.*,
+  c.gsmc,
+  d.xfmc,
+  e.kpdmc
+FROM
+	t_yhdyk a join t_dyzl b on a.dybtid = b.id
+left join t_gsxx c on a.gsdm = c.gsdm 
+left join t_xf d on (a.xfid = d.id and d.yxbz='1')
+left join t_skp e on (a.skpid = e.id and e.yxbz='1')
+WHERE a.yxbz = '1'
+AND b.yxbz = '1'
+            <if test="dydm != null and dydm !=''">
+                 and b.dydm=#{dydm}
+            </if> 
+    </select>
+    
+    <select id="findTjsj" parameterType="map" resultType="fpnum">
+            select count(*) fpnum,sum(t.zsje+t.fsje) hjje,sum(t.zsse+t.fsse) hjse from
+(select lrry,lrsj,
+case when fpczlxdm in('11','14') then hjje else 0 end zsje,
+case when fpczlxdm in('12','13') then hjje else 0 end fsje,
+case when fpczlxdm in('11','14') then hjse else 0 end zsse,
+case when fpczlxdm in('12','13') then hjse else 0 end fsse
+from t_kpls where yxbz='1' and fphm is not NULL
+<if test="gsdm !=null and gsdm !=''">
+and gsdm = #{gsdm}
+</if>
+<if test="xfs !=null">
+      <foreach collection="xfs" open=" and xfid in ("
+				separator="," close=")" item="item" index="index">
+				#{xfs[${index}].id}
+			</foreach>
+</if>
+<if test="skps !=null">
+     <foreach collection="skps" open=" and skpid in ("
+				separator="," close=")" item="item" index="index">
+				#{skps[${index}].id}
+			</foreach>
+</if>
+<if test="xfid !=null and xfid !=''">
+and xfid = #{xfid}
+</if>
+<if test="skpid !=null and skpid !=''">
+and skpid = #{skpid}
+</if>
+<if test="kprq !=null and kprq !=''">
+and kprq like CONCAT('%',#{kprq},'%')
+</if>
+) t
+    </select>
+
+</mapper>
+

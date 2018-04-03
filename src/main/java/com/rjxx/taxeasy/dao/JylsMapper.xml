@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.JylsMapper">
+
+    <select id="findOneByParams" parameterType="jyls" resultType="jyls">
+        select * from t_jyls where yxbz = '1'
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="tqm != null">
+            and tqm = #{tqm}
+        </if>
+        <if test="jylsh != null">
+            and jylsh = #{jylsh}
+        </if>
+        <if test="djh != null">
+            and djh = #{djh}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="jyls" resultType="jyls">
+        select * from t_jyls where yxbz = '1'
+        <if test="sqlsh != null">
+            and sqlsh = #{sqlsh}
+        </if>
+    </select>
+	<select id="findBySql" parameterType="map" resultType="jyls">
+      SELECT * FROM t_jyls t WHERE t.yxbz = '1' AND t.fpczlxdm LIKE '1%'  AND t.fpzldm = '12' AND t.jshj - IFNULL(t.ykpjshj,0) != 0 and t.clztdm = '03' order by djh LIMIT 1000
+    </select>
+    <select id="findByPage" parameterType="pagination" resultType="jyls">
+        select * from t_jyls where yxbz = '1'
+        <if test="params.clztdm != null">
+            and clztdm = #{params.clztdm} 
+        </if>
+        <if test="params.fpzldm != null and params.fpzldm != ''">
+            and fpzldm = #{params.fpzldm} 
+        </if>
+        <if test="params.fpczlxdm != null">
+            and fpczlxdm = #{params.fpczlxdm}
+        </if>
+        <if test="params.gfmc != null and params.gfmc != ''">
+            and gfmc like concat('%',#{params.gfmc},'%')
+        </if>
+        <if test="params.ddh != null and params.ddh != ''">
+            and ddh like concat('%',#{params.ddh},'%')
+        </if>
+        <if test="params.jylsh != null and params.jylsh != ''">
+            and jylsh like concat('%',#{params.jylsh},'%')
+        </if>
+        <if test="params.rqq !=null and params.rqq != ''">
+			and jylssj &gt;= #{params.rqq}
+		</if>
+		<if test="params.rqz !=null and params.rqz != ''">
+			and jylssj &lt;
+			date_add(str_to_date(#{params.rqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+        <if test="params.gsdm != null and params.gsdm != ''" >
+            and gsdm = #{params.gsdm}
+        </if>
+        <if test="params.xfsh != null and params.xfsh != ''" >
+            and xfsh = #{params.xfsh}
+        </if>
+        <if test="params.xfs !=null">
+               <foreach collection="params.xfs" open=" and (xfid in (" separator="," close=")" item="item" index="index">
+                #{params.xfs[${index}].id} 
+            </foreach>
+            or xfid is null)
+         </if>
+         <if test="params.skps !=null">
+               <foreach collection="params.skps" open=" and (skpid in (" separator="," close=")" item="item" index="index">
+                #{params.skps[${index}].id} 
+                </foreach>
+                or skpid is null)
+         </if>        
+        <if test="params.orderBy != null">
+            order by djh
+        </if>
+    </select>
+
+    <select id="findByMapParams" parameterType="map" resultType="jyls">
+        select * from t_jyls where yxbz = '1'
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="jylshList != null">
+            <foreach collection="jylshList" open=" and jylsh in (" separator="," close=")" item="jylsh">
+                #{jylsh}
+            </foreach>
+        </if>
+        <if test="tqmList != null">
+            <foreach collection="tqmList" open=" and tqm in (" separator="," close=")" item="tqm">
+                #{tqm}
+            </foreach>
+        </if>
+    </select>
+    
+    <select id="findJylsByDjh" parameterType="map" resultType="jyls">
+       select * from t_jyls where djh = #{djh}
+    </select>
+   <!--  更新处理状态 -->
+   <update id="updateClzt" parameterType="map">
+       update t_jyls set clztdm = #{clztdm},xgsj=#{xgsj} where djh = #{djh}
+   </update>
+
+    <!--  更新处理状态 -->
+    <update id="updateClzt2" parameterType="map">
+        update t_jyls set clztdm = #{clztdm},xgsj=#{xgsj} where djh = #{djh} and
+        clztdm ='00'
+    </update>
+   
+   <select id="fptqcx" parameterType="pagination" resultType="fptqvo">
+        select a.ddh,a.gfmc,a.jshj,b.tqsj,(case when locate('Windows', llqxx) > 0 THEN 'PC' when locate('Windows', llqxx) = 0 THEN '手机' end) as tqsb,
+            (case when jlly='1' then '提取' when jlly='2' then '发邮件' when jlly='3' then '保存发票夹' else null end) as jlly 
+             from t_jyls a,t_tqjl b where a.djh = b.djh and a.yxbz='1' 
+        <if test="params.gsdm !=null and params.gsdm !=''">
+            and a.gsdm = #{params.gsdm}
+        </if>
+        <if test="params.xfs !=null">
+               <foreach collection="params.xfs" open=" and (a.xfid in (" separator="," close=")" item="item" index="index">
+                #{params.xfs[${index}].id} 
+            </foreach>
+            or a.xfid is null)
+         </if>
+        <if test="params.skps !=null">
+               <foreach collection="params.skps" open=" and (a.skpid in (" separator="," close=")" item="item" index="index">
+                #{params.skps[${index}].id} 
+            </foreach>
+            or a.skpid is null)
+         </if>        
+        <if test="params.ddh !=null and params.ddh !=''">
+            and a.ddh = #{params.ddh}
+        </if>
+         <if test="params.gfmc !=null and params.gfmc !=''">
+               and a.gfmc like CONCAT('%',#{params.gfmc},'%') 
+         </if>
+         <if test="params.tqrqq !=null and params.tqrqq !='' and params.tqrqz !=null and params.tqrqz !=''">
+               and b.tqsj between #{params.tqrqq} and #{params.tqrqz}
+         </if>
+         <if test='params.tqsb =="1"'>
+               and locate('Windows', llqxx) > 0
+         </if>
+         <if test='params.tqsb =="2"'>
+               and locate('Windows', llqxx) = 0
+         </if>
+         <if test="params.jlly !=null and params.jlly !=''">
+              and b.jlly = #{params.jlly}
+         </if>
+         order by b.tqsj desc
+   </select>
+   
+   
+    
+    <select id="findAll" parameterType="map" resultType="jyls">
+       SELECT * FROM t_jyls t WHERE t.yxbz = '1' AND t.fpczlxdm LIKE '1%'  AND 
+       t.fpzldm = '12' AND t.jshj - IFNULL(t.ykpjshj,0) != 0 and t.clztdm = '01' order by djh
+    </select>
+    
+    <select id="findYjfs" parameterType="map" resultType="yjfsxxvo">
+       select a.djh,a.ddh,a.gfemail from t_jyls a,t_yjfs c where a.djh = c.djh and c.fsjg = 2 
+       and c.fscs &lt; 3 union SELECT a.djh,a.ddh,a.gfemail FROM t_jyls a WHERE a.sffsyj = '1' 
+       and a.gfemail is not null and a.gfemail != '' AND a.clztdm = '21' and 
+       not exists (select 1 from t_kpls b where a.djh = b.djh and b.pdfurl is null)
+    </select>
+    
+    <select id="findFpxx" parameterType="map" resultType="fpxxvo">
+       select b.pdfurl,b.fpdm,b.fphm,a.ddh,a.jshj,c.kprq,substr(b.jym,length(b.jym)-5,length(b.jym)) jym 
+       from t_jyls a,t_kpls b,t_kpspmx c
+       where a.djh = b.djh and a.djh = c.djh and c.spmxxh = 1
+       and a.ddh = #{ddh} and a.jshj = (#{jshj}+0)
+       and b.pdfurl is not null and b.pdfurl != ''
+    </select>
+
+
+    <select resultType="kpls" parameterType="map" id="findByTqm">
+        select b.* from t_jyls a, t_kpls b where a.yxbz = '1' AND a.clztdm =
+        '91' AND a.djh = b.djh AND b.fpztdm = '00' AND b.fpczlxdm = '11' AND
+        b.pdfurl IS NOT NULL AND b.pdfurl !=''
+        <if test="tqm != null and tqm != ''"> and a.tqm = #{tqm} </if>
+        <if test="je != null and je != ''"> and a.jshj = #{je} </if>
+        <if test="ddh != null and ddh != ''"> and a.ddh = #{ddh} </if>
+
+        <if test="gsdm != null and gsdm != ''"> and a.gsdm = #{gsdm} </if>
+
+    </select>
+
+    <select resultType="kpls" parameterType="map" id="findBySq">
+        select b.* from t_jyls a, t_kpls b where a.yxbz = '1' AND a.clztdm =
+        '91' AND a.djh = b.djh AND b.fpztdm = '00' AND b.fpczlxdm = '11' AND
+        (b.pdfurl IS  NULL or b.pdfurl ='')
+        <if test="tqm != null and tqm != ''"> and a.tqm = #{tqm} </if>
+        <if test="je != null and je != ''"> and a.jshj = #{je} </if>
+        <if test="ddh != null and ddh != ''"> and a.ddh = #{ddh} </if>
+
+        <if test="gsdm != null and gsdm != ''"> and a.gsdm = #{gsdm} </if>
+
+    </select>
+	<select id="findOne" parameterType="map" resultType="jyls">
+		select * from t_jyls where yxbz = '1'
+		<if test="gsdm != null">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="tqm != null">
+			and tqm = #{tqm}
+		</if>
+		<if test="djh != null">
+			and djh = #{djh}
+		</if>
+		<if test="je != null">
+			and jshj = #{je}
+		</if>
+        <if test="sqlsh != null">
+            and sqlsh = #{sqlsh}
+        </if>
+        <if test="khh != null">
+            and khh = #{khh}
+        </if>
+		limit 1
+	</select>
+    <select resultType="kpls" parameterType="map" id="findBykhh">
+        select b.* from t_jyls a, t_kpls b where a.yxbz = '1' AND a.clztdm =
+        '91' AND a.djh = b.djh  AND b.fpczlxdm = '11' AND
+        b.pdfurl IS NOT NULL AND b.pdfurl !='' and b.fpztdm='00'
+        <if test="khh != null and khh != ''"> and a.khh = #{khh} </if>
+        <if test="tqm != null and tqm != ''"> and a.tqm = #{tqm} </if>
+        <if test="je != null and je != ''"> and a.jshj = #{je} </if>
+        <if test="ddh != null and ddh != ''"> and a.ddh = #{ddh} </if>
+
+        <if test="gsdm != null and gsdm != ''"> and a.gsdm = #{gsdm} </if>
+        <if test="this != null and this != ''">
+            and  date_format(b.kprq,'%Y-%m')=date_format(now(),'%Y-%m')
+        </if>
+        <if test="previous != null and previous != ''">
+            and  date_format(b.kprq,'%Y-%m')=date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y-%m')
+        </if>
+        <if test="twobefore != null and twobefore != ''">
+            and b.kprq &lt;date_add(curdate(),interval -2 MONTH)
+        </if>
+        <if test="Decemberbefore != null and Decemberbefore != ''">
+            and year(b.kprq)=year(date_sub(now(),interval 1 year))
+        </if>
+        order by b.fpdm,b.fphm
+    </select>
+	 <!--  更新处理状态 -->
+   <update id="updateJshj" parameterType="map">
+       update t_jyls set jshj = #{jshj} where djh = #{djh}
+   </update>
+   
+   <select id="findAllByJylsh" parameterType="map" resultType="jyls">
+        select * from t_jyls where yxbz = '1' AND jylsh = #{jylsh}
+    </select>
+    
+    <select id="findJylsFsdx" resultType="jyls">
+        select * from t_jyls where yxbz = '1' and gfsjh is not null and gfsjh !='' and dxzt='0' and fpczlxdm in('11','23');
+    </select>
+    
+    <update id="updateDxbz" parameterType="map">
+        update t_jyls set dxzt = #{dxzt} where djh = #{djh}
+    </update>
+    
+    <select id="findFsdxSqj" resultType="jyls">
+         select a.* from t_jyls a,t_kpls b where a.gsdm='sqj' and gfsjh is not null and gfsjh !='' and dxzt ='0' and a.djh=b.djh and b.fpztdm='00' and a.fpczlxdm='11'
+    </select>
+    
+    
+     <select id="findAllJyls" parameterType="map" resultType="jyls">
+        select * from t_jyls where yxbz = '1'
+        <if test="clztdm != null">
+            and clztdm = #{clztdm}
+        </if>
+        <if test="fpzldm != null">
+            and fpzldm = #{fpzldm}
+        </if>
+        <if test="fpczlxdm != null">
+            and fpczlxdm = #{fpczlxdm}
+        </if>
+        <if test="gfmc != null and gfmc != ''">
+            and gfmc like concat('%',#{gfmc},'%')
+        </if>
+        <if test="ddh != null and ddh != ''">
+            and ddh like concat('%',#{ddh},'%')
+        </if>
+        <if test="jylsh != null and jylsh != ''">
+            and jylsh like concat('%',#{jylsh},'%')
+        </if>
+        <if test="rqq != null and rqq != '' and rqz != null and rqz != ''" >
+            and jylssj between #{rqq} and #{rqz}
+        </if>
+        <if test="gsdm != null and gsdm != ''" >
+            and gsdm = #{gsdm}
+        </if>
+        <if test="xfsh != null and xfsh != ''" >
+            and xfsh = #{xfsh}
+        </if>
+        <if test="xfs !=null">
+               <foreach collection="xfs" open=" and (xfid in (" separator="," close=")" item="item" index="index">
+                #{xfs[${index}].id} 
+            </foreach>
+            or xfid is null)
+         </if>
+         <if test="skps !=null">
+               <foreach collection="skps" open=" and (skpid in (" separator="," close=")" item="item" index="index">
+                #{skps[${index}].id} 
+                </foreach>
+                or skpid is null)
+         </if>        
+        <if test="orderBy != null">
+            order by ${orderBy}
+        </if>
+    </select>
+</mapper>
+

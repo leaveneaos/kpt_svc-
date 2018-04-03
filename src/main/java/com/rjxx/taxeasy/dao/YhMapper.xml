@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.YhMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="yh">
+        select * from t_yh where yxbz = '1'
+        <if test="dlyhid != null and dlyhid !=''">
+            and dlyhid = #{dlyhid}
+        </if>
+        <if test="gsdm != null and gsdm !=''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="yhmm != null and yhmm !=''">
+            and yhmm = #{yhmm}
+        </if>
+        <if test="yhid !=null and yhid !=''">
+            and id = #{yhid}
+        </if>
+        <if test="userid !=null and userid !=''">
+            and dinguserid = #{userid}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findOneByParam" parameterType="map" resultType="yh">
+        select dlyhid,zhlxmc zhlxdm from t_yh a, t_dm_zhlx b where a.zhlxdm=b.zhlxdm and a.yxbz = '1'
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+        <if test="gsdm != null and gsdm !=''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="yhmm != null and yhmm !=''">
+            and yhmm = #{yhmm}
+        </if>
+        limit 1
+    </select>
+    
+    <select id="findOneByYhVo" parameterType="map" resultType="yhvo">
+        select a.*,b.zhlxmc as zhlxmc  from t_yh a, t_dm_zhlx b where a.zhlxdm=b.zhlxdm and a.yxbz = '1'
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+        <if test="gsdm != null and gsdm !=''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="yhmm != null and yhmm !=''">
+            and yhmm = #{yhmm}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="yh">
+        select * from t_yh where yxbz = '1'
+        <if test="gsdm != null and gsdm !=''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+    <select id="findAllByYHCount" parameterType="map" resultType="yhvo">
+        select count( DISTINCT a.id) as yhcount from t_yh a where a.yxbz='1'
+        <if test="gsdm != null and gsdm !=''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+    <select id="findByPage" parameterType="pagination" resultType="yh">
+        SELECT
+        *
+        FROM
+        t_yh y
+        WHERE
+        y.yxbz = '1'
+        <if test="params.yhzh != null and params.yhzh != ''">
+            and y.dlyhid like concat('%',#{params.yhzh},'%')
+        </if>
+        <if test="params.yhmc != null and params.yhmc != ''">
+            and y.yhmc like concat('%',#{params.yhmc},'%')
+        </if>
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        t_xf a,
+        t_group d
+        WHERE
+        a.id = d.xfid
+        AND d.yxbz = '1'
+        AND a.yxbz = '1'
+        AND y.id = d.yhid
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        t_group b,
+        t_yh c
+        WHERE
+            b.yxbz = '1'
+        <if test="params.yhid != null and params.yhid != ''">
+            and c.id = #{params.yhid}
+        </if>
+        <if test="params.gsdm != null and params.gsdm != ''">
+            and gsdm = #{params.gsdm}
+        </if>
+        AND c.sup = '1'
+        AND a.gsdm = c.gsdm
+        AND b.yhid = c.id
+        AND c.yxbz = '1'
+        AND (
+        (
+        b.xfid IS NULL
+        )
+        OR (
+        a.id = b.xfid
+        )
+        )
+        )
+        )
+    </select>
+
+</mapper>
+

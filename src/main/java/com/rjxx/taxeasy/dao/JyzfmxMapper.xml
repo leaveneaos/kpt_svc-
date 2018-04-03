@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.JyzfmxMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="jyzfmx">
+        select * from t_jyzfmx where 1=1
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="ddh != null">
+            and ddh = #{ddh}
+        </if>
+        <if test="sqlsh != null">
+            and sqlsh = #{sqlsh}
+        </if>
+        limit 1
+    </select>
+    <select id="findAllByParamsVo" parameterType="map" resultType="jyzfmxvo">
+        select t.id ,t.ddh,t.zffs_dm,(select a.zffs_mc from t_dm_zffs a where a.zffs_dm=t.zffs_dm) zfmc,t.gsdm,t.sqlsh,t.zfje from t_jyzfmx t where 1=1
+        <if test="gsdm != null">
+            and t.gsdm = #{gsdm}
+        </if>
+        <if test="ddh != null">
+            and t.ddh = #{ddh}
+        </if>
+        <if test="sqlsh != null">
+            and t.sqlsh = #{sqlsh}
+        </if>
+
+    </select>
+    <select id="findAllByParams" parameterType="map" resultType="jyzfmx">
+        select * from t_jyzfmx where 1 = 1
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="sqlsh != null">
+            and sqlsh = #{sqlsh}
+        </if>
+        <if test="orderBy != null">
+            order by ${orderBy}
+        </if>
+    </select>
+
+    <select id="findByPage" parameterType="pagination" resultType="jyzfmx">
+        select * from t_jyzfmx where 1=1
+        <if test="params.orderBy != null">
+            order by ${params.orderBy}
+        </if>
+    </select>
+
+	<insert id="addJyzfmxBatch" useGeneratedKeys="true"
+		keyProperty="id" parameterType="java.util.List">  
+    
+    	insert into t_jyzfmx (ddh, sqlsh, zffs_dm, zfje, gsdm, lrsj, lrry, xgsj,
+			xgry, paynumber)   
+   	 values  
+    	<foreach collection="list" item="item" index="index" separator="," >  
+       	 	(#{item.ddh},#{item.sqlsh},#{item.zffsDm},#{item.zfje},#{item.gsdm},#{item.lrsj},
+        	#{item.lrry},#{item.xgsj},#{item.xgry},#{item.paynumber})  
+    	</foreach>    
+	</insert>
+
+</mapper>
+

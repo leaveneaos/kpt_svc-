@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.JyspmxMapper">
+
+    <select id="findOneByParams" parameterType="jyspmx" resultType="jyspmx">
+        select * from t_jyspmx where 1 = 1
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="jyspmx" resultType="jyspmx">
+        select * from t_jyspmx where 1 = 1
+        <if test="djh != null">
+            and djh = #{djh}
+        </if>
+    </select>
+    
+      <!--  根据djh查询明细 -->
+  <select id="findMxList" parameterType="map" resultType="jyspmx">
+      select * from t_jyspmx where djh = #{djh} order by spmxxh
+  </select>
+  <select id="findBySql" parameterType="jyspmx" resultType="JyspmxDecimal">
+       SELECT * FROM t_jyspmx t WHERE  t.jshj - IFNULL(t.ykphj,0) != 0 
+        <if test="djh != null">
+            and t.djh = #{djh}
+        </if>
+        order by spmxxh
+    </select>
+    <select id="findByPage" parameterType="pagination" resultType="jyspmx">
+        select * from t_jyspmx where 1 = 1
+        <if test="params.djh != null and params.djh!=''">
+            and djh in ( ${params.djh} )
+        </if>
+        <if test="params.djh==''">
+            and djh =0
+        </if>
+        <if test="params.gsdm != null">
+            and gsdm = #{params.gsdm}
+        </if>
+        <if test="params.djhlist !=null">
+            <foreach collection="params.djhlist" open=" and djh in ("  close=")" separator=","  item="item" index="index" >
+                #{params.djhlist[${index}]}
+            </foreach>
+        </if>
+        order BY djh DESC ,spmxxh ASC
+    </select>
+
+    <select id="findByDjhList" parameterType="list" resultType="jyspmx">
+        select * from t_jyspmx where 1 = 1
+        <foreach collection="list" open=" and djh in (" close=")" separator="," item="djh">
+            #{djh}
+        </foreach>
+    </select>
+
+    <select id="getNeedToKP2" parameterType="map" resultType="jyspmxdecimal">
+        SELECT * FROM t_jyspmx t WHERE t.djh= #{djh} and t.jshj - IFNULL(t.ykphj,0) != 0 order by spmxxh
+    </select>
+    
+     <select id="getNeedToKP3" parameterType="map" resultType="jyspmxdecimal2">
+        SELECT * FROM t_jymxsq t WHERE t.sqlsh= #{sqlsh} and t.jshj order by spmxxh
+    </select>
+
+    <select id="getNeedToKP4" parameterType="map" resultType="jyspmxdecimal2">
+        SELECT * FROM t_jymxsq_cl t WHERE t.sqlsh= #{sqlsh} order by spmxxh asc,fphxz desc
+    </select>
+
+	<select id="findAll" parameterType="map" resultType="jyspmx">
+		select * from t_jyspmx where 1 = 1 
+		<if test="djh != null and djh != ''">
+			and djh = #{djh}
+		</if>
+	</select>
+
+</mapper>
+

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.XfMapper">
+
+    <select id="getXfListByYhId" parameterType="int" resultType="xf">
+        SELECT
+	      *
+        FROM
+	      t_xf a
+            WHERE
+	          a.yxbz = '1'
+                AND EXISTS (
+	                 SELECT
+		              1
+	                FROM
+		              t_group b,
+		              t_yh c
+	                  WHERE
+	                    a.gsdm = c.gsdm
+	                    AND b.yhid = c.id
+	                    AND c.yxbz = '1'
+	                    AND b.yxbz = '1'
+                        and b.yhid = #{yhId}
+	                    AND ((b.xfid IS NULL) OR (a.id = b.xfid)))
+    </select>
+	<select id="findOneByParams" parameterType="xf" resultType="xf">
+        select * from t_xf where yxbz = '1'
+        <if test="xfsh != null and xfsh != ''">
+            and xfsh = #{xfsh}
+        </if>
+        <if test="gsdm != null and gsdm != ''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="xfmc != null and xfmc != ''">
+            and xfmc = #{xfmc}
+        </if>
+        limit 1
+    </select>
+
+    <select resultType="XfKzVo" parameterType="map"
+            id="findXfkzListByXfid"> SELECT a.*,b.id xfid FROM sf_dmb a,t_xf b
+            WHERE 1=1
+           <if test="xfList != null">
+              <foreach collection="xfList" open=" and b.id in (" separator="," close=")" item="xf">
+                  #{xf.id}
+              </foreach>
+           </if>
+           and f_get_sf(b.xfsh) = a.SF_DM
+    </select>
+
+
+    <select id="findAllByParams" parameterType="xf" resultType="xf">
+        select * from t_xf where yxbz = '1'
+        <if test="gsdm != null and gsdm != ''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="xfsh != null and xfsh != ''">
+            and xfsh = #{xfsh}
+        </if>
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+    </select>
+    
+    <select id="findAllByMap" parameterType="map" resultType="xf">
+        select * from t_xf where yxbz = '1'
+        <if test="gsdm != null and gsdm != ''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="xfList != null">
+            <foreach collection="xfList" open=" and id in (" separator="," close=")" item="xf">
+                #{xf.id}
+            </foreach>
+        </if>
+    </select>
+    
+    <select id="findAllByXfxx" parameterType="map" resultType="xfvo">
+        select  count( DISTINCT t.xfsh)  as count from t_xf t where yxbz = '1'
+        <if test="gsdm != null and gsdm != ''">
+            and gsdm = #{gsdm}
+        </if>
+    </select>
+    
+
+    <select id="findByPage" parameterType="pagination" resultType="xf">
+        select * from t_xf where yxbz = '1'
+        <if test="params.xfsh != null and params.xfsh != ''">
+            and xfsh like concat('%',#{params.xfsh},'%')
+        </if>
+        <if test="params.xfmc != null and params.xfmc != ''">
+            and xfmc like concat('%',#{params.xfmc},'%')
+        </if>
+        <if test="params.gsdm != null and params.gsdm != ''">
+            and gsdm = #{params.gsdm}
+        </if>
+        <if test="params.orderBy != null">
+            order by lrsj desc
+        </if>
+    </select>
+    
+    
+    <select id="findByPages" parameterType="pagination" resultType="xfvo">
+        select a.*,b.xfmc sjxfmc from t_xf a left join t_xf b on a.sjjgbm=b.id where a.yxbz = '1'
+        <if test="params.xfid !=null and params.xfid !=''">
+            and (a.id in
+            <foreach collection="params.xfid" item="item" index="index"
+                     open="(" separator="," close=")">#{params.xfid[${index}]}
+            </foreach>
+            or a.id is null)
+        </if>
+        <if test="params.xfsh != null and params.xfsh != ''">
+            and a.xfsh like concat('%',#{params.xfsh},'%')
+        </if>
+        <if test="params.xfmc != null and params.xfmc != ''">
+            and a.xfmc like concat('%',#{params.xfmc},'%')
+        </if>
+        <if test="params.gsdm != null and params.gsdm != ''">
+            and a.gsdm = #{params.gsdm}
+        </if>
+        <if test="params.kpr != null and params.kpr != ''">
+            and a.kpr like concat('%',#{params.kpr},'%') 
+        </if>
+        <if test="params.sjxfmc != null and params.sjxfmc != ''">
+            and b.xfmc like concat('%',#{params.sjxfmc},'%')
+        </if>
+        <if test="params.sjgj != null and params.sjgj != ''">
+            and a.sjjgbm = #{params.sjgj}
+        </if>
+        <if test="params.orderBy != null">
+            order by a.lrsj desc
+        </if>
+    </select>
+</mapper>

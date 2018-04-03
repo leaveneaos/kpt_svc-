@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.JyxxsqMapper">
+
+	<select id="findOneByParams" parameterType="map" resultType="jyxxsq">
+		select * from t_jyxxsq where yxbz = '1'
+		<if test="gsdm != null">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="ddh != null">
+			and ddh = #{ddh}
+		</if>
+		<if test="tqm != null">
+			and tqm = #{tqm}
+		</if>
+		<if test="jylsh != null">
+			and jylsh = #{jylsh}
+		</if>
+		<if test="sqlsh != null">
+			and sqlsh = #{sqlsh}
+		</if>
+		<if test="fpdm != null">
+			and yfpdm = #{fpdm}
+		</if>
+		<if test="fphm != null">
+			and yfphm = #{fphm}
+		</if>
+		<if test="openid != null">
+			and openid = #{openid}
+		</if>
+		<if test="je != null">
+			and jshj = #{je}
+		</if>
+		limit 1
+	</select>
+
+
+	<select id="findOneByTqmAndJshj" parameterType="map" resultType="jyxxsq">
+		select  a.* from t_jyxxsq a ,t_jymxsq_cl b where a.sqlsh = b.sqlsh and a.yxbz='1'
+		<if test="gsdm != null">
+			and a.gsdm = #{gsdm}
+		</if>
+		<if test="ddh != null">
+			and a.ddh = #{ddh}
+		</if>
+		<if test="tqm != null">
+			and a.tqm = #{tqm}
+		</if>
+		<if test="jylsh != null">
+			and a.jylsh = #{jylsh}
+		</if>
+		<if test="sqlsh != null">
+			and a.sqlsh = #{sqlsh}
+		</if>
+		<if test="je != null">
+			and a.jshj = #{je}
+		</if>
+		limit 1
+	</select>
+
+
+	<select id="findAllByTqms" parameterType="map" resultType="jyxxsq">
+		select * from t_jyxxsq where yxbz = '1'
+		<if test="tqmList != null">
+			<foreach collection="tqmList" open=" and tqm in (" separator=","
+				close=")" item="tqm">
+				#{tqm}
+			</foreach>
+		</if>
+		<if test="gsdm != null">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="orderBy != null">
+			order by #{orderBy}
+		</if>
+	</select>
+
+	<select id="findAllByJylshs" parameterType="map" resultType="jyxxsq">
+		select * from t_jyxxsq where yxbz = '1'
+		<if test="jylshList != null">
+			<foreach collection="jylshList" open=" and jylsh in ("
+				separator="," close=")" item="jylsh">
+				#{jylsh}
+			</foreach>
+		</if>
+		<if test="gsdm != null">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="orderBy != null">
+			order by #{orderBy}
+		</if>
+	</select>
+	<select id="findOneByJylsh" parameterType="map" resultType="jyxxsq">
+		select * from t_jyxxsq where yxbz = '1'
+		<if test="gsdm != null">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="jylsh != null">
+			and jylsh = #{jylsh}
+		</if>
+		<if test="sqlsh != null and sqlsh != ''">
+			and sqlsh = #{sqlsh}
+		</if>
+		<if test="orderBy != null">
+			order by #{orderBy}
+		</if>
+	</select>
+	<select id="findAllByDdhs" parameterType="map" resultType="jyxxsq">
+		select * from t_jyxxsq where yxbz = '1'
+		<if test="ddhList != null">
+			<foreach collection="ddhList" open=" and ddh in (" separator=","
+				close=")" item="ddh">
+				#{ddh}
+			</foreach>
+		</if>
+		<if test="gsdm != null">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="orderBy != null">
+			order by #{orderBy}
+		</if>
+	</select>
+
+	<select id="findXfExistByKpd" parameterType="map" resultType="xf">
+		select t.* from t_xf t where t.yxbz='1' and t.id in
+		(select a.xfid from t_skp a where a.kpddm =#{kpddm} and a.gsdm =#{gsdm} )
+		LIMIT 1
+	</select>
+
+	<select id="findXfExistByXfsh" parameterType="map" resultType="xf">
+		select t.* from t_xf t where t.yxbz='1' and t.xfsh =#{xfsh} and t.gsdm =#{gsdm}
+        LIMIT 1
+	</select>
+
+	<select id="findskpExistByXfid" parameterType="map" resultType="skp">
+		select t.* from t_skp t where t.yxbz='1' and t.xfid =#{xfid} and t.gsdm =#{gsdm}
+		LIMIT 1
+	</select>
+
+	<select id="findSjlyAndOpenidByMap" parameterType="map" resultType="jyxxsq">
+		SELECT a.* FROM t_jyxxsq a,t_jyls b,t_kpls c WHERE c.djh = b.djh
+		AND b.sqlsh = a.sqlsh AND a.jylsh = b.jylsh
+		<if test="gsdm !=null and gsdm !=''">
+			and a.gsdm = #{gsdm}
+		</if>
+		<if test="kplsh !=null and kplsh !=''">
+			and c.kplsh = #{kplsh}
+		</if>
+		LIMIT 1
+	</select>
+
+    <select id="findBykplscxPage" parameterType="map" resultType="jyxxsqVO">
+		SELECT
+		a.sqlsh,a.jylsh,a.ddh,a.jshj,a.gfmc,a.ddrq,d.fpzlmc,a.tqm,a.sjly,a.ztbz
+		FROM
+		t_jyxxsq a
+		JOIN (
+		SELECT
+		t.sqlsh
+		FROM
+		t_jyxxsq t
+		WHERE
+		t.yxbz = '1'
+		<if test="gsdm !=null and gsdm !=''">
+			and t.gsdm = #{gsdm}
+		</if>
+		<if test="xfs !=null">
+			<foreach collection="xfs" open=" and (t.xfid in ("
+					 separator="," close=")" item="item" index="index">
+				#{xfs[${index}].id}
+			</foreach>
+			or t.xfid is null)
+		</if>
+		<if test="skps !=null">
+			<foreach collection="skps" open=" and (t.skpid in ("
+					 separator="," close=")" item="item" index="index">
+				#{skps[${index}].id}
+			</foreach>
+			or t.skpid is null)
+		</if>
+		<if test="ddh !=null and ddh !=''">
+			and t.ddh = #{ddh}
+		</if>
+		<if test="fpzldm !=null and fpzldm !=''" >
+			and t.fpzldm= #{fpzldm}
+		</if>
+		<if test="xfsh !=null and xfsh !=''" >
+			and t.xfsh = #{xfsh}
+		</if>
+		<if test="jylsh !=null and jylsh !=''">
+			and t.jylsh = #{jylsh}
+		</if>
+
+		<if test="gfmc !=null and gfmc !=''">
+			and t.gfmc like concat('%',#{gfmc},'%')
+		</if>
+		<if test="rqq !=null and rqq != ''">
+			and t.ddrq &gt;= #{rqq}
+		</if>
+		<if test="rqz !=null and rqz != ''">
+			and t.ddrq &lt;
+			date_add(str_to_date(#{rqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+		ORDER BY t.sqlsh desc
+		LIMIT #{start},#{length}) b ON a.sqlsh = b.sqlsh
+		LEFT JOIN t_fpzl d on a.fpzldm = d.fpzldm
+		-- LEFT JOIN t_fpczlx e on a.fpczlxdm = e.fpczlxdm
+		-- LEFT JOIN t_clzt c on a.clztdm = c.clztdm;
+    </select>
+
+	<select id="findBykplscxtotal" parameterType="map" resultType="int">
+		SELECT
+		count(a.sqlsh)
+		FROM
+		t_jyxxsq a
+		JOIN (
+		SELECT
+		t.sqlsh
+		FROM
+		t_jyxxsq t
+		WHERE
+		t.yxbz = '1'
+		<if test="gsdm !=null and gsdm !=''">
+			and t.gsdm = #{gsdm}
+		</if>
+		<if test="xfs !=null">
+			<foreach collection="xfs" open=" and (t.xfid in ("
+					 separator="," close=")" item="item" index="index">
+				#{xfs[${index}].id}
+			</foreach>
+			or t.xfid is null)
+		</if>
+		<if test="skps !=null">
+			<foreach collection="skps" open=" and (t.skpid in ("
+					 separator="," close=")" item="item" index="index">
+				#{skps[${index}].id}
+			</foreach>
+			or t.skpid is null)
+		</if>
+		<if test="ddh !=null and ddh !=''">
+			and t.ddh = #{ddh}
+		</if>
+		<if test="fpzldm !=null and fpzldm !=''" >
+			and t.fpzldm= #{fpzldm}
+		</if>
+		<if test="xfsh !=null and xfsh !=''" >
+			and t.xfsh = #{xfsh}
+		</if>
+		<if test="jylsh !=null and jylsh !=''">
+			and t.jylsh = #{jylsh}
+		</if>
+
+		<if test="gfmc !=null and gfmc !=''">
+			and t.gfmc like concat('%',#{gfmc},'%')
+		</if>
+		<if test="rqq !=null and rqq != ''">
+			and t.ddrq &gt;= #{rqq}
+		</if>
+		<if test="rqz !=null and rqz != ''">
+			and t.ddrq &lt;
+			date_add(str_to_date(#{rqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+		ORDER BY t.sqlsh desc) b ON a.sqlsh = b.sqlsh
+		LEFT JOIN t_fpzl d on a.fpzldm = d.fpzldm
+		-- LEFT JOIN t_fpczlx e on a.fpczlxdm = e.fpczlxdm
+		-- LEFT JOIN t_clzt c on a.clztdm = c.clztdm;
+	</select>
+    
+	<select id="findByPage" parameterType="pagination" resultType="jyxxsqVO">
+		select DISTINCT a.* from t_jyxxsq a , t_jymxsq b WHERE a.sqlsh=b.sqlsh
+		and a.yxbz ='1'
+		<if test="params.gsdm !=null and params.gsdm !=''">
+			and a.gsdm = #{params.gsdm}
+		</if>
+		<if test="params.ztbz !=null and params.ztbz !=''">
+			and (a.ztbz = #{params.ztbz}  or a.ztbz = #{params.bfzt} )
+		</if>
+		<if test="params.xfs !=null">
+			<foreach collection="params.xfs" open=" and (a.xfid in ("
+				separator="," close=")" item="item" index="index">
+				#{params.xfs[${index}].id}
+			</foreach>
+			or a.xfid is null)
+		</if>
+		<if test="params.skps !=null">
+			<foreach collection="params.skps" open=" and (a.skpid in ("
+				separator="," close=")" item="item" index="index">
+				#{params.skps[${index}].id}
+			</foreach>
+			or a.skpid is null)
+		</if>
+		<if test="params.ddh !=null">
+			and a.ddh like concat('%',#{params.ddh},'%')
+		</if>
+		<if test="params.fpzldm !=null">
+			and a.fpzldm= #{params.fpzldm}
+		</if>
+		<if test="params.xfsh !=null">
+			and a.xfsh = #{params.xfsh}
+		</if>
+		<if test="params.gfmc !=null">
+			and a.gfmc like concat('%',#{params.gfmc},'%')
+		</if>
+		<if test="params.kprqq !=null and params.kprqq != ''">
+			and a.ddrq &gt;= #{params.kprqq}
+		</if>
+		<if test="params.kprqz !=null and params.kprqz != ''">
+			and a.ddrq &lt;
+			date_add(str_to_date(#{params.kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+		<!-- <if test="params.jyrqq !=null and params.jyrqq != ''"> and jylssj 
+			&gt;= ${params.jyrqq} </if> <if test="params.jyrqz !=null and params.jyrqz 
+			!= ''"> and jylssj &lt; date_add(str_to_date(#{params.jyrqz},'%Y-%m-%d'),INTERVAL 
+			1 day) </if> -->
+		<if test="params.spmc != null and params.spmc != ''">
+			and b.spmc like CONCAT('%',#{params.spmc},'%')
+		</if>
+		<if test="params.order != null">		
+		order by ${params.order}
+		</if>
+		${params.ord}
+	</select>
+
+
+	<select id="findByPage2" parameterType="map" resultType="jyxxsqVO">
+					SELECT * FROM  t_jyxxsq m
+							JOIN (SELECT DISTINCT a.sqlsh FROM
+									t_jyxxsq a,
+									t_jymxsq b
+										WHERE a.sqlsh = b.sqlsh
+										AND a.yxbz = '1'
+		<if test="gsdm !=null and gsdm !=''">
+			and a.gsdm =#{gsdm}
+		</if>
+		<if test="ztbz !=null and ztbz !=''">
+			 and a.ztbz in(#{ztbz},#{bfzt})
+		</if>
+		<if test="xfs !=null">
+			<foreach collection="xfs" open=" and (a.xfid in ("
+					 separator="," close=")" item="item" index="index">
+				#{xfs[${index}].id}
+			</foreach>
+			or a.xfid is null)
+		</if>
+		<if test="skps !=null">
+			<foreach collection="skps" open=" and (a.skpid in ("
+					 separator="," close=")" item="item" index="index">
+				#{skps[${index}].id}
+			</foreach>
+			or a.skpid is null)
+		</if>
+		<if test="ddh !=null and ddh !=''">
+			and a.ddh = #{ddh}
+		</if>
+		<if test="fpzldm !=null and fpzldm !=''">
+			and a.fpzldm= #{fpzldm}
+		</if>
+		<if test="xfsh !=null and xfsh !=''">
+			and a.xfsh = #{xfsh}
+		</if>
+		<if test="gfmc !=null and gfmc !=''">
+			and a.gfmc like concat('%',#{gfmc},'%')
+		</if>
+		<if test="kprqq !=null and kprqq != ''">
+			and a.ddrq &gt;= #{kprqq}
+		</if>
+		<if test="kprqz !=null and kprqz != ''">
+			and a.ddrq &lt;
+			date_add(str_to_date(#{kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+		<if test="spmc != null and spmc != ''">
+			and b.spmc like CONCAT('%',#{spmc},'%')
+		</if>
+										ORDER BY a.sqlsh asc
+										LIMIT #{start},#{length}) t
+										WHERE m.sqlsh = t.sqlsh
+										ORDER BY m.sqlsh asc
+	</select>
+
+
+	<select id="findtotal" parameterType="map" resultType="int">
+		SELECT COUNT(m.sqlsh) FROM  t_jyxxsq m
+		JOIN (SELECT DISTINCT a.sqlsh FROM
+		t_jyxxsq a,
+		t_jymxsq b
+		WHERE a.sqlsh = b.sqlsh
+		AND a.yxbz = '1'
+		<if test="gsdm !=null and gsdm !=''">
+			and a.gsdm =#{gsdm}
+		</if>
+		<if test="ztbz !=null and ztbz !=''">
+			and a.ztbz in(#{ztbz},#{bfzt})
+		</if>
+		<if test="xfs !=null ">
+			<foreach collection="xfs" open=" and (a.xfid in ("
+					 separator="," close=")" item="item" index="index">
+				#{xfs[${index}].id}
+			</foreach>
+			or a.xfid is null)
+		</if>
+		<if test="skps !=null">
+			<foreach collection="skps" open=" and (a.skpid in ("
+					 separator="," close=")" item="item" index="index">
+				#{skps[${index}].id}
+			</foreach>
+			or a.skpid is null)
+		</if>
+		<if test="ddh !=null  and ddh !=''">
+			and a.ddh = #{ddh}
+		</if>
+		<if test="fpzldm !=null  and fpzldm !=''">
+			and a.fpzldm= #{fpzldm}
+		</if>
+		<if test="xfsh !=null and xfsh !=''">
+			and a.xfsh = #{xfsh}
+		</if>
+		<if test="gfmc !=null and gfmc !=''">
+			and a.gfmc like concat('%',#{gfmc},'%')
+		</if>
+		<if test="kprqq !=null and kprqq != ''">
+			and a.ddrq &gt;= #{kprqq}
+		</if>
+		<if test="kprqz !=null and kprqz != ''">
+			and a.ddrq &lt;
+			date_add(str_to_date(#{kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+		<if test="spmc != null and spmc != ''">
+			and b.spmc like CONCAT('%',#{spmc},'%')
+		</if>
+		ORDER BY a.sqlsh asc) t
+		WHERE m.sqlsh = t.sqlsh
+		ORDER BY m.sqlsh asc
+	</select>
+
+   <select id="findYscByPage" parameterType="pagination" resultType="jyxxsqVO">
+		select DISTINCT a.* from t_jyxxsq a , t_jymxsq b WHERE a.sqlsh=b.sqlsh
+		and a.yxbz ='1' and a.ztbz not in ('0','2')
+		<if test="params.gsdm !=null and params.gsdm !=''">
+			and a.gsdm = #{params.gsdm}
+		</if>
+		<if test="params.xfs !=null">
+			<foreach collection="params.xfs" open=" and (a.xfid in ("
+				separator="," close=")" item="item" index="index">
+				#{params.xfs[${index}].id}
+			</foreach>
+			or a.xfid is null)
+		</if>
+		<if test="params.skps !=null">
+			<foreach collection="params.skps" open=" and (a.skpid in ("
+				separator="," close=")" item="item" index="index">
+				#{params.skps[${index}].id}
+			</foreach>
+			or a.skpid is null)
+		</if>
+		<if test="params.ddh !=null">
+			and a.ddh like concat('%',#{params.ddh},'%')
+		</if>
+		<if test="params.fpzldm !=null">
+			and a.fpzldm= #{params.fpzldm}
+		</if>
+		<if test="params.xfsh !=null">
+			and a.xfsh = #{params.xfsh}
+		</if>
+		<if test="params.gfmc !=null">
+			and a.gfmc like concat('%',#{params.gfmc},'%')
+		</if>
+		<if test="params.kprqq !=null and params.kprqq != ''">
+			and a.ddrq &gt;= #{params.kprqq}
+		</if>
+		<if test="params.kprqz !=null and params.kprqz != ''">
+			and a.ddrq &lt;
+			date_add(str_to_date(#{params.kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+		</if>
+		<!-- <if test="params.jyrqq !=null and params.jyrqq != ''"> and jylssj 
+			&gt;= ${params.jyrqq} </if> <if test="params.jyrqz !=null and params.jyrqz 
+			!= ''"> and jylssj &lt; date_add(str_to_date(#{params.jyrqz},'%Y-%m-%d'),INTERVAL 
+			1 day) </if> -->
+		<if test="params.spmc != null and params.spmc != ''">
+			and b.spmc like CONCAT('%',#{params.spmc},'%')
+		</if>
+		order by a.ddrq desc
+	</select>
+
+	<select id="findByPage1" parameterType="pagination" resultType="jyxxsq">
+		select * from t_jyxxsq where yxbz = '1' and ztbz in('0','2')
+		<if test="params.clztdm != null">
+			and clztdm = #{params.clztdm}
+		</if>
+		<if test="params.fpzldm != null and params.fpzldm != ''">
+			and fpzldm = #{params.fpzldm}
+		</if>
+		<if test="params.fpczlxdm != null and params.fpczlxdm != ''">
+			and fpczlxdm = #{params.fpczlxdm}
+		</if>
+		<if test="params.gfmc != null and params.gfmc != ''">
+			and gfmc like concat('%',#{params.gfmc},'%')
+		</if>
+		<if test="params.ddh != null and params.ddh != ''">
+			and ddh like concat('%',#{params.ddh},'%')
+		</if>
+		<if test="params.jylsh != null and params.jylsh != ''">
+			and jylsh like concat('%',#{params.jylsh},'%')
+		</if>
+		<if
+			test="params.rqq != null and params.rqq != '' and params.rqz != null and params.rqz != ''">
+			and ddrq between #{params.rqq} and #{params.rqz}
+		</if>
+		<if test="params.gsdm != null and params.gsdm != ''">
+			and gsdm = #{params.gsdm}
+		</if>
+		<if test="params.xfsh != null and params.xfsh != ''">
+			and xfsh = #{params.xfsh}
+		</if>
+		<if test="params.xfs !=null">
+			<foreach collection="params.xfs" open=" and (xfid in ("
+				separator="," close=")" item="item" index="index">
+				#{params.xfs[${index}].id}
+			</foreach>
+			or xfid is null)
+		</if>
+		<if test="params.skps !=null">
+			<foreach collection="params.skps" open=" and (skpid in ("
+				separator="," close=")" item="item" index="index">
+				#{params.skps[${index}].id}
+			</foreach>
+			or skpid is null)
+		</if>
+		<if test="params.orderBy != null">
+			order by ${params.orderBy}
+		</if>
+	</select>
+
+	<insert id="saveJyxxsq" parameterType="jyxxsq" useGeneratedKeys="true"
+		keyProperty="sqlsh">
+		insert into t_jyxxsq (kpddm, jylsh, ddrq, ddh, fpzldm, fpczlxdm, xfid, xfsh,
+		xfmc, xfyh, xfyhzh, xflxr, xfdz, xfdh, xfyb, gfid, gfsh, gfmc, gfyh,
+		gfyhzh, gflxr, gfdz, gfdh, gfyb, gfemail, sffsyj, clztdm, bz, skr,
+		kpr, fhr, sfcp, sfdyqd, zsfs, ssyf, hztzdh, yfpdm, yfphm, hsbz, jshj,
+		ykpjshj, yxbz, lrsj, lrry, xgsj, xgry, gfsjr, gfsjrdz, gsdm, tqm,
+		skpid, gfsjh, dxzt,sjly,sfzlkp,sfdy,ztbz,khh,openid) VALUES (#{kpddm}, #{jylsh}, #{ddrq}, #{ddh},
+		#{fpzldm}, #{fpczlxdm}, #{xfid}, #{xfsh}, #{xfmc}, #{xfyh}, #{xfyhzh},
+		#{xflxr}, #{xfdz}, #{xfdh}, #{xfyb}, #{gfid}, #{gfsh}, #{gfmc},
+		#{gfyh}, #{gfyhzh},#{gflxr}, #{gfdz}, #{gfdh}, #{gfyb}, #{gfemail},
+		#{sffsyj}, #{clztdm}, #{bz}, #{skr}, #{kpr}, #{fhr}, #{sfcp},
+		#{sfdyqd}, #{zsfs}, #{ssyf}, #{hztzdh}, #{yfpdm}, #{yfphm}, #{hsbz},
+		#{jshj}, #{ykpjshj}, #{yxbz}, #{lrsj}, #{lrry}, #{xgsj}, #{xgry},
+		#{gfsjr}, #{gfsjrdz}, #{gsdm}, #{tqm}, #{skpid},#{gfsjh},#{dxzt},#{sjly},#{sfzlkp},#{sfdy},#{ztbz},#{khh},#{openid})
+	</insert>
+	
+	
+	<select id="findByMapParams" parameterType="map" resultType="jyxxsq">
+        select * from t_jyxxsq where yxbz = '1'
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="jylshList != null">
+            <foreach collection="jylshList" open=" and jylsh in (" separator="," close=")" item="jylsh">
+                #{jylsh}
+            </foreach>
+        </if>
+        <if test="tqmList != null">
+            <foreach collection="tqmList" open=" and tqm in (" separator="," close=")" item="tqm">
+                #{tqm}
+            </foreach>
+        </if>
+    </select>
+    
+    <insert id="addJyxxsqBatch" useGeneratedKeys="true"
+		keyProperty="sqlsh" parameterType="java.util.List">  
+    
+    insert into t_jyxxsq (kpddm, jylsh, ddrq, ddh, fpzldm, fpczlxdm, xfid, xfsh,
+		xfmc, xfyh, xfyhzh, xflxr, xfdz, xfdh, xfyb, gfid, gfsh, gfmc, gfyh,
+		gfyhzh, gflxr, gfdz, gfdh, gfyb, gfemail, sffsyj, clztdm, bz, skr,
+		kpr, fhr, sfcp, sfdyqd, zsfs, ssyf, hztzdh, yfpdm, yfphm, hsbz, jshj,
+		ykpjshj, yxbz, lrsj, lrry, xgsj, xgry, gfsjr, gfsjrdz, gsdm, tqm,
+		skpid, gfsjh, dxzt,sjly,sfzlkp,sfdy,ztbz,khh,openid,qjzk)
+    values  
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.kpddm},#{item.jylsh},#{item.ddrq},#{item.ddh},#{item.fpzldm},#{item.fpczlxdm},
+        #{item.xfid},#{item.xfsh},#{item.xfmc},#{item.xfyh},#{item.xfyhzh},
+        #{item.xflxr},#{item.xfdz},#{item.xfdh},#{item.xfyb},#{item.gfid},
+        #{item.gfsh},#{item.gfmc},#{item.gfyh},#{item.gfyhzh},#{item.gflxr},
+        #{item.gfdz},#{item.gfdh},#{item.gfyb},#{item.gfemail},#{item.sffsyj},
+        #{item.clztdm},#{item.bz},#{item.skr},#{item.kpr},#{item.fhr},
+        #{item.sfcp},#{item.sfdyqd},#{item.zsfs},#{item.ssyf},#{item.hztzdh},
+        #{item.yfpdm},#{item.yfphm},#{item.hsbz},#{item.jshj},#{item.ykpjshj},
+        #{item.yxbz},#{item.lrsj},#{item.lrry},#{item.xgsj},#{item.xgry},
+        #{item.gfsjr},#{item.gfsjrdz},#{item.gsdm},#{item.tqm},#{item.skpid},
+        #{item.gfsjh},#{item.dxzt},#{item.sjly},#{item.sfzlkp},#{item.sfdy},#{item.ztbz}
+		,#{item.khh},#{item.openid},#{item.qjzk})
+    </foreach>    
+</insert>
+
+	<update id="updateGfxx" parameterType="map">
+	  UPDATE t_jyxxsq set gfsh=#{gfsh},gfmc=#{gfmc},gfemail=#{email},gfdh=#{gfdh},gfdz=#{gfdz},sffsyj=#{sffsyj},
+	  gfyh=#{gfyh},gfyhzh=#{gfyhzh},sjly=#{sjly},openid=#{openid},
+	  gflx=#{gflx},sjly=#{sjly},openid=#{openid},gflx=#{gflx} where gsdm=#{gsdm} and tqm=#{tqm}
+	</update>
+</mapper>
+

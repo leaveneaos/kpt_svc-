@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.SkpMapper">
+
+	<select id="findOneByParams" parameterType="map" resultType="skp">
+		select * from t_skp where yxbz = '1'
+		<if test="kpddm != null and kpddm != ''">
+			and kpddm = #{kpddm}
+		</if>
+		<if test="kpdmc != null and kpdmc != ''">
+			and kpdmc = #{kpdmc}
+		</if>
+		<if test="gsdm != null and gsdm != ''">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="notid != null and notid != ''">
+			and id != #{notid}
+		</if>
+		<if test="xfid != null and xfid != ''">
+			and xfid = #{xfid}
+		</if>
+		<if test="kpdid != null and kpdid != ''">
+			and id = #{kpdid}
+		</if>
+		<if test="skph != null and skph != ''">
+			and skph = #{skph}
+		</if>
+		limit 1
+	</select>
+	<select id="findSkpbySkph" parameterType="map" resultType="skp">
+        select * from t_skp  t where yxbz = '1'
+		<if test="kpdid != null and kpdid != ''">
+			and ( t.skph=#{kpdid} or id=#{kpdid} )
+		</if>
+	</select>
+
+	<select id="getSkpListByYhId" parameterType="map" resultType="skp">
+		SELECT
+		*
+		FROM
+		t_skp a
+		WHERE
+		a.yxbz = '1'
+		AND EXISTS (
+		SELECT
+		1
+		FROM
+		t_group b,
+		t_yh c
+		WHERE
+        b.yxbz = '1'
+		<if test="yhid != null and yhid != ''">
+			and b.yhid =#{yhid}
+		</if>
+		AND b.yhid = c.id
+		AND a.gsdm = c.gsdm
+		AND c.yxbz = '1'
+		AND b.yxbz = '1'
+		AND (
+		(
+		 /* t_group xfid is null and skpid is null 赋予用户公司全部销方全部开票点权限*/
+		 b.xfid IS NULL
+		AND b.skpid IS NULL
+		)
+		OR (
+		/*t_group skpid is null 赋予销方全部开票点权限*/
+		a.xfid = b.xfid
+		AND b.skpid IS NULL
+		)
+		OR (
+		/*指定开票点权限*/
+		a.xfid = b.xfid
+		AND a.id = b.skpid
+		)
+		)
+		)
+
+
+	</select>
+
+	<!--<select id="getSkpListByYhId" parameterType="map" resultType="skp">
+		select * from t_skp where yxbz = '1' 
+		<if test="xfs != null or skps != null">
+			and (
+				<if test="xfs != null">
+					 xfid in
+					<foreach collection="xfs" item="item" index="index" open=" ("
+						separator="," close=")"> #{item.id}</foreach> or
+				</if>
+				<if test="skps != null">
+					(id in
+					<foreach collection="skps" item="item" index="index" open=" ("
+						separator="," close=")"> #{item.id}</foreach>)
+				</if>
+				<if test="skps == null">
+					id is null
+				</if>
+			)
+		</if>
+		<if test="xfs == null and skps == null">
+			and xfid is null
+		</if>
+		
+	</select>-->
+	<select id="findAllByParams" parameterType="skp" resultType="skp">
+		select * from t_skp where yxbz = '1'
+		<if test="xfid != null and xfid != ''">
+			and xfid = #{xfid}
+		</if>
+		<if test="gsdm != null and gsdm != ''">
+			and gsdm = #{gsdm}
+		</if>
+		<if test="pid != null and pid != ''">
+			and pid = #{pid}
+		</if>
+	</select>
+	<select id="findBySql" parameterType="skp" resultType="skp">
+		select * from t_skp where yxbz = '1'
+		<if test="xfid != null and xfid != ''">
+			and xfid = #{xfid}
+		</if>
+	</select>
+	<select id="findByPage" parameterType="pagination" resultType="skpvo">
+		select s.*,x.xfmc, p.ppdm, p.ppmc 
+		from t_skp s LEFT JOIN t_xf x on s.xfid = x.id  LEFT JOIN t_pp p on s.pid = p.id 
+		where s.yxbz = '1'
+		<if test="params.gsdm != null and params.gsdm != ''">
+			and s.gsdm = #{params.gsdm}
+		</if>
+		<if test="params.xfid != null and params.xfid != ''">
+			and s.xfid = #{params.xfid}
+		</if>
+		<if test="params.xfi !=null and params.xfi !=''">
+			and (s.xfid in
+			<foreach collection="params.xfi" item="item" index="index"
+					 open="(" separator="," close=")">#{params.xfi[${index}]}
+			</foreach>
+			or s.xfid is null)
+		</if>
+		<if test="params.skpid !=null and params.skpid !=''">
+			and (s.id in
+			<foreach collection="params.skpid" item="item" index="index"
+					 open="(" separator="," close=")">#{params.skpid[${index}]}
+			</foreach>
+			or s.id is null)
+		</if>
+		<if test="params.kpdmc != null and params.kpdmc != ''">
+			and s.kpdmc like concat('%',#{params.kpdmc},'%')
+		</if>
+		<if test="params.kpddm != null and params.kpddm != ''">
+			and s.kpddm = #{params.kpddm}
+		</if>
+		<if test="params.kpr != null and params.kpr != ''">
+			and s.kpr like concat('%',#{params.kpr},'%') 
+		</if>
+		<if test="params.sbcs != null and params.sbcs != ''">
+			and s.sbcs = #{params.sbcs}
+		</if>
+		<if test="params.kplx != null and params.kplx != ''">
+			and s.kplx like concat('%',#{params.kplx},'%') 
+		</if>
+		<if test="params.xfmc != null and params.xfmc != ''">
+			and s.xfid in (select id from t_xf where xfmc like concat('%',#{params.xfmc},'%')) 
+		</if>
+		order by lrsj desc
+	</select>
+
+	<select id="getKpd" parameterType="map" resultType="skp">
+		select * from t_skp where yxbz = '1'
+		and id in (select kpdid from t_cszb where yxbz='1' and csz='是' and csid = (select id from t_csb where csm = 'sfzczt') and 
+		kpdid
+		in (SELECT id FROM t_skp WHERE yxbz='1'
+		<if test="xfid != null">
+			and xfid = #{xfid}
+		</if>
+		<if test="xfsh != null">
+			and xfid = (select min(id) from t_xf where xfsh=#{xfsh} and yxbz='1')
+		</if>
+		))
+	</select>
+	<select id="findCsz" parameterType="skp" resultType="skp">
+		SELECT
+		a.kpddm
+		FROM
+		t_skp a,
+		t_csb b,
+		t_cszb c
+		WHERE
+		a.yxbz = '1'
+		AND b.yxbz = '1'
+		AND c.yxbz = '1'
+		AND a.id = c.kpdid
+		AND b.id = c.csid
+		AND b.csm = 'sflxkp'
+		AND c.csz = '是'
+		<if test="gsdm != null and gsdm != ''">
+			and c.gsdm = #{gsdm}
+		</if>
+	</select>
+	
+	<select id="findXfSkp" parameterType="map" resultType="skpVo">
+	   select a.kpdmc,b.xfmc from t_skp a,t_xf b where a.yxbz='1' and a.xfid = b.id
+	   <if test="skpid !=null and skpid !=''">
+	        and a.id = #{skpid}
+	   </if>
+	</select>
+	
+	<select id="findXfSkpNum" parameterType="map" resultType="skpVo">
+	   select count( DISTINCT a.skph) as skpcount from t_skp a where a.yxbz='1'
+	   <if test="gsdm !=null and gsdm !=''">
+	        and a.gsdm = #{gsdm}
+	   </if>
+	</select>
+</mapper>
+

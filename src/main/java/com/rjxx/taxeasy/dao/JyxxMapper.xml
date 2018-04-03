@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.JyxxMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="jyxx">
+        select * from t_jyxx where yxbz = '1'
+        <if test="gsdm != null">
+           and gsdm = #{gsdm}
+        </if>
+        <if test="tqm != null">
+           and order_no = #{tqm}
+        </if>
+        <if test="je != null">
+           and price = #{je}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="smtq">
+      SELECT b.* from t_jyxx a,t_smtq  b WHERE a.gsdm = b.gsdm and a.order_no = b.ddh and a.price = b.zje and a.yxbz = '1' AND b.yxbz = '1' and b.fpzt = '07'  
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+	
+	<select id="findAllByParams1" parameterType="map" resultType="smtq">
+      SELECT b.* from t_smtq  b WHERE  b.fpzt = '07' and b.yxbz = '1'  
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+	<select id="findAllByParams2" parameterType="map" resultType="tqmtqVo">
+    SELECT a.store_no as kpddm,b.* from t_jyxx a,t_tqmtq  b WHERE a.gsdm = b.gsdm and a.order_no = b.ddh and a.price = b.zje and a.yxbz = '1' AND b.yxbz = '1' and b.fpzt = '0'  
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+    </select>
+    <select id="findByPage" parameterType="pagination" resultType="jyxx">
+        select * from t_jyxx a where a.yxbz = '1'
+        <if test="params.gsdm != null and params.gsdm !=''">
+           and a.gsdm = #{params.gsdm}
+        </if>
+        <if test="params.ddh != null and params.ddh !=''">
+           and a.order_no = #{params.ddh}
+        </if>
+        <if test="params.kpddm != null and params.kpddm !=''">
+           and a.store_no = #{params.kpddm}
+        </if>
+        <if test="params.ddrqq != null and params.ddrqq !='' and params.ddrqz != null and params.ddrqz !=''">
+			and SUBSTR(a.order_time,1,8) &gt;= #{params.ddrqq} and SUBSTR(a.order_time,1,8) &lt;= #{params.ddrqz}
+		</if>
+        order by a.lrsj desc
+    </select>
+    <update id="update" parameterType="map">
+		update t_jyxx t  set t.store_no =
+		#{store_no},t.order_time =#{order_time},t.price=#{price},t.sign=#{sign},t.xgsj=#{xgsj}
+		    where 1=1
+		     and t.gsdm = #{gsdm}
+		     and t.order_no = #{order_no}
+	</update>
+</mapper>
+

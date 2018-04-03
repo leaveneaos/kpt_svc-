@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.SpvoMapper">
+
+    <select id="findAllByParams" parameterType="spvo" resultType="spvo">
+        select * from spvo where yxbz = '1'
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="spdm != null">
+            and spdm = #{spdm}
+        </if>
+        <if test="spbm != null">
+            and spbm = #{spbm}
+        </if>
+        <if test="spmc != null">
+            and spmc = #{spmc}
+        </if>
+        <if test="sl != null">
+            and sl = #{sl}
+        </if>
+        <if test="id != null">
+            and id = #{id}
+        </if>
+    </select>
+    <select id="findOneSpvo" parameterType="map" resultType="spvo">
+        select * from spvo where yxbz = '1'
+        <if test="gsdm != null">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="spdm != null">
+            and spdm = #{spdm}
+        </if>
+        <if test="spbm != null">
+            and spbm = #{spbm}
+        </if>
+        <if test="spmc != null">
+            and spmc = #{spmc}
+        </if>
+        <if test="sl != null">
+            and sl = #{sl}
+        </if>
+        <if test="id != null">
+            and id = #{id}
+        </if>
+        limit 1
+    </select>
+    <select id="findAllOnPage" parameterType="pagination" resultType="spvo">
+        select * from spvo where yxbz = '1'
+        <if test="params.spdm != null and params.spdm != ''">
+            and spdm like concat('%',#{params.spdm},'%')
+        </if>
+        <if test="params.spmc != null and params.spmc != ''">
+            and spmc like concat('%',#{params.spmc},'%')
+        </if>
+        <if test="params.slid != null and params.slid != ''">
+            and smid = #{params.slid}
+        </if>
+        <if test="params.sl != null and params.sl != ''">
+            and smid in (select id from t_sm where sl = #{params.sl})
+        </if>
+        <if test="params.gsdm != null and params.gsdm != ''">
+            and gsdm = #{params.gsdm}
+        </if>
+        <if test="params.sylxList != null">
+            <foreach collection="params.sylxList" open=" and sylx in (" separator="," close=")" item="item" index="index">
+                #{params.sylxList[${index}]}
+            </foreach>
+        </if>
+        <if test="params.orderBy != null">
+            order by lrsj desc
+        </if>
+    </select>
+
+</mapper>

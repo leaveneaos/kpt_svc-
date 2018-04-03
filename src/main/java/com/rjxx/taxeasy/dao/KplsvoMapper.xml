@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.KplsvoMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="kplsvo">
+        select * from kplsvo where yxbz = '1'
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="kplsvo">
+        select * from kplsvo where  fpzldm = '12' and fphm is not null and fphm != ''
+        <if test="gsdm !=null and gsdm !=''">
+            and gsdm = #{gsdm}
+        </if>
+        <if test="kprqq !=null and kprqq != ''">
+            and kprq &gt;= ${kprqq}
+         </if>
+        <if test="kprqz !=null and kprqz != ''">
+            and kprq &lt; date_add(str_to_date(#{kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+
+         </if>
+        <if test="xxzs !=null">
+            and fpczlxdm = '11'
+         </if>
+        <if test="xxfs !=null">
+            and (fpczlxdm = '12' or fpczlxdm = '13')
+         </if>
+        <if test="kprq !=null and kprq != ''">
+            and kprq like concat('%',#{kprq},'%')
+         </if>
+        <if test="fpczlxdm !=null and fpczlxdm != ''">
+            and fpczlxdm = #{fpczlxdm}
+         </if>
+    </select>
+
+    <select id="findByPage" parameterType="pagination" resultType="kplsvo">
+        select a.*,b.fpzlmc from kplsvo a,t_fpzl b where a.fpzldm = b.fpzldm and fpczlxdm = #{params.fpczlxdm} and fphm is not null
+        <if test="params.gsdm !=null and params.gsdm !=''">
+            and gsdm = #{params.gsdm}
+        </if>
+        <if test="params.xfs !=null">
+               <foreach collection="params.xfs" open=" and (xfid in (" separator="," close=")" item="item" index="index">
+                #{params.xfs[${index}].id} 
+            </foreach>
+            or xfid is null)
+         </if>
+        <if test="params.ddh !=null and params.ddh !=''">
+            and ddh like concat('%',#{params.ddh},'%')
+         </if>
+         <if test="params.skpid !=null and params.skpid !=''">
+            and skpid =#{params.skpid}
+         </if>
+         <if test="params.xfid !=null and params.xfid !=''">
+            and xfid =#{params.xfid}
+         </if>
+         <if test="params.xfmc !=null and params.xfmc !=''">
+            and xfmc like concat('%',#{params.xfmc},'%')
+         </if>
+        <if test="params.gfmc !=null and params.gfmc !=''">
+            and gfmc like concat('%',#{params.gfmc},'%')
+         </if>
+        <if test="params.fpdm !=null and params.fpdm !=''">
+            and fpdm like concat('%',#{params.fpdm},'%')
+         </if>
+        <if test="params.fphm !=null and params.fphm !=''">
+            and fphm like concat('%',#{params.fphm},'%')
+         </if>
+        <if test="params.kprqq !=null and params.kprqq != ''">
+            and a.kprq &gt;= #{params.kprqq}
+         </if>
+        <if test="params.kprqz !=null and params.kprqz != ''">
+            and a.kprq &lt; date_add(str_to_date(#{params.kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+         </if>
+        <if test="params.jyrqq !=null and params.jyrqq != ''">
+            and a.jylssj &gt;= #{params.jyrqq}
+         </if>
+        <if test="params.jyrqz !=null and params.jyrqz != ''">
+            and a.jylssj &lt; date_add(str_to_date(#{params.jyrqz},'%Y-%m-%d'),INTERVAL 1 day)
+         </if>
+         <if test="params.fpzl!=null and params.fpzl !=''">
+            and a.fpzldm=#{params.fpzl}
+         </if>
+         order by kprq desc
+    </select>
+    
+    <select id="Sltjcx" parameterType="map" resultType="slcxvo">
+            SELECT
+	    *
+     FROM
+	(
+		SELECT
+			fpzl,
+			sl * 100 sl,
+			CASE jzjtbz
+		WHEN 1 THEN
+			'即征即退'
+		ELSE
+			'普通'
+		END jzjtbz,
+		sum(zsje) zsje,
+		sum(fsje) fsje,
+		sum(hjje) hjje,
+		sum(zsse) zsse,
+		sum(fsse) fsse,
+		sum(hjse) hjse
+	FROM
+		V_FP_FSLMX
+	WHERE 1=1
+	<if test="gsdm !=null and gsdm !=''">
+	   and gsdm = #{gsdm}
+	</if>
+	<if test="kprqq !=null and kprqq != ''">
+            and kprq &gt;= #{kprqq}
+         </if>
+        <if test="kprqz !=null and kprqz != ''">
+            and kprq &lt; date_add(str_to_date(#{kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+         </if>
+	GROUP BY
+		fpzl,
+		sl * 100,
+		CASE jzjtbz
+	WHEN 1 THEN
+		'即征即退'
+	ELSE
+		'普通'
+	END WITH ROLLUP
+	) t
+WHERE
+	(
+		t.jzjtbz ='普通'
+		OR t.jzjtbz = '即征即退'
+	)
+AND t.fpzl IS NOT NULL
+AND t.sl IS NOT NULL
+ORDER BY
+	1,
+	2,
+	3;
+    </select>
+    
+    <select id="findFps" parameterType="map" resultType="Fpnum">
+        select sum(t.zsp) zspfs,sum(t.fsp) fspfs from
+(select case when fpczlxdm in ('11','21') then 1 else 0 end zsp,
+case when fpczlxdm in ('12','13') then 1 else 0 end fsp
+from t_kpls where gsdm=#{gsdm} 
+<if test="kprqq !=null and kprqq != ''">
+            and kprq &gt;= #{kprqq}
+         </if>
+        <if test="kprqz !=null and kprqz != ''">
+            and kprq &lt; date_add(str_to_date(#{kprqz},'%Y-%m-%d'),INTERVAL 1 day)
+         </if>
+and fphm is not null) t
+    </select>
+    
+    <select id="findYypl" parameterType="map" resultType="cxtjvo">
+        SELECT
+        count(1) fpsl,sum(a.jshj) jshj,
+        case when substring(a.kprq, 1, 7) is null then '0000-00' ELSE substring(a.kprq, 1, 7) end kpny,
+        case when a.fpzldm is null then '00' else a.fpzldm end fpzldm,
+        t.fpzlmc
+        FROM
+        t_kpls a,t_fpzl t
+        WHERE
+        a.yxbz = '1'
+        AND a.fpztdm in('00','02')
+        and a.fpzldm = t.fpzldm
+        AND a.fphm IS NOT NULL
+        <if test="gsdm !=null">
+            and a.gsdm = #{gsdm}
+        </if>
+        <if test="xfid !=null">
+            and a.xfid = #{xfid}
+        </if>
+        <if test="skpid !=null and skpid !=''">
+            and a.skpid = #{skpid}
+        </if>
+        <if test="kprqq !=null and kprqq !='' and kprqz !=null and kprqz !=''">
+            AND a.kprq >= STR_TO_DATE(
+            concat(#{kprqq}, '-01'),
+            "%Y-%m-%d"
+            )
+            AND a.kprq &lt; date_add(
+            STR_TO_DATE(
+            concat(#{kprqz}, '-01'),
+            "%Y-%m-%d"
+            ),
+            INTERVAL 1 MONTH
+            )
+        </if>
+        GROUP BY
+        substring(a.kprq, 1, 7),a.fpzldm
+        WITH ROLLUP
+    </select>
+    
+    <select id="findYtql" parameterType="map" resultType="cxtjvo">
+        select count(*) tqsl,tqny from 
+(select DISTINCT substring(a.tqsj,1,7) tqny,a.djh,b.gsdm,b.xfid,b.fpzldm,b.skpid 
+from t_tqjl a,t_jyls b
+where a.djh= b.djh) t where 1=1
+<if test="gsdm !=null and gsdm !=''">
+    and t.gsdm = #{gsdm}
+</if>
+<if test="xfid !=null and xfid !=''">
+    and t.xfid = #{xfid}
+</if>
+<if test="skpid !=null and skpid !=''">
+   and t.skpid = #{skpid}
+</if>
+<if test="kprqq !=null and kprqq !='' and kprqz !=null and kprqz !=''">
+   and t.tqny &gt;=#{kprqq} and t.tqny  &lt;= #{kprqz}
+</if>
+group by t.tqny
+    </select>
+</mapper>
+

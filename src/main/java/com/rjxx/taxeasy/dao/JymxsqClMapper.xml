@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.JymxsqClMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="jymxsqCl">
+        select * from t_jymxsq_cl where yxbz = '1'
+        <if test="orderBy != null">
+            order by ${orderBy}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="jyspmxDecimal2">
+        select * from t_jymxsq_cl where yxbz = '1'
+        <if test="sqlsh != null and sqlsh != ''">
+         and sqlsh = ${sqlsh}
+        </if>
+        <if test="orderBy != null">
+            order by ${orderBy}
+        </if>
+    </select>
+
+    <select id="findAllByParams2" parameterType="map" resultType="jymxsqCl">
+        select * from t_jymxsq_cl where 1=1 and yxbz = '1'
+        <if test="sqlsh != null and sqlsh !=''">
+            and  sqlsh = #{sqlsh}
+        </if>
+        order by spmxxh asc,fphxz desc
+    </select>
+
+    <select id="findByPage" parameterType="pagination" resultType="jymxsqCl">
+        select * from t_jymxsq_cl where yxbz = '1'
+        <if test="params.orderBy != null">
+            order by ${params.orderBy}
+        </if>
+    </select>
+
+    <select id="findBySqlsh" parameterType="map" resultType="JymxsqCl">
+        select * from t_jymxsq_cl where yxbz = '1'
+        <if test="sqlsh != null and sqlsh != ''">
+            and sqlsh = ${sqlsh}
+        </if>
+
+    </select>
+    
+    <select id="findBySqlshList" parameterType="list" resultType="JymxsqCl">
+        select * from t_jymxsq_cl where 1 = 1 and yxbz = '1'
+        <foreach collection="list" open=" and sqlsh in (" close=")" separator="," item="sqlsh">
+            #{sqlsh}
+        </foreach>
+    </select>
+    
+    <insert id="addJymxsqClBatch" useGeneratedKeys="true" keyProperty="id"
+		parameterType="java.util.List">
+
+		insert into t_jymxsq_cl (sqlsh, ddh, kpddm, hsbz, spmxxh, fphxz, spdm,
+		spmc,
+		spggxh, spzxbm, yhzcbs, yhzcmc, lslbz, spdw, sps, spdj, spje,
+		spsl, spse,
+		kce, jshj, hzkpxh, lrsj, lrry, xgsj, xgry, gsdm, skpid,
+		xfid,
+		yxbz, spid, ykjje, kkjje, spbz)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.sqlsh},#{item.ddh},#{item.kpddm},#{item.hsbz},#{item.spmxxh},#{item.fphxz},
+			#{item.spdm},#{item.spmc},#{item.spggxh},#{item.spzxbm},#{item.yhzcbs},
+			#{item.yhzcmc},#{item.lslbz},#{item.spdw},#{item.sps},#{item.spdj},
+			#{item.spje},#{item.spsl},#{item.spse},#{item.kce},#{item.jshj},
+			#{item.hzkpxh},#{item.lrsj},#{item.lrry},#{item.xgsj},#{item.xgry},
+			#{item.gsdm},#{item.skpid},#{item.xfid},#{item.yxbz},#{item.spid},
+			#{item.ykjje},#{item.kkjje},#{item.spbz})
+		</foreach>
+	</insert>
+</mapper>
+
