@@ -11,7 +11,7 @@ import com.rjxx.taxeasy.service.CszbService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.service.SkpService;
-import com.rjxx.taxeasy.sk.InvoicePendingData;
+import com.rjxx.taxeasy.vo.InvoicePendingData;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.TemplateUtils;
 import com.rjxx.utils.XmlJaxbUtils;
@@ -188,7 +188,7 @@ public class SocketService {
             }
             Map map=new HashMap();
             map.put("kpdid",kpdid);
-            map.put("SendCommand",SendSkCommand.Invoice);
+            map.put("SendCommand", SendCommand.Invoice);
             map.put("content",content);
             map.put("lsh",lsh);
             map.put("wait",wait);
@@ -355,7 +355,7 @@ public class SocketService {
                 }
                 Map map=new HashMap();
                 map.put("kpdid",kpdid);
-                map.put("SendCommand",SendSkCommand.VoidInvoice);
+                map.put("SendCommand", SendCommand.VoidInvoice);
                 map.put("content",content);
                 map.put("lsh",commandId);
                 map.put("wait",wait);
