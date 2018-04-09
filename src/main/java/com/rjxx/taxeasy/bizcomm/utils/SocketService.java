@@ -71,7 +71,7 @@ public class SocketService {
         parms.put("kpdid",kpdid);
         List<Skp> skpList=skpService.findSkpbySkph(parms);
         Skp skp=skpList.get(0);
-        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), skp.getId(), "sfzcdkpdkp");
         String sfzcdkpdkp = cszb.getCsz();
         if(sfzcdkpdkp.equals("是")){
             skph=kpdid;
