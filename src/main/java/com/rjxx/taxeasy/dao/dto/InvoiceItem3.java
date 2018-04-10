@@ -1,15 +1,15 @@
-package com.rjxx.taxeasy.dao.bo;
+package com.rjxx.taxeasy.dao.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by xlm on 2017/6/9.
+ * Created by xlm on 2017/8/29.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
-public class InvoiceItem {
+@XmlRootElement(name = "InvoiceItem")
+public class InvoiceItem3 {
 
     private String ReturnCode;
 
@@ -29,21 +29,7 @@ public class InvoiceItem {
 
     private String PdfUrl;
 
-    public String getReturnCode() {
-        return ReturnCode;
-    }
-
-    public void setReturnCode(String returnCode) {
-        ReturnCode = returnCode;
-    }
-
-    public String getReturnMessage() {
-        return ReturnMessage;
-    }
-
-    public void setReturnMessage(String returnMessage) {
-        ReturnMessage = returnMessage;
-    }
+    private String ExtractCode;
 
     public String getInvoiceCode() {
         return InvoiceCode;
@@ -99,5 +85,29 @@ public class InvoiceItem {
 
     public void setPdfUrl(String pdfUrl) {
         PdfUrl = pdfUrl;
+    }
+
+    public String getExtractCode() {
+        return ExtractCode;
+    }
+
+    public void setExtractCode(String extractCode) {
+        ExtractCode = extractCode;
+    }
+
+    public String getReturnCode() {
+        return ReturnCode;
+    }
+
+    public void setReturnCode(String returnCode) {
+        ReturnCode = returnCode;
+    }
+
+    public String getReturnMessage() {
+        return ReturnMessage;
+    }
+
+    public void setReturnMessage(String returnMessage) {
+        ReturnMessage = returnMessage;
     }
 }

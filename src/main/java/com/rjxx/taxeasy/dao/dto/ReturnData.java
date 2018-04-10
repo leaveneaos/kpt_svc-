@@ -1,4 +1,4 @@
-package com.rjxx.taxeasy.dao.bo;
+package com.rjxx.taxeasy.dao.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,19 +15,19 @@ public class ReturnData {
 
     private  InvoiceItems  InvoiceItems;
 
-    public com.rjxx.taxeasy.domains.OperationItem getOperationItem() {
+    public OperationItem getOperationItem() {
         return OperationItem;
     }
 
-    public void setOperationItem(com.rjxx.taxeasy.domains.OperationItem operationItem) {
+    public void setOperationItem(OperationItem operationItem) {
         OperationItem = operationItem;
     }
 
-    public com.rjxx.taxeasy.domains.InvoiceItems getInvoiceItems() {
+    public InvoiceItems getInvoiceItems() {
         return InvoiceItems;
     }
 
-    public void setInvoiceItems(com.rjxx.taxeasy.domains.InvoiceItems invoiceItems) {
+    public void setInvoiceItems(InvoiceItems invoiceItems) {
         InvoiceItems = invoiceItems;
     }
 }

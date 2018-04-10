@@ -19,11 +19,11 @@ public class smsEnvelopes {
         this.toPhoneNumber = toPhoneNumber;
     }
 
-    public com.rjxx.taxeasy.vo.messageParams getMessageParams() {
+    public messageParams getMessageParams() {
         return messageParams;
     }
 
-    public void setMessageParams(com.rjxx.taxeasy.vo.messageParams messageParams) {
+    public void setMessageParams(messageParams messageParams) {
         this.messageParams = messageParams;
     }
 

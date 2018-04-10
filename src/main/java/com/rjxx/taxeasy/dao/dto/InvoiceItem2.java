@@ -1,19 +1,15 @@
-package com.rjxx.taxeasy.dao.bo;
+package com.rjxx.taxeasy.dao.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by xlm on 2017/8/29.
+ * Created by xlm on 2017/7/11.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "InvoiceItem")
-public class InvoiceItem3 {
-
-    private String ReturnCode;
-
-    private String ReturnMessage;
+public class InvoiceItem2 {
 
     private String InvoiceCode;
 
@@ -28,8 +24,6 @@ public class InvoiceItem3 {
     private String TaxAmount;
 
     private String PdfUrl;
-
-    private String ExtractCode;
 
     public String getInvoiceCode() {
         return InvoiceCode;
@@ -85,29 +79,5 @@ public class InvoiceItem3 {
 
     public void setPdfUrl(String pdfUrl) {
         PdfUrl = pdfUrl;
-    }
-
-    public String getExtractCode() {
-        return ExtractCode;
-    }
-
-    public void setExtractCode(String extractCode) {
-        ExtractCode = extractCode;
-    }
-
-    public String getReturnCode() {
-        return ReturnCode;
-    }
-
-    public void setReturnCode(String returnCode) {
-        ReturnCode = returnCode;
-    }
-
-    public String getReturnMessage() {
-        return ReturnMessage;
-    }
-
-    public void setReturnMessage(String returnMessage) {
-        ReturnMessage = returnMessage;
     }
 }

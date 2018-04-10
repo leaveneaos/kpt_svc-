@@ -1,4 +1,4 @@
-package com.rjxx.taxeasy.dao.bo;
+package com.rjxx.taxeasy.dao.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * Created by xlm on 2017/7/11.
+ * Created by xlm on 2017/6/9.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "InvoiceItems")
-public class InvoiceItems2 {
+@XmlRootElement
+public class InvoiceItems {
 
     @XmlAttribute
     private int count;
 
-    private List<InvoiceItem2> InvoiceItem;
+    private List<InvoiceItem> InvoiceItem;
 
     public int getCount() {
         return count;
@@ -26,11 +26,11 @@ public class InvoiceItems2 {
         this.count = count;
     }
 
-    public List<InvoiceItem2> getInvoiceItem() {
+    public List<InvoiceItem> getInvoiceItem() {
         return InvoiceItem;
     }
 
-    public void setInvoiceItem(List<InvoiceItem2> invoiceItem) {
+    public void setInvoiceItem(List<InvoiceItem> invoiceItem) {
         InvoiceItem = invoiceItem;
     }
 }

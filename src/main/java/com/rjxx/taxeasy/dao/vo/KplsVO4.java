@@ -2,8 +2,8 @@ package com.rjxx.taxeasy.dao.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.rjxx.comm.json.JsonDatetimeFormat;
-import com.rjxx.taxeasy.domains.Jyxxsq;
-import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.dao.bo.Jyxxsq;
+import com.rjxx.taxeasy.dao.bo.Kpls;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -432,7 +432,7 @@ public Integer getSqlsh() {
 public KplsVO4() {
 	super();
 }
-public KplsVO4(Kpls kpls,Jyxxsq jyxxsq) {
+public KplsVO4(Kpls kpls, Jyxxsq jyxxsq) {
 	super();
 	this.kplsh = kpls.getKplsh();
 	this.djh = kpls.getDjh();
