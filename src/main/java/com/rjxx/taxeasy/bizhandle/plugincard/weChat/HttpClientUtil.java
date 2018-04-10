@@ -1,4 +1,4 @@
-package com.rjxx.taxeasy.bizhandle.plugincard.WeChat;
+package com.rjxx.taxeasy.bizhandle.plugincard.weChat;
 
 /**
  * Created by rj-wyh on 2017/4/7.

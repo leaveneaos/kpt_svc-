@@ -1,13 +1,10 @@
 package com.rjxx.taxeasy.bizhandle.plugincard;
 
-/**
- * Created by admin 2017-08-16
- * 微信，支付宝归集卡包公共类
- */
+
 
 import com.rjxx.taxeasy.bizhandle.invoicehandling.DataOperate;
-import com.rjxx.taxeasy.bizhandle.plugincard.WeChat.WeixinUtils;
-import com.rjxx.taxeasy.bizhandle.plugincard.WeChat.wechatFpxxServiceImpl;
+import com.rjxx.taxeasy.bizhandle.plugincard.weChat.WeixinUtils;
+import com.rjxx.taxeasy.bizhandle.plugincard.weChat.wechatFpxxServiceImpl;
 import com.rjxx.taxeasy.bizhandle.plugincard.alipay.AlipayUtils;
 import com.rjxx.taxeasy.dal.JyxxsqService;
 import com.rjxx.taxeasy.dal.KplsService;
@@ -28,10 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- * Title:归集卡包类
- * </p>
- */
+ *@ClassName DataOperate
+ *@Description 微信，支付宝归集卡包公共类
+ *@Author kzx
+ *@Date 2018/3/29.
+ *@Version 1.0
+ **/
 @Service
 public class ImputationCardUtil {
 

@@ -1,4 +1,4 @@
-package com.rjxx.taxeasy.bizhandle.plugincard.WeChat;
+package com.rjxx.taxeasy.bizhandle.plugincard.weChat;
 
 import com.itextpdf.text.log.Logger;
 import com.itextpdf.text.log.LoggerFactory;

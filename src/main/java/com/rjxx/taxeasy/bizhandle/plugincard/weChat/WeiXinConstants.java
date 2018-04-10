@@ -1,4 +1,4 @@
-package com.rjxx.taxeasy.bizhandle.plugincard.WeChat;
+package com.rjxx.taxeasy.bizhandle.plugincard.weChat;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
