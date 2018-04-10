@@ -2,7 +2,7 @@ package com.rjxx.taxeasy.dao.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.rjxx.comm.json.JsonDatetimeFormat;
-import com.rjxx.taxeasy.domains.Privileges;
+import com.rjxx.taxeasy.dao.bo.Privileges;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rjxx.taxeasy.dao.JyspmxMapper">
+<mapper namespace="com.rjxx.taxeasy.dao.orm.JyspmxMapper">
 
     <select id="findOneByParams" parameterType="jyspmx" resultType="jyspmx">
         select * from t_jyspmx where 1 = 1

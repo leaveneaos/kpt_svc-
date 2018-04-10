@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rjxx.taxeasy.dao.DrmbMapper">
+<mapper namespace="com.rjxx.taxeasy.dao.orm.DrmbMapper">
 
     <select id="findOneByParams" parameterType="drmb" resultType="drmb">
         select * from t_drmb where yxbz = '1'

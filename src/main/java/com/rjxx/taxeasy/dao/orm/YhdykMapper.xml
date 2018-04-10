@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rjxx.taxeasy.dao.YhdykMapper">
+<mapper namespace="com.rjxx.taxeasy.dao.orm.YhdykMapper">
 
     <select id="findOneByParams" parameterType="map" resultType="yhdyk">
         select * from t_yhdyk where yxbz = '1'

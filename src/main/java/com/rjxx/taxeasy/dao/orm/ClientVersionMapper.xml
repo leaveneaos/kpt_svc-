@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rjxx.taxeasy.dao.ClientVersionMapper">
+<mapper namespace="com.rjxx.taxeasy.dao.orm.ClientVersionMapper">
 
     <select id="findOneByParams" parameterType="map" resultType="clientVersion">
         select * from t_client_version where yxbz = '1'
