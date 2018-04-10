@@ -9,9 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+
 /**
- * Created by Administrator on 2017-06-13.
- */
+ *@ClassName PasswordConfig
+ *@Description rabbitMQ配置类
+ *@Author Administrator
+ *@Date 2017-06-13.
+ *@Version 1.0
+ **/
 @Configuration
 public class AmqpConfig {
 

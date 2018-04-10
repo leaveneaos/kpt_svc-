@@ -6,39 +6,90 @@ import javax.persistence.Id;
 import java.sql.Timestamp;
 import java.util.List;
 
-/* 待开电子发票主表 */
+
+/**
+ *@ClassName FpPdfInfo
+ *@Description 待开电子发票主表
+ *@Author xlm
+ *@Date 2018/04/10
+ *@Version 1.0
+ **/
 public class FpPdfInfo extends AbstractDocumentVo {
+    /**
+     * 单据号 主键 单纯的当作id就行，不易混淆
+     */
     @Id
-    private int djh;//单据号 主键 单纯的当作id就行，不易混淆
-    //@Column private String ptdm;//平台代码 外键
+    private int djh;
+    /**
+     * 交易流水号
+     */
     @Column
-    private String jylsh;//交易流水号
+    private String jylsh;
+    /**
+     * 订单时间
+     */
     @Column
-    private Timestamp jylssj;//订单时间
+    private Timestamp jylssj;
+    /**
+     * 订单号
+     */
     @Column
-    private String ddh;//订单号
+    private String ddh;
+    /**
+     * 发票种类代码 如增值税普通电子发票
+     */
     @Column
-    private String fpzldm;//发票种类代码 如增值税普通电子发票
+    private String fpzldm;
+    /**
+     * 发票操作类型 如红字 蓝字
+     */
     @Column
-    private String fpczlxdm;//发票操作类型 如红字 蓝字
+    private String fpczlxdm;
+    /**
+     * 销方税号
+     */
     @Column
-    private String xfsh;//销方税号
+    private String xfsh;
+    /**
+     * 名称
+     */
     @Column
-    private String xfmc;//名称
+    private String xfmc;
+    /**
+     * 银行
+     */
     @Column
-    private String xfyh;//银行
+    private String xfyh;
+    /**
+     * 银行帐号
+     */
     @Column
-    private String xfyhzh;//银行帐号
+    private String xfyhzh;
+    /**
+     * 联系人
+     */
     @Column
-    private String xflxr;//联系人
+    private String xflxr;
+    /**
+     * 地址
+     */
     @Column
-    private String xfdz;//地址
+    private String xfdz;
+    /**
+     * 电话
+     */
     @Column
-    private String xfdh;//电话
+    private String xfdh;
+    /**
+     * 邮编
+     */
     @Column
-    private String xfyb;//邮编
+    private String xfyb;
+    /**
+     * 购房税号
+     */
     @Column
-    private String gfsh;//购房税号
+    private String gfsh;
     @Column
     private String gfmc;
     @Column
@@ -53,44 +104,92 @@ public class FpPdfInfo extends AbstractDocumentVo {
     private String gfdh;
     @Column
     private String gfyb;
+    /**
+     * 邮箱地址
+     */
     @Column
-    private String gfemail;//邮箱地址
+    private String gfemail;
+    /**
+     * 是否发送邮件
+     */
     @Column
-    private String sffsyj;//是否发送邮件
+    private String sffsyj;
+    /**
+     * 电子发票处理状态代码  等同之前的flag 00需要开票
+     */
     @Column
-    private String clztdm;//电子发票处理状态代码  等同之前的flag 00需要开票
+    private String clztdm;
     @Column
     private String bz;
+    /**
+     * 收款人
+     */
     @Column
-    private String skr;//收款人
+    private String skr;
+    /**
+     * 开票人
+     */
     @Column
-    private String kpr;//开票人
+    private String kpr;
+    /**
+     * 复核人
+     */
     @Column
-    private String fhr;//复核人
+    private String fhr;
+    /**
+     * jshj - ykpjshj > 0 #未完全开具
+     */
     @Column
-    private Double jshj;//jshj - ykpjshj > 0 #未完全开具
+    private Double jshj;
     @Column
     private Double ykpjshj;
+    /**
+     * 所属月份 格式为201512
+     */
     @Column
-    private String ssyf;//所属月份 格式为201512
+    private String ssyf;
+    /**
+     * 原发票代码
+     */
     @Column
-    private String yfpdm;//原发票代码
+    private String yfpdm;
+    /**
+     * 原发票号码
+     */
     @Column
-    private String yfphm;//原发票号码
+    private String yfphm;
+    /**
+     * 含税标志 1含税
+     */
     @Column
-    private String hsbz;//含税标志 1含税
+    private String hsbz;
+    /**
+     * 有效标志 1有效
+     */
     @Column
-    private String yxbz;//有效标志 1有效
+    private String yxbz;
+    /**
+     * 录入时间
+     */
     @Column
-    private Timestamp lrsj;//录入时间
+    private Timestamp lrsj;
+    /**
+     * 录入人员
+     */
     @Column
-    private int lrry;//录入人员
+    private int lrry;
+    /**
+     * 修改
+     */
     @Column
-    private Timestamp xgsj;//修改
+    private Timestamp xgsj;
     @Column
     private int xgry;
+    /**
+     * 公司代码
+     */
     @Column
-    private String gsdm;//公司代码
+    private String gsdm;
 
     private int gfmcSize;
 
@@ -117,22 +216,47 @@ public class FpPdfInfo extends AbstractDocumentVo {
 
     /**
      * 以下为表中不存在的字段，添加的，为生成pdf
+     * 价税合计  pdf格式需要
      */
-    private String totalString;//价税合计  pdf格式需要
+    private String totalString;
     private String totalAmountString;
     private String totalTaxAmountString;
-    private String iddd;//明细条数
-    private String base64Image;//二维码
-    private String imagePath;//印章
-    private String jqbh;//机器编号
-    private String kprq;//开票日期
-    private String jym;//校验码
-    private String fpmw;//密文
+    /**
+     * 明细条数
+     */
+    private String iddd;
+    /**
+     * 二维码
+     */
+    private String base64Image;
+    /**
+     * 印章
+     */
+    private String imagePath;
+    /**
+     * 机器编号
+     */
+    private String jqbh;
+    /**
+     * 开票日期
+     */
+    private String kprq;
+    /**
+     * 校验码
+     */
+    private String jym;
+    /**
+     * 密文
+     */
+    private String fpmw;
     private String fpmw1;
     private String fpmw2;
     private String fpmw3;
     private String fpmw4;
-    private String jshjdx;//价税合计（大写）
+    /**
+     * 价税合计（大写）
+     */
+    private String jshjdx;
 
     private List<FpPdfMxInfo> jyspmxls;
 

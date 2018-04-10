@@ -9,9 +9,14 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 /**
- * Created by Administrator on 2017-06-13.
- */
+ *@ClassName PasswordConfig
+ *@Description rabbitMQ配置类
+ *@Author Administrator
+ *@Date 2017-06-13.
+ *@Version 1.0
+ **/
 @Component
 public class RabbitmqUtils {
 

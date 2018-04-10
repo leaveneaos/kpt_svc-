@@ -25,6 +25,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
+/**
+ *@ClassName PdfDocumentGenerator
+ *@Description 生成pdf主类
+ *@Author 许黎明
+ *@Date 2015-09-22.
+ *@Version 1.0
+ **/
 @Service
 @Scope("prototype")
 public class PdfDocumentGenerator {
@@ -101,11 +109,11 @@ public class PdfDocumentGenerator {
             }
 
             out = new FileOutputStream(outputFile);
+            /**
+             * 获取对象池中对象
+             */
             iTextRenderer = (ITextRenderer) ITextRendererObjectFactory
-                    .getObjectPool().borrowObject();// 获取对象池中对象
-            //ITextFontResolver fontResolver = iTextRenderer.getFontResolver();
-            //fontResolver.addFont("/config/fonts/STKAITI.TTF", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-            //fontResolver.addFont("/config/fonts/STZhongsong.TTF", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                    .getObjectPool().borrowObject();
 
             SharedContext sharedContext = iTextRenderer.getSharedContext();
 
@@ -114,30 +122,10 @@ public class PdfDocumentGenerator {
              */
             sharedContext.setReplacedElementFactory(new B64ImgReplacedElementFactory());
             sharedContext.getTextRenderer().setSmoothingThreshold(0);
-            // iTextRenderer.setDocumentFromString(strFileContent);
             try {
                 iTextRenderer.setDocument(doc, null);
                 iTextRenderer.layout();
                 iTextRenderer.createPDF(out);
-
-//                FileInputStream fis = new FileInputStream(outputFile);
-//                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-//                byte[] buffer = new byte[1024];
-//                int len = 0;
-//                // 将内容读到buffer中，读到末尾为-1
-//                while ((len = fis.read(buffer)) != -1) {
-//                    // 写到内存缓冲区中，起到保存每次内容的作用
-//                    outStream.write(buffer, 0, len);
-//                }
-//                byte[] data = outStream.toByteArray(); // 取内存中保存的数据
-//                fis.close();
-//                logger.info("PDF file length = " + data.length);
-//                logger.info("开始签名...");
-                //String signData = SafeEngine.Sign(data, outputFile,jyls);
-                //logger.info(signData);
-                //map.put("signData", signData);
-                // map.put("outputFile", outputFile);
-
             } catch (Exception e) {
                 ITextRendererObjectFactory.getObjectPool().invalidateObject(iTextRenderer);
                 iTextRenderer = null;
@@ -303,7 +291,9 @@ public class PdfDocumentGenerator {
         try {
             long start = System.currentTimeMillis();
 
-            // 模板数据
+            /**
+             * 模板数据
+             */
             String xfsh = kpls.getXfsh();
             String gsdm = kpls.getGsdm();
             Map<String, Object> params = new HashMap<>();
@@ -354,7 +344,6 @@ public class PdfDocumentGenerator {
             in_request.setKpr(kpr);
             in_request.setSkr(skr);
             in_request.setFhr(fhr);
-            // in_request.setRemark(ir.getRemark());
             in_request.setXfdz(xfdz==null?"":xfdz);
             in_request.setXfyh(xfyh==null?"":xfyh);
             in_request.setXfyhzh(xfyhzh==null?"":xfyhzh);
@@ -370,20 +359,9 @@ public class PdfDocumentGenerator {
             in_request.setXfmcSize(getGfxxXfxxFontSize(in_request.getXfmc()));
             in_request.setXfdzdhSize(getGfxxXfxxFontSize(in_request.getXfdz() + "　" + in_request.getXfdh()));
             in_request.setXfyhzhSize(getGfxxXfxxFontSize(in_request.getXfyh() + "　" + in_request.getXfyhzh()));
-
             in_request.setXfsh(xfsh);
             in_request.setYfpdm((String) map.get("FP_DM"));
             in_request.setYfphm((String) map.get("FP_HM"));
-
-//        if ("12".equals(jyls.getFpczlxdm()) || "13".equals(jyls.getFpczlxdm())) {
-//            if (StringUtils.isBlank(bz)) {
-//                bz = "对应正数发票代码:" + jyls.getYfpdm() + "号码:" + jyls.getYfphm();
-//            } else {
-//                bz += "<br/>对应正数发票代码:" + jyls.getYfpdm() + "号码:" + jyls.getYfphm();
-//            }
-//
-//        }
-
             Date kprq = kpls.getKprq();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
             String dateString = formatter.format(kprq);
@@ -438,10 +416,15 @@ public class PdfDocumentGenerator {
              * 合计金额部分
              */
             String total = df.format(kpls.getJshj());
-            String totalAmount = df.format(kpls.getHjje());     //le.getTotalAmount(djh, jyspmxs);// 两位小数已保留
-            String totalTaxAmount = df.format(kpls.getHjse());  //le.getTotalTaxAmount(total, totalAmount);
-
-            in_request.setJshjdx(ChinaNumber.getCHSNumber(total));// 中文大写表示
+            /**
+             * 两位小数已保留
+             */
+            String totalAmount = df.format(kpls.getHjje());
+            String totalTaxAmount = df.format(kpls.getHjse());
+            /**
+             * 中文大写表示
+             */
+            in_request.setJshjdx(ChinaNumber.getCHSNumber(total));
             in_request.setTotalString(total);
             in_request.setTotalAmountString(totalAmount);
 
@@ -460,12 +443,16 @@ public class PdfDocumentGenerator {
                     String s = String.valueOf(i + 1);
                     String sl = LeviedSeparate.getTaxRate(t_kpspmx.getSpsl());
                     Double sps = t_kpspmx.getSps();
-                    //数量
+                    /**
+                     * 数量
+                     */
                     String xmsl = "";
                     if (sps != null && sps != 0) {
                         xmsl = dfsl.format(sps);
                     }
-                    //单价
+                    /**
+                     * 单价
+                     */
                     Double dj = t_kpspmx.getSpdj();
                     String xmdj = "";
                     if (dj != null && dj != 0) {
@@ -533,11 +520,11 @@ public class PdfDocumentGenerator {
                 //TODO 现仅针对A&F要求，将所有明细合为1条，且商品数也为1
                 Kpspmx t_kpspmx = t_kpspmxes.get(0);
                 String s = String.valueOf(1);
-                String sl = LeviedSeparate.getTaxRate(t_kpspmx.getSpsl());//t_kpspmx.getSpsl() == null ? 0 : t_kpspmx.getSpsl();
-                Double xmsl = t_kpspmx.getSps();//*(t_kpspmxes.size());//t_kpspmx.getSps() == null ? 0 : t_kpspmx.getSps() ;
+                String sl = LeviedSeparate.getTaxRate(t_kpspmx.getSpsl());
+                Double xmsl = t_kpspmx.getSps();
                 FpPdfMxInfo fpPdfMxInfo = new FpPdfMxInfo(t_kpspmx.getSpmc(),
                         t_kpspmx.getSpggxh() == null ? "" : t_kpspmx.getSpggxh(),
-                        t_kpspmx.getSpdw() == null ? "" : t_kpspmx.getSpdw(), df.format(/*xmsl*/1.00),
+                        t_kpspmx.getSpdw() == null ? "" : t_kpspmx.getSpdw(), df.format(1.00),
                         df.format(Double.parseDouble(totalAmount)), df.format(Double.parseDouble(totalAmount)), sl, df.format(Double.parseDouble(totalTaxAmount)), s);
                 /**
                  * 处理商品名称字体大小
@@ -581,7 +568,10 @@ public class PdfDocumentGenerator {
                  */
                 TwoDimensionCode handler = new TwoDimensionCode();
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
-                handler.encoderQRCode(qrcode1, output);// 二维码中数据的来源
+                /**
+                 * 二维码中数据的来源
+                 */
+                handler.encoderQRCode(qrcode1, output);
                 imgbase64string = Base64.encodeBase64String(output.toByteArray());
             } else {
                 imgbase64string = qrcode;
@@ -703,6 +693,5 @@ public class PdfDocumentGenerator {
     }
     public static void main(String[] args) throws Exception {
         DecimalFormat df = new DecimalFormat("######0.000000");
-        //System.out.println(df.format(0.00));
     }
 }

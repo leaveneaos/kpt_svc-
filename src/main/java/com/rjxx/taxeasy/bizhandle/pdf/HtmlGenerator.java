@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+
+
 /**
- * Generate HTML.
- * Created by Him on 2015-09-22.
- */
+ *@ClassName HtmlGenerator
+ *@Description freemark配置
+ *@Author Him
+ *@Date 2015-09-22.
+ *@Version 1.0
+ **/
 public class HtmlGenerator {
     /**
      * Generate html string.

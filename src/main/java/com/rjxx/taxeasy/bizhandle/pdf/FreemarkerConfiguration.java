@@ -6,10 +6,14 @@ import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
 
+
 /**
- * freemark配置
- * Created by Him on 2015-09-22.
- */
+ *@ClassName FreemarkerConfiguration
+ *@Description freemark配置
+ *@Author Him
+ *@Date 2015-09-22.
+ *@Version 1.0
+ **/
 public class FreemarkerConfiguration {
     private static Configuration config = null;
 

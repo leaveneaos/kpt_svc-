@@ -13,9 +13,14 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
+
 /**
- * @author kzx
- */
+ *@ClassName DataOperate
+ *@Description TODO
+ *@Author kzx
+ *@Date 2018/3/29.
+ *@Version 1.0
+ **/
 @Service
 public class DataOperate {
 	@Autowired
@@ -133,8 +138,6 @@ public class DataOperate {
      */
     public  List<Kpspmx> getPDFSpmx(int kplsh) {
         List<Kpspmx> t_kpspmxes = null;
-//        String sql = "SELECT * FROM t_kpspmx t WHERE t.kplsh= " +
-//                kplsh + " order by t.spmxxh";
         try {
         	Map<String, Object> params = new HashMap<>();
         	params.put("kplsh", kplsh);
@@ -143,7 +146,6 @@ public class DataOperate {
             e.printStackTrace();
         }
         return t_kpspmxes;
-
     }
 
     /**
@@ -256,9 +258,8 @@ public class DataOperate {
             kplsSerivce.save(kpls);
         } catch (Exception e) {
             e.printStackTrace();
-            // DataOperate.updateFlag(jyls, "92");
             saveLog(kpls.getDjh(), "92", "1", "DataOperate：updateHc",
-                    "(服务端)开票成功后更新蓝字kpspmx表'红冲日期'失败" + e.getMessage(), 2/*jyls.getXfsh(),jyls.getJylsh()*/, null, null);
+                    "(服务端)开票成功后更新蓝字kpspmx表'红冲日期'失败" + e.getMessage(), 2, null, null);
         }
 
     }

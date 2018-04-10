@@ -15,7 +15,7 @@ import java.util.Map;
  * <p>
  * Tue Nov 01 17:20:13 CST 2016
  *
- * @Wangyong
+ * @author Wangyong
  */ 
 @Service
 public class DzfplogService {

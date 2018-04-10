@@ -9,10 +9,14 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.File;
 
+
 /**
- * ITextRenderer对象工厂,提供性能,加载中文字体集(大小20M),增加对象池
- * Created by Him on 2015-09-22.
- */
+ *@ClassName HtmlGenerator
+ *@Description ITextRenderer对象工厂,提供性能,加载中文字体集(大小20M),增加对象池
+ *@Author Him
+ *@Date 2015-09-22.
+ *@Version 1.0
+ **/
 public class ITextRendererObjectFactory extends BasePoolableObjectFactory {
     private static GenericObjectPool itextRendererObjectPool = null;
 
@@ -74,11 +78,6 @@ public class ITextRendererObjectFactory extends BasePoolableObjectFactory {
      */
     public static ITextFontResolver addFonts(ITextFontResolver fontResolver)
             throws Exception {
-        // Font fontChinese = null;
-        // BaseFont bfChinese = BaseFont.createFont("STSong-Light",
-        // "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-        // fontChinese = new Font(bfChinese, 12, Font.NORMAL);
-
         File fontsDir = new File(ResourceLoader.getPath("config/fonts"));
         if (fontsDir != null && fontsDir.isDirectory()) {
             File[] files = fontsDir.listFiles();

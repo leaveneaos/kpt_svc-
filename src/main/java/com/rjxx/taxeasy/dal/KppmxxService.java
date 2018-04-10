@@ -15,7 +15,7 @@ import java.util.Map;
  * <p>
  * Wed Nov 30 10:13:46 CST 2016
  *
- * @ZhangBing
+ * @author ZhangBing
  */ 
 @Service
 public class KppmxxService {

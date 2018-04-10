@@ -16,7 +16,7 @@ import java.util.Map;
  * <p>
  * Fri Oct 21 09:52:47 CST 2016
  *
- * @ZhangBing
+ * @author ZhangBing
  */ 
 @Service
 public class KpspmxService {

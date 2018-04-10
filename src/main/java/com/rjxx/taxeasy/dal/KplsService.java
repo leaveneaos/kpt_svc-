@@ -50,7 +50,9 @@ public class KplsService {
     public void save(Kpls kpls) {
         kplsJpaDao.save(kpls);
         if ("04".equals(kpls.getFpztdm())) {
-            //如果状态是04，发送的mq中
+            /**
+             * 如果状态是04，发送的mq中
+             */
             try {
                 String sksbh = skpService.findOne(kpls.getSkpid()).getSkph();
                 if(!"".equals(sksbh)&&null!=sksbh){
@@ -69,7 +71,9 @@ public class KplsService {
         kplsJpaDao.save(kplsList);
         for (Kpls kpls : kplsList) {
             if ("04".equals(kpls.getFpztdm())) {
-                //如果状态是04，发送的mq中
+                /**
+                 * 如果状态是04，发送的mq中
+                 */
                 try {
                     String sksbh = skpService.findOne(kpls.getSkpid()).getSkph();
                     if(!"".equals(sksbh)&&null!=sksbh){

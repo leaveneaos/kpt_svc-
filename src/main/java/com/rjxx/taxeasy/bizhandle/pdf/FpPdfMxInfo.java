@@ -3,33 +3,76 @@ package com.rjxx.taxeasy.bizhandle.pdf;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-/* 待开电子发票明细表 */
+
+/**
+ *@ClassName FpPdfMxInfo
+ *@Description 待开电子发票明细表
+ *@Author xlm
+ *@Date 2018/04/10
+ *@Version 1.0
+ **/
 @Table(name = "t_jyspmx")
 public class FpPdfMxInfo extends AbstractDocumentVo {
+    /**
+     * 单据号 主键
+     */
     @Column
-    private int djh;//单据号 主键
+    private int djh;
+    /**
+     * 商品序列号 主键
+     */
     @Column
-    private int spmxxh;//商品序列号 主键
+    private int spmxxh;
+    /**
+     * 商品名称
+     */
     @Column
-    private String spmc;//商品名称
+    private String spmc;
+    /**
+     * 发票行性质
+     */
     @Column
-    private String fphxz;//发票行性质
+    private String fphxz;
+    /**
+     * 商品规格型号
+     */
     @Column
-    private String spggxh;//商品规格型号
+    private String spggxh;
+    /**
+     * 商品单位
+     */
     @Column
-    private String spdw;//商品单位
+    private String spdw;
+    /**
+     * 商品数量
+     */
     @Column
-    private Double sps;//商品数量
+    private Double sps;
+    /**
+     * 商品单价
+     */
     @Column
-    private Double spdj;//商品单价
+    private Double spdj;
+    /**
+     * 金额
+     */
     @Column
-    private Double spje;//金额
+    private Double spje;
+    /**
+     * 税率
+     */
     @Column
-    private Double spsl;//税率
+    private Double spsl;
+    /**
+     * 税额
+     */
     @Column
-    private Double spse;//税额
+    private Double spse;
+    /**
+     * 价税合计
+     */
     @Column
-    private Double jshj;//价税合计
+    private Double jshj;
 
     private int spmcSize;
 
@@ -43,12 +86,30 @@ public class FpPdfMxInfo extends AbstractDocumentVo {
 
     }
 
-    private String idd;//明细条数 	商品序列号
-    private String sl;//税率
-    private String se;//税额
-    private String xmsl;//数量
-    private String xmdj;//单价
-    private String xmje;//金额
+    /**
+     * 明细条数 	商品序列号
+     */
+    private String idd;
+    /**
+     * 税率
+     */
+    private String sl;
+    /**
+     * 税额
+     */
+    private String se;
+    /**
+     * 数量
+     */
+    private String xmsl;
+    /**
+     * 单价
+     */
+    private String xmdj;
+    /**
+     * 金额
+     */
+    private String xmje;
 
     public FpPdfMxInfo(String description, String speType,
                        String unit, String xmsl, String xmdj, String xmje, String sl, String se, String idd) {

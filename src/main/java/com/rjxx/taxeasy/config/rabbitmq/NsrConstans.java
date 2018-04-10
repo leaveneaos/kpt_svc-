@@ -1,11 +1,28 @@
 package com.rjxx.taxeasy.config.rabbitmq;
 
+
 /**
- * Created by wangyahui on 2018/3/6 0006.
- */
+ *@ClassName PasswordConfig
+ *@Description rabbitMQ配置类
+ *@Author wangyahui
+ *@Date 2018/3/6 0006.
+ *@Version 1.0
+ **/
 public class NsrConstans {
-    public static final String[] XGM_NSR ={"-1","0"};//小规模纳税人
-    public static final String[] YB_NSR ={"1","0"};//一般纳税人
-    public static final String[] JYZS_NSR ={"-1","0"};//简易征收一般纳税人
-    public static final String[] BFJYZS_NSR ={"-1","0","1"};//部分简易征收一般纳税人
+    /**
+     * 小规模纳税人
+     */
+    public static final String[] XGM_NSR ={"-1","0"};
+    /**
+     * 一般纳税人
+     */
+    public static final String[] YB_NSR ={"1","0"};
+    /**
+     * 简易征收一般纳税人
+     */
+    public static final String[] JYZS_NSR ={"-1","0"};
+    /**
+     * 部分简易征收一般纳税人
+     */
+    public static final String[] BFJYZS_NSR ={"-1","0","1"};
 }

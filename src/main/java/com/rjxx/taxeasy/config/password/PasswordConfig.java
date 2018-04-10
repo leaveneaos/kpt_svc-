@@ -2,10 +2,13 @@ package com.rjxx.taxeasy.config.password;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 /**
- * Created by xlm on 2017/11/27.
- */
+ *@ClassName PasswordConfig
+ *@Description 生成pdf配置签名证书用户，密码类
+ *@Author xlm
+ *@Date 2017/11/27.
+ *@Version 1.0
+ **/
 @Component
 public class PasswordConfig {
     public static  String FTP_URL;
@@ -51,21 +54,30 @@ public class PasswordConfig {
         FTP_FILEPATH = ftp_filepath;
     }
 
-    public static  String PDF_SIGNUSER;//pdf签名证书别名
+    /**
+     * pdf签名证书别名
+     */
+    public static  String PDF_SIGNUSER;
 
     @Value("${pdf_signuser}")
     public void setPDF_SIGNUSER(String pdf_signuser){
         PDF_SIGNUSER = pdf_signuser;
     }
 
-    public static  String PDF_SIGNPASSWORD;//pdf签名证书密码
+    /**
+     * pdf签名证书密码
+     */
+    public static  String PDF_SIGNPASSWORD;
 
     @Value("${pdf_signpassword}")
     public void setPDF_SIGNPASSWORD(String pdf_signpassword) {
         PDF_SIGNPASSWORD = pdf_signpassword;
     }
 
-    public static  String keyStorePath;//pdf证书路径
+    /**
+     * pdf证书路径
+     */
+    public static  String keyStorePath;
 
     @Value("${pdf_keyStorePath}")
     public void  setKeyStorePath(String pdf_keyStorePath){

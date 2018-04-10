@@ -20,7 +20,7 @@ import java.util.Map;
  * <p>
  * Fri Oct 14 08:55:04 GMT+08:00 2016
  *
- * @ZhangBing
+ * @author ZhangBing
  */
 @Service
 public class SkpService {
@@ -42,7 +42,7 @@ public class SkpService {
 		skpJpaDao.save(skp);
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void save(List<Skp> skpList) {
 		skpJpaDao.save(skpList);
 		if (!skpList.isEmpty()) {

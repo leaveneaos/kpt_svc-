@@ -10,9 +10,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
+
 /**
- * Created by Him on 2015-09-23.
- */
+ *@ClassName TwoDimensionCode
+ *@Description 生成二维码主类
+ *@Author Him
+ *@Date 2015-09-22.
+ *@Version 1.0
+ **/
 public class TwoDimensionCode {
 
     /**
