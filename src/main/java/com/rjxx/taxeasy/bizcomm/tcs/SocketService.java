@@ -1,7 +1,10 @@
-package com.rjxx.taxeasy.bizhandle.invoicehandling;
+package com.rjxx.taxeasy.bizcomm.tcs;
 
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
+import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
+import com.rjxx.taxeasy.bizhandle.invoicehandling.GeneratePdfService;
+import com.rjxx.taxeasy.bizhandle.invoicehandling.SkService;
 import com.rjxx.taxeasy.bizhandle.maindata.command.SendCommand;
 import com.rjxx.taxeasy.bizhandle.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizhandle.utils.SeperateInvoiceUtils;
@@ -16,6 +19,7 @@ import com.rjxx.taxeasy.dao.bo.Kpspmx;
 import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.taxeasy.dao.dto.InvoicePendingData;
 import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
+import com.rjxx.utils.HtmlUtils;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.TemplateUtils;
 import com.rjxx.utils.XmlJaxbUtils;
@@ -375,6 +379,11 @@ public class SocketService {
         }
     }
 
+    /**
+     * 重新生成pdf
+     * @param kplsh
+     * @return
+     */
     public  InvoiceResponse generatePdf(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
         try {
@@ -392,6 +401,11 @@ public class SocketService {
         return invoiceResponse;
     }
 
+    /**
+     * 税控服务器开票
+     * @param kplsh
+     * @return
+     */
     public InvoiceResponse skServerKP(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
         try{
@@ -403,5 +417,97 @@ public class SocketService {
             e.printStackTrace();
         }
         return invoiceResponse;
+    }
+
+    /**
+     * 获取发票代码、发票号码
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    public String getCodeAndNo(String p)throws Exception {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String params = skService.decryptSkServerParameter(p);
+            Map<String, String> map = HtmlUtils.parseQueryString(params);
+            String kpdid = map.get("kpdid");
+            Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), skp.getId(), "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }
+            String fplxdm = map.get("fplxdm");
+            Map resultMap=new HashMap(6);
+            resultMap.put("kpdid",kpdid);
+            resultMap.put("SendCommand", SendCommand.GetCodeAndNo);
+            resultMap.put("content",fplxdm);
+            resultMap.put("lsh","00000");
+            resultMap.put("wait",false);
+            resultMap.put("timeout",0);
+            String result = skService.sendMessage(JSON.toJSONString(resultMap));
+            logger.debug(result);
+            return result;
+        } catch (Exception e) {
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
+    }
+
+    public String reprintInvoice(String p) throws Exception{
+
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            logger.debug("receive void invoice request:" + kplsh);
+            Kpls kpls = kplsService.findOne(kplsh);
+            if (kpls == null) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
+                return XmlJaxbUtils.toXml(response);
+            }
+            if (StringUtils.isBlank(kpls.getFpdm()) || StringUtils.isBlank(kpls.getFphm())) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有发票代码或号码，无法重打");
+                return XmlJaxbUtils.toXml(response);
+            }
+            Map params = new HashMap();
+            params.put("kpls", kpls);
+            String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
+            params.put("lsh", lsh);
+            String content = TemplateUtils.generateContent("invoice-request.ftl", params);
+            logger.debug(content);
+            Skp skp = skpService.findOne(kpls.getSkpid());
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            String kpdid=null;
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }else{
+                kpdid=kpls.getSkpid().toString();
+            }
+            Map resultMap=new HashMap(6);
+            resultMap.put("kpdid",kpdid);
+            resultMap.put("SendCommand", SendCommand.ReprintInvoice);
+            resultMap.put("content",content);
+            resultMap.put("lsh",kpls.getKplsh() + "");
+            resultMap.put("wait",true);
+            resultMap.put("timeout",60000);
+            String result = skService.sendMessage(JSON.toJSONString(resultMap));
+            InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
+            invoiceResponse.setKpddm(kpls.getKpddm());
+            invoiceResponse.setJylsh(kpls.getJylsh());
+            result = XmlJaxbUtils.toXml(invoiceResponse);
+            logger.debug(result);
+            return result;
+        } catch (Exception e) {
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
     }
 }
