@@ -332,18 +332,15 @@ public class GeneratePdfService {
                      * 发送手机短信
                      */
                     if(jyls.getSkpid()!=null){
-                        Boolean sffsdx = sffsdxMap.get(jyls.getSkpid());
-                        if (sffsdx == null) {
+
+                            boolean sffsdx=false;
                             Cszb cszb = cszbService.getSpbmbbh(jyls.getGsdm(), jyls.getXfid(), jyls.getSkpid(), "sfktdx");
                             String dxfsFlag = cszb.getCsz();
                             if ("是".equals(dxfsFlag)) {
-                                sffsdxMap.put(jyls.getSkpid(), true);
                                 sffsdx = true;
                             } else {
-                                sffsdxMap.put(jyls.getSkpid(), false);
                                 sffsdx = false;
                             }
-                        }
                         if (sffsdx) {
                             Cszb zb = cszbService.getSpbmbbh(jyls.getGsdm(), jyls.getXfid(), jyls.getSkpid(), "sfzdfs");
                             String zdfsFlag = zb.getCsz();
