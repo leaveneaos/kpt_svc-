@@ -6,23 +6,16 @@ import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.GeneratePdfService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.SkService;
 import com.rjxx.taxeasy.bizhandle.maindata.command.SendCommand;
+import com.rjxx.taxeasy.bizhandle.utils.AESUtils;
+import com.rjxx.taxeasy.bizhandle.utils.HttpUtils;
 import com.rjxx.taxeasy.bizhandle.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizhandle.utils.SeperateInvoiceUtils;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
-import com.rjxx.taxeasy.dal.CszbService;
-import com.rjxx.taxeasy.dal.KplsService;
-import com.rjxx.taxeasy.dal.KpspmxService;
-import com.rjxx.taxeasy.dal.SkpService;
-import com.rjxx.taxeasy.dao.bo.Cszb;
-import com.rjxx.taxeasy.dao.bo.Kpls;
-import com.rjxx.taxeasy.dao.bo.Kpspmx;
-import com.rjxx.taxeasy.dao.bo.Skp;
+import com.rjxx.taxeasy.dal.*;
+import com.rjxx.taxeasy.dao.bo.*;
 import com.rjxx.taxeasy.dao.dto.InvoicePendingData;
 import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
-import com.rjxx.utils.HtmlUtils;
-import com.rjxx.utils.StringUtils;
-import com.rjxx.utils.TemplateUtils;
-import com.rjxx.utils.XmlJaxbUtils;
+import com.rjxx.utils.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -69,6 +62,14 @@ public class SocketService {
 
     @Autowired
     private FpclService fpclService;
+
+    @Autowired
+    private GsxxService gsxxService;
+
+    @Autowired
+    private XfService xfService;
+
+
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -433,6 +434,7 @@ public class SocketService {
             String params = skService.decryptSkServerParameter(p);
             Map<String, String> map = HtmlUtils.parseQueryString(params);
             String kpdid = map.get("kpdid");
+            logger.debug("------传输数据-------"+params);
             Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
             Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), skp.getId(), "sfzcdkpdkp");
             String sfzcdkpdkp = cszb.getCsz();
@@ -524,12 +526,178 @@ public class SocketService {
                 InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
                 return XmlJaxbUtils.toXml(response);
             }
-            return null;
+            Map params = new HashMap();
+            params.put("kplsh", kpls.getKplsh());
+            List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
+            if (kpspmxList == null || kpspmxList.isEmpty()) {
+                throw new Exception("没有商品明细");
+            }
+            int skpid = kpls.getSkpid();
+            Skp skp = skpService.findOne(skpid);
+            //文本方式，需要重新进行价税分离
+            List<Kpspmx> kpspmxListnew= SeperateInvoiceUtils.repeatSeparatePrice(kpls,kpspmxList);
+            int xfid = skp.getXfid();
+            int kpdid = skp.getId();
+            Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), xfid, kpdid, "spbmbbh");
+            String spbmbbh = cszb.getCsz();
+            String fpzldm=kpls.getFpzldm();
+            String fpzl=null;
+            if (("01").equals(fpzldm)) {
+                fpzl="s";
+            } else if (("02").equals(fpzldm)) {
+                fpzl="c";
+            } else if (("12").equals(fpzldm)) {
+                fpzl="t";
+            }
+            params.put("spbmbbh",spbmbbh);
+            params.put("kpls", kpls);
+            params.put("kpspmxList", kpspmxListnew);
+            params.put("fpzl",fpzl);
+            String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
+            String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
+            String xfyhzh =  (kpls.getXfyh() == null ? "" : kpls.getXfyh()) + (kpls.getXfyhzh() == null ? "" : kpls.getXfyhzh());
+            String xfdzdh = (kpls.getXfdz() == null ? "" : kpls.getXfdz()) + (kpls.getXfdh() == null ? "" : kpls.getXfdh());
+            gfyhzh = gfyhzh.trim();
+            gfdzdh = gfdzdh.trim();
+            xfyhzh = xfyhzh.trim();
+            xfdzdh = xfdzdh.trim();
+            if (StringUtils.isBlank(gfyhzh)) {
+                gfyhzh = "　";
+            }
+            if (StringUtils.isBlank(gfdzdh)) {
+                gfdzdh = "　";
+            }
+            if (StringUtils.isBlank(xfyhzh)) {
+                xfyhzh = "　";
+            }
+            if (StringUtils.isBlank(xfdzdh)) {
+                xfdzdh = "　";
+            }
+            params.put("gfyhzh", gfyhzh);
+            params.put("gfdzdh", gfdzdh);
+            params.put("xfyhzh", xfyhzh);
+            params.put("xfdzdh", xfdzdh);
+            params.put("mxCount", kpspmxListnew.size());
+            String templateName = "skekyun.ftl";
+            String content = TemplateUtils.generateContent(templateName, params);
+            Map invoiceMap=new HashMap(7);
+            invoiceMap.put("invoice",kpls.getXfsh());
+            invoiceMap.put("kpjh",skp.getKpjh());
+            invoiceMap.put("token",skp.getToken());
+            invoiceMap.put("spxx", AESUtils.AESEncode(kpls.getXfsh(),content));
+            invoiceMap.put("orderId",kplsh);
+            String invoiceXml=JSON.toJSONString(invoiceMap);
+            Map parmMap=new HashMap(1);
+            parmMap.put("gsdm",kpls.getGsdm());
+            Gsxx gsxx=gsxxService.findOneByParams(parmMap);
+            /**
+             * http://ek.caikaixin.cn/sendFpInfo
+             */
+            String returnJson= HttpUtils.HttpPost_Basic("http://ek.caikaixin.cn/sendFpInfo",invoiceXml);
+            Map resultMap= XmltoJson.strJson2Map(returnJson);
+            String errcode=resultMap.get("errcode").toString();
+            String errmsg=resultMap.get("errmsg").toString();
+            if("700".equals(errcode)){
+                refreshToken(kpdid);
+                skEkyunKP(p);
+            }else if("200".equals(errcode)){
+
+            }
+            return returnJson;
         }catch (Exception e){
             e.printStackTrace();
             logger.error("", e);
             InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
             return XmlJaxbUtils.toXml(response);
         }
+    }
+
+    public String registerXf(int skpid) {
+        String token=null;
+        try {
+            Skp skp=skpService.findOne(skpid);
+            Xf xf=xfService.findOne(skp.getXfid());
+            Map xfMap=new HashMap(6);
+            xfMap.put("company",xf.getXfmc());
+            xfMap.put("invoice",xf.getXfsh());
+            xfMap.put("kpjh","1");
+            xfMap.put("address",skp.getLxdz());
+            xfMap.put("tel",skp.getLxdz());
+            xfMap.put("contact",skp.getKpr());
+            String xfJson= JSON.toJSONString(xfMap);
+            String tokenjson=HttpUtils.HttpPost_Basic("http://ek.caikaixin.cn/register",xfJson);
+            Map resultMap = XmltoJson.strJson2Map(tokenjson);
+            String errcode=resultMap.get("errcode").toString();
+            String errmsg=resultMap.get("errmsg").toString();
+            List infoList=(List)resultMap.get("info");
+            Map infoMap=(Map)infoList.get(0);
+            token=infoMap.get("token").toString();
+            skp.setToken(token);
+            skp.setKpjh("1");
+            skpService.save(skp);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return token;
+    }
+
+    public String refreshToken(int skpid) {
+        String token=null;
+        try {
+            Skp skp = skpService.findOne(skpid);
+            Xf xf = xfService.findOne(skp.getXfid());
+            Map refreshtokenMap = new HashMap(6);
+            refreshtokenMap.put("invoice", xf.getXfsh());
+            refreshtokenMap.put("kpjh", skp.getKpjh());
+            refreshtokenMap.put("token", skp.getToken());
+            String tokenJson = JSON.toJSONString(refreshtokenMap);
+            String resultTokenJson = HttpUtils.HttpPost_Basic("http://ek.caikaixin.cn/token", tokenJson);
+            Map resultMap = XmltoJson.strJson2Map(resultTokenJson);
+            String errcode = resultMap.get("errcode").toString();
+            String errmsg = resultMap.get("errmsg").toString();
+            List infoList=(List)resultMap.get("info");
+            Map infoMap=(Map)infoList.get(0);
+            token = infoMap.get("token").toString();
+            skp.setToken(token);
+            skpService.save(skp);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return token;
+    }
+
+    public String skEkyunGetFpData(String p) {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            logger.debug("receive void invoice request:" + kplsh);
+            Kpls kpls = kplsService.findOne(kplsh);
+            if (kpls == null) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
+                return XmlJaxbUtils.toXml(response);
+            }
+            int skpid = kpls.getSkpid();
+            Skp skp = skpService.findOne(skpid);
+            Map invoiceMap=new HashMap(7);
+            invoiceMap.put("invoice",kpls.getXfsh());
+            invoiceMap.put("kpjh",skp.getKpjh());
+            invoiceMap.put("token",skp.getToken());
+            invoiceMap.put("orderId",kplsh);
+            String invoiceXml=JSON.toJSONString(invoiceMap);
+            String returnJson= HttpUtils.HttpPost_Basic("http://ek.caikaixin.cn/getFPData",invoiceXml);
+            Map resultMap= XmltoJson.strJson2Map(returnJson);
+            String errcode=resultMap.get("errcode").toString();
+            String errmsg=resultMap.get("errmsg").toString();
+            List infoList=(List)resultMap.get("info");
+            Map infpMap=(Map)infoList.get(0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

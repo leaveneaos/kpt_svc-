@@ -199,6 +199,12 @@ public class Skp implements Serializable {
 	@Column(name = "kpjssj")
 	protected Time kpjssj;
 
+	@Column(name = "token")
+	protected String token;
+
+	@Column(name = "kpjh")
+	protected String kpjh;
+
 	public Time getKpqssj() {
 		return kpqssj;
 	}
@@ -493,5 +499,21 @@ public class Skp implements Serializable {
 
 	public void setWrzs(String wrzs) {
 		this.wrzs = wrzs;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getKpjh() {
+		return kpjh;
+	}
+
+	public void setKpjh(String kpjh) {
+		this.kpjh = kpjh;
 	}
 }
