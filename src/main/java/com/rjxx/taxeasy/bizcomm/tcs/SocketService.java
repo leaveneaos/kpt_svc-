@@ -601,7 +601,7 @@ public class SocketService {
                 refreshToken(kpdid);
                 skEkyunKP(p);
             }else if("200".equals(errcode)){
-
+                skEkyunGetFpData(p);
             }
             return returnJson;
         }catch (Exception e){
@@ -695,6 +695,15 @@ public class SocketService {
             String errmsg=resultMap.get("errmsg").toString();
             List infoList=(List)resultMap.get("info");
             Map infpMap=(Map)infoList.get(0);
+            if(infpMap!=null){
+                String orderId=infpMap.get("orderId").toString();
+                String fpdm=infpMap.get("fpdm").toString();
+                String fphm=infpMap.get("fphm").toString();
+                String kprq=infpMap.get("kprq").toString();
+                kpls.setKprq(com.rjxx.time.TimeUtil.getSysDateInDate(kprq, "yyyy-MM-dd HH:mm:ss"));
+                kpls.setFpdm(fpdm);
+                kpls.setFphm(fphm);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
