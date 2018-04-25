@@ -205,6 +205,15 @@ public class Skp implements Serializable {
 	@Column(name = "kpjh")
 	protected String kpjh;
 
+	@Column(name = "deviceSN")
+	protected String deviceSN;
+
+	@Column(name = "devicePassword")
+	protected String devicePassword;
+
+	@Column(name = "deviceKey")
+	protected String deviceKey;
+
 	public Time getKpqssj() {
 		return kpqssj;
 	}
@@ -515,5 +524,29 @@ public class Skp implements Serializable {
 
 	public void setKpjh(String kpjh) {
 		this.kpjh = kpjh;
+	}
+
+	public String getDeviceSN() {
+		return deviceSN;
+	}
+
+	public void setDeviceSN(String deviceSN) {
+		this.deviceSN = deviceSN;
+	}
+
+	public String getDevicePassword() {
+		return devicePassword;
+	}
+
+	public void setDevicePassword(String devicePassword) {
+		this.devicePassword = devicePassword;
+	}
+
+	public String getDeviceKey() {
+		return deviceKey;
+	}
+
+	public void setDeviceKey(String deviceKey) {
+		this.deviceKey = deviceKey;
 	}
 }

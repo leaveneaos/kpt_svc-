@@ -127,7 +127,7 @@ public class PacketBody {
             return itemList;
     }
 
-    public  String Packet_Terminal(String kplsh,String DeviceSN,String OpType,String Data){
+    public  String Packet_DeviceCmd (String kplsh,String DeviceSN,String OpType,String Data){
         Packet.Terminal terminal=new Packet().new Terminal();
         terminal.ProtocolVer=1;
         terminal.SeqNumber=kplsh;
@@ -146,5 +146,20 @@ public class PacketBody {
          requestLayer.ReqType=ReqType;
          requestLayer.ReqData=ReqData;
          return JSON.toJSONString(requestLayer);
+    }
+
+    public String Packet_DeviceAuth(String DeviceSN,String DevicePassword){
+        Packet.DeviceAuth deviceAuth=new Packet().new DeviceAuth();
+        deviceAuth.ReqType="DeviceAuth";
+        deviceAuth.DeviceSN=DeviceSN;
+        deviceAuth.DevicePassword=DevicePassword;
+        return JSON.toJSONString(deviceAuth);
+    }
+    public String Packet_DeviceState(String DeviceSN,String DeviceKey){
+        Packet.DeviceState deviceState=new Packet().new DeviceState();
+        deviceState.ReqType="DeviceState";
+        deviceState.DeviceSN=DeviceSN;
+        deviceState.DeviceKey=DeviceKey;
+        return JSON.toJSONString(deviceState);
     }
 }
