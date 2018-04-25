@@ -620,7 +620,7 @@ public class SocketService {
             Map xfMap=new HashMap(6);
             xfMap.put("company",xf.getXfmc());
             xfMap.put("invoice",xf.getXfsh());
-            xfMap.put("kpjh","1");
+            xfMap.put("kpjh",skp.getKpjh());
             xfMap.put("address",skp.getLxdz());
             xfMap.put("tel",skp.getLxdz());
             xfMap.put("contact",skp.getKpr());
@@ -633,7 +633,7 @@ public class SocketService {
             Map infoMap=(Map)infoList.get(0);
             token=infoMap.get("token").toString();
             skp.setToken(token);
-            skp.setKpjh("1");
+            skp.setKpjh(skp.getKpjh());
             skpService.save(skp);
 
         }catch (Exception e){
@@ -693,20 +693,28 @@ public class SocketService {
             Map resultMap= XmltoJson.strJson2Map(returnJson);
             String errcode=resultMap.get("errcode").toString();
             String errmsg=resultMap.get("errmsg").toString();
-            List infoList=(List)resultMap.get("info");
-            Map infpMap=(Map)infoList.get(0);
-            if(infpMap!=null){
-                String orderId=infpMap.get("orderId").toString();
-                String fpdm=infpMap.get("fpdm").toString();
-                String fphm=infpMap.get("fphm").toString();
-                String kprq=infpMap.get("kprq").toString();
-                kpls.setKprq(com.rjxx.time.TimeUtil.getSysDateInDate(kprq, "yyyy-MM-dd HH:mm:ss"));
-                kpls.setFpdm(fpdm);
-                kpls.setFphm(fphm);
+            if(null!=resultMap.get("info")&&!"".equals(resultMap.get("info"))){
+                List infoList=(List)resultMap.get("info");
+                Map infpMap=(Map)infoList.get(0);
+                if(infpMap!=null){
+                    String orderId=infpMap.get("orderId").toString();
+                    String fpdm=infpMap.get("fpdm").toString();
+                    String fphm=infpMap.get("fphm").toString();
+                    String kprq=infpMap.get("kprq").toString();
+                    kpls.setKprq(com.rjxx.time.TimeUtil.getSysDateInDate(kprq, "yyyy-MM-dd HH:mm:ss"));
+                    kpls.setFpdm(fpdm);
+                    kpls.setFphm(fphm);
+                    kplsService.save(kpls);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public String skBoxKP(String p) {
+
         return null;
     }
 }
