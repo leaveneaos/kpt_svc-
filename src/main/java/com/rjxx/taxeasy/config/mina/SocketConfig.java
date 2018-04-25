@@ -64,7 +64,7 @@ public class SocketConfig {
         connectFuture.awaitUninterruptibly() ;
 
         IoSession session = connectFuture.getSession() ;
-
+        SocketSession.getInstance().setSession(session);
        /* //阻塞，知道session关闭
         session.getCloseFuture().awaitUninterruptibly() ;
 

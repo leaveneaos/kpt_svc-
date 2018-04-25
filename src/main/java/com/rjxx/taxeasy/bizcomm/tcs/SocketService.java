@@ -10,11 +10,13 @@ import com.rjxx.taxeasy.bizhandle.utils.AESUtils;
 import com.rjxx.taxeasy.bizhandle.utils.HttpUtils;
 import com.rjxx.taxeasy.bizhandle.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizhandle.utils.SeperateInvoiceUtils;
+import com.rjxx.taxeasy.config.mina.ServerHandler;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
 import com.rjxx.taxeasy.dal.*;
 import com.rjxx.taxeasy.dao.bo.*;
 import com.rjxx.taxeasy.dao.dto.InvoicePendingData;
 import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
+import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.utils.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -22,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -53,6 +56,9 @@ public class SocketService {
 
     @Autowired
     private KplsService kplsService;
+
+    @Autowired
+    private JylsService jylsService;
 
     @Autowired
     private KpspmxService kpspmxService;
@@ -459,6 +465,12 @@ public class SocketService {
         }
     }
 
+    /**
+     * 重打发票
+     * @param p
+     * @return
+     * @throws Exception
+     */
     public String reprintInvoice(String p) throws Exception{
 
         try {
@@ -513,6 +525,11 @@ public class SocketService {
         }
     }
 
+    /**
+     * 盟度开票方法
+     * @param p
+     * @return
+     */
     public String skEkyunKP(String p) {
         try {
             if (StringUtils.isBlank(p)) {
@@ -612,6 +629,11 @@ public class SocketService {
         }
     }
 
+    /**
+     * 注册盟度开票获取token
+     * @param skpid
+     * @return
+     */
     public String registerXf(int skpid) {
         String token=null;
         try {
@@ -642,6 +664,11 @@ public class SocketService {
         return token;
     }
 
+    /**
+     * 刷新盟度开票token
+     * @param skpid
+     * @return
+     */
     public String refreshToken(int skpid) {
         String token=null;
         try {
@@ -668,6 +695,11 @@ public class SocketService {
         return token;
     }
 
+    /**
+     * 盟度获取发票
+     * @param p
+     * @return
+     */
     public String skEkyunGetFpData(String p) {
         try {
             if (StringUtils.isBlank(p)) {
@@ -713,8 +745,66 @@ public class SocketService {
         return null;
     }
 
-    public String skBoxKP(String p) {
+
+    @Value("${CRESTV.AppID}")
+    private String  AppID;
+
+    @Value("${CRESTV.AppKey}")
+    private String  AppKey;
+    /**
+     * 税控盒子开票
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    public String skBoxKP(String p) throws Exception{
+
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            Kpls kpls=kplsService.findOne(kplsh);
+            Jyls jyls=jylsService.findOne(kpls.getDjh());
+            Map params = new HashMap();
+            params.put("kplsh", kpls.getKplsh());
+            List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
+            Skp skp=skpService.findOne(kpls.getSkpid());
+            String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(AppID,"DeviceCmd",DeviceCmd,AppKey);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return null;
+    }
+
+    /**
+     *  终端授权
+     * @param skpid
+     * @return
+     */
+    public String deviceAuth(int skpid) {
+        Skp skp=skpService.findOne(skpid);
+        String deviceAuth=PacketBody.getInstance().Packet_DeviceAuth(skp,AppKey);
+        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(AppID,"DeviceAuth",deviceAuth,AppKey);
+        ServerHandler.sendMessage(Ruquest);
+        return JSON.toJSONString(deviceAuth);
+    }
+
+    /**
+     * 查询终端状态
+     * @param skpid
+     * @return
+     */
+    public String deviceState(int skpid) {
+        Skp skp=skpService.findOne(skpid);
+        String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,AppKey);
+        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(AppID,"DeviceState",deviceState,AppKey);
+        ServerHandler.sendMessage(Ruquest);
+        return JSON.toJSONString(deviceState);
     }
 }

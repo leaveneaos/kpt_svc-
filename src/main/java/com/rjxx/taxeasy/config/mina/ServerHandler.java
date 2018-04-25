@@ -23,6 +23,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
 
 
+
     /**
      * 线程池执行任务
      */
@@ -33,16 +34,28 @@ public class ServerHandler extends IoHandlerAdapter {
 
 
 
+    /**
+     * 发送消息
+     * @param message
+     */
+    public static void sendMessage( String message) {
+        IoSession session=SocketSession.getInstance().getSession();
+        sendMessage(session,message);
+    }
 
 
-
-
-
-
+    /**
+     * 发送消息
+     *
+     * @param session
+     * @param message
+     */
+    public static void sendMessage(IoSession session, String message) {
+        session.write(message);
+    }
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-//        session.setAttribute("openTime", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
     }
 
     @Override
@@ -53,6 +66,8 @@ public class ServerHandler extends IoHandlerAdapter {
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
         ReceiveTask receiveTask = new ReceiveTask();
+        receiveTask.setMsg((String)message);
+        receiveTask.setSession(session);
         if (taskExecutor == null) {
             taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
         }
@@ -90,12 +105,19 @@ public class ServerHandler extends IoHandlerAdapter {
         private Logger logger = LoggerFactory.getLogger(this.getClass());
 
         private String msg;
-
         private IoSession session;
 
         @Override
         public void run() {
+            logger.info("-------消息---------"+msg);
+        }
 
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public void setSession(IoSession session) {
+            this.session = session;
         }
     }
 

@@ -1,9 +1,11 @@
 package com.rjxx.taxeasy.dao.dto.crestvinvoice;
 
 import com.alibaba.fastjson.JSON;
+import com.rjxx.taxeasy.bizhandle.utils.AESUtils;
 import com.rjxx.taxeasy.dao.bo.Jyls;
 import com.rjxx.taxeasy.dao.bo.Kpls;
 import com.rjxx.taxeasy.dao.bo.Kpspmx;
+import com.rjxx.taxeasy.dao.bo.Skp;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,10 +30,10 @@ public class PacketBody {
         return PacketBody.SingletonPacketBody.INSTANCE;
     }
 
-    public String Packet_Invoice_Json(Kpls kpls,Jyls jyls,List<Kpspmx>kpspmxList){
+    public String Packet_Invoice_Json(Kpls kpls,Jyls jyls,List<Kpspmx>kpspmxList,Skp skp){
         Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList);
         String Invoice_Json= JSON.toJSONString(newInvoice);
-      return Invoice_Json;
+      return AESUtils.AESEncode(skp.getDevicekey(),Invoice_Json);
     }
 
     public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmx>kpspmxList){
@@ -127,39 +129,39 @@ public class PacketBody {
             return itemList;
     }
 
-    public  String Packet_DeviceCmd (String kplsh,String DeviceSN,String OpType,String Data){
+    public  String Packet_DeviceCmd (String kplsh,String OpType,String Data,Skp skp){
         Packet.Terminal terminal=new Packet().new Terminal();
         terminal.ProtocolVer=1;
         terminal.SeqNumber=kplsh;
         terminal.ZipType=0;
         terminal.EncryptType=1;
-        terminal.DeviceSN=DeviceSN;
+        terminal.DeviceSN=skp.getDevicesn();
         terminal.UserID="rjxx";
         terminal.OpType=OpType;
         terminal.Data=Data;
         return JSON.toJSONString(terminal);
     }
 
-    public String Packet_Ruquest(String AppID,String ReqType,String ReqData){
+    public String Packet_Ruquest(String AppID,String ReqType,String ReqData,String Appkey){
          Packet.RequestLayer requestLayer=new Packet().new RequestLayer();
          requestLayer.AppID=AppID;
          requestLayer.ReqType=ReqType;
-         requestLayer.ReqData=ReqData;
+         requestLayer.ReqData=AESUtils.AESEncode(Appkey,ReqData);
          return JSON.toJSONString(requestLayer);
     }
 
-    public String Packet_DeviceAuth(String DeviceSN,String DevicePassword){
+    public String Packet_DeviceAuth(Skp skp,String AppKey){
         Packet.DeviceAuth deviceAuth=new Packet().new DeviceAuth();
         deviceAuth.ReqType="DeviceAuth";
-        deviceAuth.DeviceSN=DeviceSN;
-        deviceAuth.DevicePassword=DevicePassword;
-        return JSON.toJSONString(deviceAuth);
+        deviceAuth.DeviceSN=skp.getDevicesn();
+        deviceAuth.DevicePassword=skp.getDevicepassword();
+        return AESUtils.AESEncode(AppKey,JSON.toJSONString(deviceAuth));
     }
-    public String Packet_DeviceState(String DeviceSN,String DeviceKey){
+    public String Packet_DeviceState(Skp skp,String AppKey){
         Packet.DeviceState deviceState=new Packet().new DeviceState();
         deviceState.ReqType="DeviceState";
-        deviceState.DeviceSN=DeviceSN;
-        deviceState.DeviceKey=DeviceKey;
-        return JSON.toJSONString(deviceState);
+        deviceState.DeviceSN=skp.getDevicesn();
+        deviceState.DeviceKey=skp.getDevicekey();
+        return AESUtils.AESEncode(AppKey,JSON.toJSONString(deviceState));
     }
 }
