@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.config.mina;
 
+import com.rjxx.utils.StringUtils;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -46,7 +47,7 @@ public class SocketConfig {
          */
         nioSocketConnector.setHandler(new ServerHandler());
 
-        TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"));
+        TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"),new String(StringUtils.hexString2Bytes("1A"),"utf-8"),new String(StringUtils.hexString2Bytes("1A"),"utf-8"));
         textLineCodecFactory.setDecoderMaxLineLength(Integer.MAX_VALUE);
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
         nioSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(textLineCodecFactory));
@@ -59,17 +60,11 @@ public class SocketConfig {
         ConnectFuture connectFuture =
                 nioSocketConnector.connect(new InetSocketAddress(ip, port)) ;
         // Connect and be ready to listen
-        logger.info("Server listening on " + port);
+        logger.info("Client listening on " + port);
         //阻塞等待，知道链接服务器成功，或被中断
         connectFuture.awaitUninterruptibly() ;
-
         IoSession session = connectFuture.getSession() ;
         SocketSession.getInstance().setSession(session);
-       /* //阻塞，知道session关闭
-        session.getCloseFuture().awaitUninterruptibly() ;
-
-        //关闭链接
-        nioSocketConnector.dispose() ;*/
     }
 
 }

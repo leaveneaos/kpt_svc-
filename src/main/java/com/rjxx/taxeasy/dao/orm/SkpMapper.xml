@@ -26,6 +26,9 @@
 		<if test="skph != null and skph != ''">
 			and skph = #{skph}
 		</if>
+		<if test="devicesn != null and devicesn != ''">
+			and devicesn = #{devicesn}
+		</if>
 		limit 1
 	</select>
 	<select id="findSkpbySkph" parameterType="map" resultType="skp">

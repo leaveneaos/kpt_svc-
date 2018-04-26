@@ -11,7 +11,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 /**
- * 
+ *
  * Title:AESUtils
  * Description:AES 加密解密工具类
  * Company: moredo
@@ -69,9 +69,9 @@ public class AESUtils {
 	        } catch (UnsupportedEncodingException e) {
 	            e.printStackTrace();
 	        }
-	        
+
 	        //如果有错就返加nulll
-	        return null;         
+	        return null;
 	    }
 	    /**
 	     * 解密
@@ -118,8 +118,8 @@ public class AESUtils {
 	        } catch (BadPaddingException e) {
 	            e.printStackTrace();
 	        }
-	        
+
 	        //如果有错就返加nulll
-	        return null;         
+	        return null;
 	    }
 }

@@ -11,12 +11,15 @@ import com.rjxx.taxeasy.bizhandle.utils.HttpUtils;
 import com.rjxx.taxeasy.bizhandle.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizhandle.utils.SeperateInvoiceUtils;
 import com.rjxx.taxeasy.config.mina.ServerHandler;
+import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
 import com.rjxx.taxeasy.dal.*;
 import com.rjxx.taxeasy.dao.bo.*;
 import com.rjxx.taxeasy.dao.dto.InvoicePendingData;
 import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
+import com.rjxx.taxeasy.dao.vo.Kpspmxvo;
+import com.rjxx.taxeasy.dao.vo.Spbm;
 import com.rjxx.utils.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -24,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -74,6 +76,9 @@ public class SocketService {
 
     @Autowired
     private XfService xfService;
+
+    @Autowired
+    private SpbmService spbmService;
 
 
 
@@ -746,11 +751,7 @@ public class SocketService {
     }
 
 
-    @Value("${CRESTV.AppID}")
-    private String  AppID;
 
-    @Value("${CRESTV.AppKey}")
-    private String  AppKey;
     /**
      * 税控盒子开票
      * @param p
@@ -769,16 +770,22 @@ public class SocketService {
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Map params = new HashMap();
             params.put("kplsh", kpls.getKplsh());
-            List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
+            List<Kpspmxvo> kpspmxList = kpspmxService.findSkMxList(params);
+            for(Kpspmxvo kpspmxvo:kpspmxList){
+                Map spbmMap=new HashMap(1);
+                spbmMap.put("spbm",kpspmxvo.getSpdm());
+                Spbm spbm=spbmService.findOneByParams(spbmMap);
+                kpspmxvo.setSpflmc(spbm.getSpmc());
+                kpspmxvo.setSpfljc(spbm.getSpbmjc());
+            }
             Skp skp=skpService.findOne(kpls.getSkpid());
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp);
-            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(AppID,"DeviceCmd",DeviceCmd,AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -787,12 +794,12 @@ public class SocketService {
      * @param skpid
      * @return
      */
-    public String deviceAuth(int skpid) {
+    public String deviceAuth(int skpid) throws Exception{
         Skp skp=skpService.findOne(skpid);
-        String deviceAuth=PacketBody.getInstance().Packet_DeviceAuth(skp,AppKey);
-        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(AppID,"DeviceAuth",deviceAuth,AppKey);
+        String deviceAuth=PacketBody.getInstance().Packet_DeviceAuth(skp,PasswordConfig.AppKey);
+        String Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceAuth",deviceAuth);
         ServerHandler.sendMessage(Ruquest);
-        return JSON.toJSONString(deviceAuth);
+        return null;
     }
 
     /**
@@ -800,11 +807,11 @@ public class SocketService {
      * @param skpid
      * @return
      */
-    public String deviceState(int skpid) {
+    public String deviceState(int skpid) throws Exception{
         Skp skp=skpService.findOne(skpid);
-        String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,AppKey);
-        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(AppID,"DeviceState",deviceState,AppKey);
+        String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,PasswordConfig.AppKey);
+        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceState",deviceState);
         ServerHandler.sendMessage(Ruquest);
-        return JSON.toJSONString(deviceState);
+        return null;
     }
 }

@@ -1,11 +1,12 @@
 package com.rjxx.taxeasy.dao.dto.crestvinvoice;
 
 import com.alibaba.fastjson.JSON;
-import com.rjxx.taxeasy.bizhandle.utils.AESUtils;
 import com.rjxx.taxeasy.dao.bo.Jyls;
 import com.rjxx.taxeasy.dao.bo.Kpls;
-import com.rjxx.taxeasy.dao.bo.Kpspmx;
 import com.rjxx.taxeasy.dao.bo.Skp;
+import com.rjxx.taxeasy.dao.vo.Kpspmxvo;
+import com.rjxx.utils.AESUtils;
+import com.rjxx.utils.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,13 +31,13 @@ public class PacketBody {
         return PacketBody.SingletonPacketBody.INSTANCE;
     }
 
-    public String Packet_Invoice_Json(Kpls kpls,Jyls jyls,List<Kpspmx>kpspmxList,Skp skp){
+    public String Packet_Invoice_Json(Kpls kpls, Jyls jyls, List<Kpspmxvo>kpspmxList, Skp skp)throws Exception{
         Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList);
         String Invoice_Json= JSON.toJSONString(newInvoice);
-      return AESUtils.AESEncode(skp.getDevicekey(),Invoice_Json);
+        return AESUtils.aesEncrypt(Invoice_Json,skp.getDevicekey());
     }
 
-    public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmx>kpspmxList){
+    public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmxvo>kpspmxList){
 
         Packet.NewInvoice newInvoice=new Packet().new NewInvoice();
         newInvoice.MerchantAddress=kpls.getXfdz();
@@ -85,9 +86,9 @@ public class PacketBody {
         return newInvoice;
     }
 
-    public  List<Packet.Item> Packet_itemList(List<Kpspmx>kpspmxList){
+    public  List<Packet.Item> Packet_itemList(List<Kpspmxvo>kpspmxList){
         List <Packet.Item> itemList=new ArrayList<>();
-        for(Kpspmx kpspmx:kpspmxList){
+        for(Kpspmxvo kpspmx:kpspmxList){
             Packet.Item item=new Packet().new Item();
             item.EntryType=kpspmx.getFphxz();
             item.ItemName=kpspmx.getSpmc();
@@ -115,11 +116,11 @@ public class PacketBody {
             /**
              * 商品分类名称
              */
-            item.CatalogName=null;
+            item.CatalogName=kpspmx.getSpflmc();
             /**
              * 商品分类简称
              */
-            item.CatalogShortName=null;
+            item.CatalogShortName=kpspmx.getSpfljc();
             item.CatalogCode=kpspmx.getSpdm();
             item.HasPreferentialPolicy=kpspmx.getYhzcbs();
             item.PreferentialPolicy=kpspmx.getYhzcmc();
@@ -129,7 +130,7 @@ public class PacketBody {
             return itemList;
     }
 
-    public  String Packet_DeviceCmd (String kplsh,String OpType,String Data,Skp skp){
+    public  String Packet_DeviceCmd (String kplsh,String OpType,String Data,Skp skp,String Appkey)throws Exception{
         Packet.Terminal terminal=new Packet().new Terminal();
         terminal.ProtocolVer=1;
         terminal.SeqNumber=kplsh;
@@ -139,29 +140,44 @@ public class PacketBody {
         terminal.UserID="rjxx";
         terminal.OpType=OpType;
         terminal.Data=Data;
-        return JSON.toJSONString(terminal);
+        System.out.println("----终端指令------"+JSON.toJSONString(terminal));
+        return AESUtils.aesEncrypt(JSON.toJSONString(terminal),Appkey) ;
     }
 
-    public String Packet_Ruquest(String AppID,String ReqType,String ReqData,String Appkey){
-         Packet.RequestLayer requestLayer=new Packet().new RequestLayer();
-         requestLayer.AppID=AppID;
-         requestLayer.ReqType=ReqType;
-         requestLayer.ReqData=AESUtils.AESEncode(Appkey,ReqData);
+    public String  Packet_Ruquest(String AppID,String ReqType,String ReqData)throws Exception{
+        Packet.RequestLayer requestLayer=new Packet().new RequestLayer();
+        byte[] newbyte=null;
+        try {
+            requestLayer.AppID=AppID;
+            requestLayer.ReqType=ReqType;
+            requestLayer.ReqData=ReqData;
+            byte[] old= StringUtils.hexString2Bytes("1A");
+            byte []temp= JSON.toJSONString(requestLayer).getBytes("utf-8");
+            int total=temp.length+(old==null?0:old.length);
+            newbyte = new byte[total];
+            System.arraycopy(temp, 0, newbyte, 0, temp.length);
+            System.arraycopy(old, 0, newbyte, temp.length, (old==null?0:old.length));
+            System.out.println(new String(newbyte,"utf-8"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
          return JSON.toJSONString(requestLayer);
     }
 
-    public String Packet_DeviceAuth(Skp skp,String AppKey){
+    public String Packet_DeviceAuth(Skp skp,String AppKey)throws Exception{
         Packet.DeviceAuth deviceAuth=new Packet().new DeviceAuth();
         deviceAuth.ReqType="DeviceAuth";
         deviceAuth.DeviceSN=skp.getDevicesn();
         deviceAuth.DevicePassword=skp.getDevicepassword();
-        return AESUtils.AESEncode(AppKey,JSON.toJSONString(deviceAuth));
+        System.out.println(JSON.toJSONString(deviceAuth));
+        return AESUtils.aesEncrypt(JSON.toJSONString(deviceAuth),AppKey);
     }
-    public String Packet_DeviceState(Skp skp,String AppKey){
+    public String Packet_DeviceState(Skp skp,String AppKey)throws Exception{
         Packet.DeviceState deviceState=new Packet().new DeviceState();
         deviceState.ReqType="DeviceState";
         deviceState.DeviceSN=skp.getDevicesn();
         deviceState.DeviceKey=skp.getDevicekey();
-        return AESUtils.AESEncode(AppKey,JSON.toJSONString(deviceState));
+        System.out.println(JSON.toJSONString(deviceState));
+        return AESUtils.aesEncrypt(JSON.toJSONString(deviceState),AppKey);
     }
 }

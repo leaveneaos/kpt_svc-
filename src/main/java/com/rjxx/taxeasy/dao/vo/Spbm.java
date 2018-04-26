@@ -16,6 +16,8 @@ public class Spbm  implements Serializable {
 
 	protected String spmc;
 
+	protected String spbmjc;
+
 	protected String sm;
 
 	protected String zzssl;
@@ -91,5 +93,12 @@ public class Spbm  implements Serializable {
 		this.sjspbm = sjspbm;
 	}
 
+	public String getSpbmjc() {
+		return spbmjc;
+	}
+
+	public void setSpbmjc(String spbmjc) {
+		this.spbmjc = spbmjc;
+	}
 }
 

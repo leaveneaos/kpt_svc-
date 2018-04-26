@@ -83,4 +83,24 @@ public class PasswordConfig {
     public void  setKeyStorePath(String pdf_keyStorePath){
         keyStorePath=pdf_keyStorePath;
     }
+
+    /**
+     * 凯盈AppID唯一标识
+     */
+    public static  String AppID;
+
+    @Value("${CRESTV.AppID}")
+    public void  setAppID(String appID){
+        AppID=appID;
+    }
+
+    /**
+     * 凯盈Appkey唯一加密key
+     */
+    public static  String AppKey;
+
+    @Value("${CRESTV.AppKey}")
+    public void  setAppKey(String appKey){
+        AppKey=appKey;
+    }
 }

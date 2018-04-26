@@ -28,6 +28,8 @@ public class Kpspmxvo implements Serializable{
 	protected String spmxxh;
 	protected Double sps;
 	protected String spdm;
+	protected String spfljc;
+	protected String spflmc;
 	public Integer getId() {
 		return id;
 	}
@@ -191,5 +193,21 @@ public class Kpspmxvo implements Serializable{
 
 	public void setKce(Double kce) {
 		this.kce = kce;
+	}
+
+	public String getSpfljc() {
+		return spfljc;
+	}
+
+	public void setSpfljc(String spfljc) {
+		this.spfljc = spfljc;
+	}
+
+	public String getSpflmc() {
+		return spflmc;
+	}
+
+	public void setSpflmc(String spflmc) {
+		this.spflmc = spflmc;
 	}
 }
