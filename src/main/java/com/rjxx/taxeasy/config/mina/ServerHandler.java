@@ -41,7 +41,7 @@ public class ServerHandler  {
      * 发送消息
      * @param message
      */
-    public  void sendMessage(String message) {
+    public  static void sendMessage(String message) {
         Socket socket=null;
         OutputStream ots=null;
         PrintWriter pw=null;
@@ -71,10 +71,9 @@ public class ServerHandler  {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
-    public  void messageReceived(Object message) throws Exception {
+    public static void messageReceived(Object message) throws Exception {
         ReceiveTask receiveTask = new ReceiveTask();
         receiveTask.setMsg((String)message);
         logger.info("-------消息---------"+message);
@@ -92,7 +91,7 @@ public class ServerHandler  {
     /**
      * 接收任务
      */
-    class ReceiveTask implements Runnable {
+    static class ReceiveTask implements Runnable {
 
         private Logger logger = LoggerFactory.getLogger(this.getClass());
 

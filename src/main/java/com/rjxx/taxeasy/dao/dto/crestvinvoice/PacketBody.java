@@ -160,7 +160,7 @@ public class PacketBody {
         }catch (Exception e){
             e.printStackTrace();
         }
-         return JSON.toJSONString(requestLayer);
+         return new String(newbyte,"utf-8");
     }
 
     public String Packet_DeviceAuth(Skp skp,String AppKey)throws Exception{
