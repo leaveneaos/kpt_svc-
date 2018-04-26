@@ -7,6 +7,7 @@ import com.rjxx.taxeasy.dal.KplsService;
 import com.rjxx.taxeasy.dal.SkpService;
 import com.rjxx.taxeasy.dao.bo.Kpls;
 import com.rjxx.taxeasy.dao.bo.Skp;
+import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.XmltoJson;
@@ -117,7 +118,7 @@ public class ServerHandler extends IoHandlerAdapter {
             try {
                 Map requestMap= XmltoJson.strJson2Map(msg);
                 String ReqType=requestMap.get("ReqType").toString();
-                String ReqData=AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer(requestMap.get("ReqData").toString()), PasswordConfig.AppKey);
+                String ReqData=new String(AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer(requestMap.get("ReqData").toString()), PasswordConfig.AppKey),"utf-8");
                 logger.info("解密后字符"+ReqData);
                 switch (ReqType){
                     case "DeviceAuth":
@@ -141,12 +142,16 @@ public class ServerHandler extends IoHandlerAdapter {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
         String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString();
         String SeqNumber=DeviceCmdMap.get("SeqNumber").toString();
+        KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
+        SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+        Kpls kpls=kplsService.findOne(Integer.valueOf(SeqNumber));
+        Skp skp=skpService.findOne(kpls.getSkpid());
         String ZipType=DeviceCmdMap.get("ZipType").toString();
         String EncryptType=DeviceCmdMap.get("EncryptType").toString();
         String DeviceSN=DeviceCmdMap.get("DeviceSN").toString();
         String UserID=DeviceCmdMap.get("UserID").toString();
         String OpType=DeviceCmdMap.get("OpType").toString();
-        String Data=DeviceCmdMap.get("Data").toString();
+        String Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
         switch (OpType){
             case "NewInvoice":
                 OnReceive_NewInvoice(Data,OpType,SeqNumber);
@@ -161,7 +166,7 @@ public class ServerHandler extends IoHandlerAdapter {
             FpclService fpclService = ApplicationContextUtils.getBean(FpclService.class);
             Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
             Skp skp=skpService.findOne(kpls.getSkpid());
-            String result=AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer(data),skp.getDevicekey());
+            String result= data;
             Map resultMap=XmltoJson.strJson2Map(result);
             String Code=resultMap.get("Code").toString();
             String Msg=resultMap.get("Msg").toString();
@@ -228,15 +233,17 @@ public class ServerHandler extends IoHandlerAdapter {
     public static void main(String[] args) throws Exception{
         //String ReqData=AESUtils.aesDecrypt(new String(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"), "UTF-8"),"1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA");
         //logger.info(new String(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"), "UTF-8"),"UTF-8");
-        String key="1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA";
+        //String key="1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA";
 
-        String ReqData=AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"),"1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA");
+       // String ReqData=AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"),"1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA");
 
-        logger.info("解密后字符"+ReqData);
+       // logger.info("解密后字符"+ReqData);
         //logger.info("-------DeviceKey----------"+new String((new BASE64Decoder().decodeBuffer("tZNLzJUsDBCR3fgV+6uinIjhJ3Bb3g0bS9RLHYZIgJ4="))));
         BASE64Decoder decoder = new BASE64Decoder();
-        String str="tZNLzJUsDBCR3fgV+6uinIjhJ3Bb3g0bS9RLHYZIgJ4=";
-        logger.info(DesUtils.bytesToHexString(decoder.decodeBuffer(str)).toUpperCase());
-
+        String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
+        byte[] str2=decoder.decodeBuffer(str);
+        //logger.info(new String(PacketBody.unGZip(str2)),"utf-8");
+        String DeviceKey="B5934BCC952C0C1091DDF815FBABA29C88E127705BDE0D1B4BD44B1D8648809E";
+        logger.info(new String(PacketBody.unGZip(AESUtils.aesDecrypt(str2,DeviceKey)),"utf-8"));
     }
 }

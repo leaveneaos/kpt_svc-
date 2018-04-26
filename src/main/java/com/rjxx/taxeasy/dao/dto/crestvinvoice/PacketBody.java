@@ -7,10 +7,15 @@ import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.taxeasy.dao.vo.Kpspmxvo;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.StringUtils;
+import sun.misc.BASE64Decoder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @ClassName PacketBody
@@ -31,13 +36,13 @@ public class PacketBody {
         return PacketBody.SingletonPacketBody.INSTANCE;
     }
 
-    public String Packet_Invoice_Json(Kpls kpls, Jyls jyls, List<Kpspmxvo>kpspmxList, Skp skp)throws Exception{
-        Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList);
+    public String Packet_Invoice_Json(Kpls kpls, Jyls jyls, List<Kpspmxvo>kpspmxList, Skp skp,String spbmbbh)throws Exception{
+        Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList,spbmbbh);
         String Invoice_Json= JSON.toJSONString(newInvoice);
         return AESUtils.aesEncrypt(Invoice_Json,skp.getDevicekey());
     }
 
-    public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmxvo>kpspmxList){
+    public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmxvo>kpspmxList,String spbmbbh){
 
         Packet.NewInvoice newInvoice=new Packet().new NewInvoice();
         newInvoice.MerchantAddress=kpls.getXfdz();
@@ -64,7 +69,7 @@ public class PacketBody {
             fpzldm="3";
         }
         newInvoice.InvoiceType=fpzldm;
-        newInvoice.CatalogVer=null;
+        newInvoice.CatalogVer=spbmbbh;
         String kplx="";
         if("11".equals(kpls.getFpczlxdm())){
             kplx="0";
@@ -178,5 +183,71 @@ public class PacketBody {
         deviceState.DeviceKey=skp.getDevicekey();
         System.out.println(JSON.toJSONString(deviceState));
         return AESUtils.aesEncrypt(JSON.toJSONString(deviceState),AppKey);
+    }
+    /***
+     * 解压GZip
+     *
+     * @param data
+     * @return
+     */
+    public static byte[] unGZip(byte[] data) {
+        byte[] b = null;
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(data);
+            GZIPInputStream gzip = new GZIPInputStream(bis);
+            byte[] buf = new byte[1024];
+            int num = -1;
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            while ((num = gzip.read(buf, 0, buf.length)) != -1) {
+                baos.write(buf, 0, num);
+            }
+            b = baos.toByteArray();
+            baos.flush();
+            baos.close();
+            gzip.close();
+            bis.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return b;
+    }
+    /***
+     * 压缩GZip
+     *
+     * @param data
+     * @return
+     */
+    public static byte[] gZip(byte[] data) {
+        byte[] b = null;
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            GZIPOutputStream gzip = new GZIPOutputStream(bos);
+            gzip.write(data);
+            gzip.finish();
+            gzip.close();
+            b = bos.toByteArray();
+            bos.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return b;
+    }
+
+    /**
+     * 解密业务包文
+     * @param str
+     * @param DeviceKey
+     * @return
+     */
+    public static String jiemiData(String str,String DeviceKey){
+        String s="";
+        try {
+            BASE64Decoder decoder = new BASE64Decoder();
+            byte[] str2=decoder.decodeBuffer(str);
+            s=new String(PacketBody.unGZip(AESUtils.aesDecrypt(str2,DeviceKey)),"utf-8");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return s;
     }
 }

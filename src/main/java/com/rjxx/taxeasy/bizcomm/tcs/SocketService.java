@@ -779,7 +779,10 @@ public class SocketService {
                 kpspmxvo.setSpfljc(spbm.getSpbmjc());
             }
             Skp skp=skpService.findOne(kpls.getSkpid());
-            String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp);
+            Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
+            String spbmbbh = cszb.getCsz();
+
+            String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
