@@ -29,10 +29,10 @@ public class SocketConfig {
 
     private static Logger logger = LoggerFactory.getLogger(SocketConfig.class);
 
-    @Value("${socket.port}")
+    @Value("${CRESTV.port}")
     private int port;
 
-    @Value("${socket.server}")
+    @Value("${CRESTV.server}")
     private String  ip;
 
     @PostConstruct
