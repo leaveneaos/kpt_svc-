@@ -60,6 +60,7 @@ public class SocketConfig {
                         future.awaitUninterruptibly();
                         // 获取会话
                         ioSession = future.getSession();
+                        SocketSession.getInstance().setSession(ioSession);
                         if (ioSession.isConnected()) {
                             logger.info("断线重连[" + nioSocketConnector.getDefaultRemoteAddress().getHostName() + ":" + nioSocketConnector.getDefaultRemoteAddress().getPort() + "]成功");
                             break;
@@ -89,6 +90,7 @@ public class SocketConfig {
                 future.awaitUninterruptibly();
                 // 获取会话
                 IoSession session = future.getSession();
+                SocketSession.getInstance().setSession(session);
                 logger.error("连接服务端" + ip + ":" + port + "[成功]" + ",,时间:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 break;
             } catch (RuntimeIoException e) {
