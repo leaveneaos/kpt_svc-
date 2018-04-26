@@ -28,6 +28,7 @@ public class SocketConfig {
                 //创建一个客户端socket
                 Socket socket = new Socket(PasswordConfig.ip,PasswordConfig.port);
                 SocketManger.getInstance().setSocket(socket);
+                logger.info("-------socket已连接-----"+PasswordConfig.ip+"----"+PasswordConfig.port);
                 //向服务器端传递信息
             }catch (Exception e){
                 e.printStackTrace();
