@@ -54,7 +54,7 @@ public class SocketConfig {
             public void sessionClosed(NextFilter nextFilter, IoSession ioSession) throws Exception {
                 for (; ; ) {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                         ConnectFuture future = nioSocketConnector.connect();
                         // 等待连接创建成功
                         future.awaitUninterruptibly();
@@ -95,8 +95,8 @@ public class SocketConfig {
                 break;
             } catch (RuntimeIoException e) {
                 logger.error("连接服务端" + ip + ":" + port + "失败" + ",,时间:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ", 连接MSG异常,请检查MSG端口、IP是否正确,MSG服务是否启动,异常内容:" + e.getMessage(), e);
-                // 连接失败后,重连间隔5s
-                Thread.sleep(5000);
+                // 连接失败后,重连间隔2s
+                Thread.sleep(2000);
             }
         }
     }
