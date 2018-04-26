@@ -10,66 +10,73 @@ import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.XmltoJson;
-import org.apache.mina.core.service.IoHandlerAdapter;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import sun.misc.BASE64Decoder;
 
+import java.io.*;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  *@ClassName SocketService
- *@Description 连接凯盈平台mina 客户端业务处理
+ *@Description 连接凯盈平台socket 客户端业务处理
  *@Author 许黎明
  *@Date 2018/4/25.
  *@Version 1.0
  **/
-public class ServerHandler extends IoHandlerAdapter {
-
-
+public class ServerHandler  {
 
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     /**
      * 线程池执行任务
      */
     private static ThreadPoolTaskExecutor taskExecutor = null;
+
+
     /**
      * 发送消息
      * @param message
      */
-    public static void sendMessage( Object message) {
-        IoSession session=SocketSession.getInstance().getSession();
-        sendMessage(session,message);
-    }
-    /**
-     * 发送消息
-     *
-     * @param session
-     * @param message
-     */
-    public static void sendMessage(IoSession session, Object message) {
-        session.write(message);
+    public  void sendMessage(String message) {
+        Socket socket=null;
+        OutputStream ots=null;
+        PrintWriter pw=null;
+        InputStream is=null;
+        InputStreamReader isr=null;
+        BufferedReader br=null;
+        try {
+            //创建一个客户端socket
+            socket =SocketManger.getInstance().getSocket();
+            //向服务器端传递信息
+             ots = socket.getOutputStream();
+             pw = new PrintWriter(ots);
+             pw.write(message);
+             pw.flush();
+            //关闭输出流
+            socket.shutdownOutput();
+            //获取服务器端传递的数据
+            is = socket.getInputStream();
+            isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
+            String info = null;
+            while((info=br.readLine())!=null){
+                logger.info("服务器应答："+info);
+                messageReceived(info);
+            }
+            //关闭资源
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
-    @Override
-    public void sessionOpened(IoSession session) throws Exception {
-    }
-
-    @Override
-    public void sessionClosed(IoSession session) throws Exception {
-
-    }
-
-    @Override
-    public void messageReceived(IoSession session, Object message) throws Exception {
+    public  void messageReceived(Object message) throws Exception {
         ReceiveTask receiveTask = new ReceiveTask();
         receiveTask.setMsg((String)message);
-        receiveTask.setSession(session);
         logger.info("-------消息---------"+message);
         if (taskExecutor == null) {
             taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
@@ -77,28 +84,10 @@ public class ServerHandler extends IoHandlerAdapter {
         taskExecutor.execute(receiveTask);
     }
 
-    @Override
-    public void messageSent(IoSession session, Object message) throws Exception {
-       logger.info("客户端发送信息成功  message:" + message);
-    }
 
-    @Override
-    public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        String kpdid = (String) session.getAttribute("kpdid");
-        if (kpdid != null) {
-            logger.info("kpd:" + kpdid + " " + session + " idle time out!!!");
-        }
-        logger.info("Client will interrupt the connection with the client");
-        session.closeNow();
-    }
 
-    @Override
-    public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        String kpdid = (String) session.getAttribute("kpdid");
-        if (kpdid != null) {
-            logger.error("kpd:" + kpdid + " " + session + " exception caught!!!", cause);
-        }
-    }
+
+
 
     /**
      * 接收任务
@@ -109,7 +98,6 @@ public class ServerHandler extends IoHandlerAdapter {
 
         private String msg;
 
-        private IoSession session;
 
         @Override
         public void run() {
@@ -133,9 +121,6 @@ public class ServerHandler extends IoHandlerAdapter {
             this.msg = msg;
         }
 
-        public void setSession(IoSession session) {
-            this.session = session;
-        }
     }
     private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
@@ -237,6 +222,6 @@ public class ServerHandler extends IoHandlerAdapter {
         BASE64Decoder decoder = new BASE64Decoder();
         String str="tZNLzJUsDBCR3fgV+6uinIjhJ3Bb3g0bS9RLHYZIgJ4=";
         logger.info(DesUtils.bytesToHexString(decoder.decodeBuffer(str)).toUpperCase());
-
+        logger.info("------开票数据------"+AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer("MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4="),"B5934BCC952C0C1091DDF815FBABA29C88E127705BDE0D1B4BD44B1D8648809E"));
     }
 }
