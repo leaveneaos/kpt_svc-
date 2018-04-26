@@ -53,6 +53,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param message
      */
     public static void sendMessage(IoSession session, Object message) {
+        logger.info("----是否发送-----"+message);
         session.write(message);
     }
 
