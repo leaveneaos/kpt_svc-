@@ -55,7 +55,7 @@ public class SocketConfig {
         nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 120);
         // Create Session Configuration
         nioSocketConnector.getSessionConfig().setReuseAddress(true);
-        logger.info("Starting Client......");
+        logger.info("Starting Client......"+"------ip----"+ip+"---port---"+port);
         //链接服务端
         ConnectFuture connectFuture =
                 nioSocketConnector.connect(new InetSocketAddress(ip, port)) ;
