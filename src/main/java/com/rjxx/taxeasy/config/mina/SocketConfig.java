@@ -1,8 +1,8 @@
 package com.rjxx.taxeasy.config.mina;
 
+import com.rjxx.taxeasy.config.password.PasswordConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,17 +20,13 @@ public class SocketConfig {
 
     private static Logger logger = LoggerFactory.getLogger(SocketConfig.class);
 
-    @Value("${CRESTV.port}")
-    private int port;
 
-    @Value("${CRESTV.server}")
-    private String  ip;
 
     @PostConstruct
     public void initialize() throws Exception {
             try {
                 //创建一个客户端socket
-                Socket socket = new Socket(ip,port);
+                Socket socket = new Socket(PasswordConfig.ip,PasswordConfig.port);
                 SocketManger.getInstance().setSocket(socket);
                 //向服务器端传递信息
             }catch (Exception e){

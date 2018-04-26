@@ -97,10 +97,25 @@ public class PasswordConfig {
     /**
      * 凯盈Appkey唯一加密key
      */
-    public static  String AppKey;
+    public   String AppKey;
 
     @Value("${CRESTV.AppKey}")
     public void  setAppKey(String appKey){
         AppKey=appKey;
     }
+
+
+    public static int port;
+    @Value("${CRESTV.port}")
+    public void  setPort(int Socketport){
+        port=Socketport;
+    }
+
+    public static String  ip;
+
+    @Value("${CRESTV.server}")
+    public void  setIp(String SocketServer){
+        ip=SocketServer;
+    }
+
 }

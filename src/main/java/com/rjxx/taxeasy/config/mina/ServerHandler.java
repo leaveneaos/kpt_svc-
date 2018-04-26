@@ -51,6 +51,9 @@ public class ServerHandler  {
         try {
             //创建一个客户端socket
             socket =SocketManger.getInstance().getSocket();
+            if(socket==null){
+                socket=new Socket(PasswordConfig.ip,PasswordConfig.port);
+            }
             //向服务器端传递信息
              ots = socket.getOutputStream();
              pw = new PrintWriter(ots);
