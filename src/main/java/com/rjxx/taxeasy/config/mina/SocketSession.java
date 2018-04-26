@@ -1,6 +1,7 @@
 package com.rjxx.taxeasy.config.mina;
 
-import java.net.Socket;
+import org.apache.mina.core.session.IoSession;
+
 import java.util.Date;
 
 /**
@@ -10,22 +11,22 @@ import java.util.Date;
  *@Date 2018/4/25.
  *@Version 1.0
  **/
-public class SocketManger {
+public class SocketSession {
 
 
     /**
      * 静态内部类懒汉式单列模式
      */
     private static class SingletonSocketSession {
-        private static final SocketManger INSTANCE = new SocketManger();
+        private static final SocketSession INSTANCE = new SocketSession();
     }
-    public static final SocketManger getInstance() {
-        return SocketManger.SingletonSocketSession.INSTANCE;
+    public static final SocketSession getInstance() {
+        return SocketSession.SingletonSocketSession.INSTANCE;
     }
 
     private Date connectTime;
 
-    private Socket socket;
+    private IoSession session;
 
     public Date getConnectTime() {
         return connectTime;
@@ -35,11 +36,11 @@ public class SocketManger {
         this.connectTime = connectTime;
     }
 
-    public Socket getSocket() {
-        return socket;
+    public IoSession getSession() {
+        return session;
     }
 
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    public void setSession(IoSession session) {
+        this.session = session;
     }
 }
