@@ -59,8 +59,6 @@ public class ServerHandler  {
              pw = new PrintWriter(ots);
              pw.write(message);
              pw.flush();
-            //关闭输出流
-            socket.shutdownOutput();
             //获取服务器端传递的数据
             is = socket.getInputStream();
             isr = new InputStreamReader(is);
