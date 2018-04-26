@@ -157,7 +157,7 @@ public class PacketBody {
             newbyte = new byte[total];
             System.arraycopy(temp, 0, newbyte, 0, temp.length);
             System.arraycopy(old, 0, newbyte, temp.length, (old==null?0:old.length));
-            System.out.println(new String(newbyte,"utf-8"));
+            System.out.println("------发送凯盈数据包------"+new String(newbyte,"utf-8"));
         }catch (Exception e){
             e.printStackTrace();
         }
