@@ -171,6 +171,7 @@ public class ServerHandler extends IoHandlerAdapter {
             String Code=resultMap.get("Code").toString();
             String Msg=resultMap.get("Msg").toString();
             List<Map> InvoiceList=(List)resultMap.get("InvoiceList");
+            logger.info("-----开票数据-----"+result);
             for(Map invoiceMap:InvoiceList){
                 String  UDiskSn=invoiceMap.get("UDiskSn").toString();
                 String  InvoiceType=invoiceMap.get("invoiceMap").toString();
