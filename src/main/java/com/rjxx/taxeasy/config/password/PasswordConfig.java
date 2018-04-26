@@ -97,7 +97,7 @@ public class PasswordConfig {
     /**
      * 凯盈Appkey唯一加密key
      */
-    public   String AppKey;
+    public static  String AppKey;
 
     @Value("${CRESTV.AppKey}")
     public void  setAppKey(String appKey){
