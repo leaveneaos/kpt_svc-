@@ -174,7 +174,7 @@ public class ServerHandler extends IoHandlerAdapter {
             logger.info("-----开票数据-----"+result);
             for(Map invoiceMap:InvoiceList){
                 String  UDiskSn=invoiceMap.get("UDiskSn").toString();
-                String  InvoiceType=invoiceMap.get("invoiceMap").toString();
+                String  InvoiceType=invoiceMap.get("InvoiceType").toString();
                 String  InvoiceCode=invoiceMap.get("InvoiceCode").toString();
                 String  InvoiceNum=invoiceMap.get("InvoiceNum").toString();
                 String  InvoiceTime=invoiceMap.get("InvoiceTime").toString();
