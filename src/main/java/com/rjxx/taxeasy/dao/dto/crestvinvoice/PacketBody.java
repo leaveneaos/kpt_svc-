@@ -79,7 +79,11 @@ public class PacketBody {
             kplx="1";
         }
         newInvoice.IssueType=kplx;
-        newInvoice.IsPrintList=kpls.getSfdyqd();
+        if(kpls.getSfdyqd()==null){
+            newInvoice.IsPrintList="";
+        }else{
+            newInvoice.IsPrintList=kpls.getSfdyqd();
+        }
         newInvoice.NegSpecialInvoicePermitNum=kpls.getHztzdh();
         newInvoice.OriginInvoiceCode=kpls.getHzyfpdm();
         newInvoice.OriginInvoiceNum=kpls.getHzyfphm();
