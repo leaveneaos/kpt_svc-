@@ -197,7 +197,9 @@ public class ServerHandler extends IoHandlerAdapter {
                 // 机器编号
                 kpMap.put("JQBH", UDiskSn);
                 kpMap.put("KPRQ", InvoiceTime);
-                kpMap.put("RETURNCODE", Code);
+                if("0".equals(Code)){
+                    kpMap.put("RETURNCODE", "0000");
+                }
                 kpMap.put("RETURNMSG", Msg);
                 kpMap.put("KPLSH", kpls.getKplsh());
                 fpclService.updateKpls(kpMap);
