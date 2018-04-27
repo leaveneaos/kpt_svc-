@@ -188,7 +188,7 @@ public class PacketBody {
     }
     public String Packet_InputUDiskPassword(Skp skp)throws Exception{
         Packet.InputUDiskPassword inputUDiskPassword=new Packet().new InputUDiskPassword();
-        inputUDiskPassword.CaPwd=skp.getSkph();
+        inputUDiskPassword.UDiskSn=skp.getSkph();
         inputUDiskPassword.UDiskPwd=skp.getSkpmm();
         inputUDiskPassword.CaPwd=skp.getZsmm();
         inputUDiskPassword.TaxDiskPwd="";

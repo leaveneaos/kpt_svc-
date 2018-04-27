@@ -234,19 +234,24 @@ public class ServerHandler extends IoHandlerAdapter {
     }
 
     public static void main(String[] args) throws Exception{
-        //String ReqData=AESUtils.aesDecrypt(new String(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"), "UTF-8"),"1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA");
-        //logger.info(new String(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"), "UTF-8"),"UTF-8");
-        //String key="1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA";
 
-       // String ReqData=AESUtils.aesDecrypt(new BASE64Decoder().decodeBuffer("yacLMdwy4ZWZUMETWpcHkzHXJwXziakpDBjmv50H1PqWLUc6/Kx6+k5ijloBRrqYO+4zJnSu4GZe1vll63YMCK+9TAoHfwmPCFSx7E2bcEdz6aiGmb8CV6tfpjfB235BlbNcuSpmPm/ugfnYp5TAevDO+Rq9sXcVZ+tLH2uPrzni8ILgN/BKbBsoNEkQIEPx"),"1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA");
-
-       // logger.info("解密后字符"+ReqData);
-        //logger.info("-------DeviceKey----------"+new String((new BASE64Decoder().decodeBuffer("tZNLzJUsDBCR3fgV+6uinIjhJ3Bb3g0bS9RLHYZIgJ4="))));
         BASE64Decoder decoder = new BASE64Decoder();
-        String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
-        byte[] str2=decoder.decodeBuffer(str);
-        //logger.info(new String(PacketBody.unGZip(str2)),"utf-8");
-        String DeviceKey="B5934BCC952C0C1091DDF815FBABA29C88E127705BDE0D1B4BD44B1D8648809E";
-        logger.info(new String(PacketBody.unGZip(AESUtils.aesDecrypt(str2,DeviceKey)),"utf-8"));
+
+        String Appkey="1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA";
+        String miwen="LodVKHBP6PfYeYgWr4qeEnSsUVPAaZTCFLkYAQtFTjw=";
+        byte[] ReqData=new BASE64Decoder().decodeBuffer(miwen);
+        String DeviceKey=DesUtils.bytesToHexString(ReqData).toUpperCase();
+        logger.info("-------解密后字符DeviceKey----------"+DeviceKey);
+
+
+
+
+
+        //BASE64Decoder decoder = new BASE64Decoder();
+       // String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
+       // byte[] str2=decoder.decodeBuffer(str);
+       // //logger.info(new String(PacketBody.unGZip(str2)),"utf-8");
+       // String DeviceKey="B5934BCC952C0C1091DDF815FBABA29C88E127705BDE0D1B4BD44B1D8648809E";
+       // logger.info(new String(PacketBody.unGZip(AESUtils.aesDecrypt(str2,DeviceKey)),"utf-8"));
     }
 }
