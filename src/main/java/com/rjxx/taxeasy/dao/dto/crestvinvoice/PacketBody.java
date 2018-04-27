@@ -131,7 +131,11 @@ public class PacketBody {
             item.CatalogCode=kpspmx.getSpdm();
             item.HasPreferentialPolicy=kpspmx.getYhzcbs();
             item.PreferentialPolicy=kpspmx.getYhzcmc();
-            item.TaxFreeType=kpspmx.getLslbz();
+            if(kpspmx.getLslbz()==null){
+                item.TaxFreeType="";
+            }else{
+                item.TaxFreeType=kpspmx.getLslbz();
+            }
             itemList.add(item);
         }
             return itemList;
