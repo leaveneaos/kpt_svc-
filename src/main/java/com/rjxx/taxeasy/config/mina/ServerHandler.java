@@ -170,38 +170,47 @@ public class ServerHandler extends IoHandlerAdapter {
             Map resultMap=XmltoJson.strJson2Map(result);
             String Code=resultMap.get("Code").toString();
             String Msg=resultMap.get("Msg").toString();
-            List<Map> InvoiceList=(List)resultMap.get("InvoiceList");
-            logger.info("-----开票数据-----"+result);
-            for(Map invoiceMap:InvoiceList){
-                String  UDiskSn=invoiceMap.get("UDiskSn").toString();
-                String  InvoiceType=invoiceMap.get("InvoiceType").toString();
-                String  InvoiceCode=invoiceMap.get("InvoiceCode").toString();
-                String  InvoiceNum=invoiceMap.get("InvoiceNum").toString();
-                String  InvoiceTime=invoiceMap.get("InvoiceTime").toString();
-                String  VerifyCode=invoiceMap.get("VerifyCode").toString();
-                String  Ciphertext=invoiceMap.get("Ciphertext").toString();
-                String  QrCode=invoiceMap.get("QrCode").toString();
-                Map kpMap=new HashMap(10);
-                // 返回结果，发票代码
-                kpMap.put("FP_DM", InvoiceCode);
-                // 发票号码
-                kpMap.put("FP_HM", InvoiceNum);
-                // 发票密文
-                kpMap.put("FP_MW", Ciphertext);
-                // 校验码
-                kpMap.put("JYM", VerifyCode);
-                // 二维码
-                if(null!=QrCode){
-                    kpMap.put("EWM", "");
+            if(resultMap.get("InvoiceList")!=null){
+                List<Map> InvoiceList=(List)resultMap.get("InvoiceList");
+                logger.info("-----开票数据-----"+result);
+                for(Map invoiceMap:InvoiceList){
+                    String  UDiskSn=invoiceMap.get("UDiskSn").toString();
+                    String  InvoiceType=invoiceMap.get("InvoiceType").toString();
+                    String  InvoiceCode=invoiceMap.get("InvoiceCode").toString();
+                    String  InvoiceNum=invoiceMap.get("InvoiceNum").toString();
+                    String  InvoiceTime=invoiceMap.get("InvoiceTime").toString();
+                    String  VerifyCode=invoiceMap.get("VerifyCode").toString();
+                    String  Ciphertext=invoiceMap.get("Ciphertext").toString();
+                    String  QrCode=invoiceMap.get("QrCode").toString();
+                    Map kpMap=new HashMap(10);
+                    // 返回结果，发票代码
+                    kpMap.put("FP_DM", InvoiceCode);
+                    // 发票号码
+                    kpMap.put("FP_HM", InvoiceNum);
+                    // 发票密文
+                    kpMap.put("FP_MW", Ciphertext);
+                    // 校验码
+                    kpMap.put("JYM", VerifyCode);
+                    // 二维码
+                    if(null!=QrCode){
+                        kpMap.put("EWM", "");
+                    }
+                    // 机器编号
+                    kpMap.put("JQBH", UDiskSn);
+                    kpMap.put("KPRQ", InvoiceTime);
+                    if("0".equals(Code)){
+                        kpMap.put("RETURNCODE", "0000");
+                    }
+                    kpMap.put("RETURNMSG", Msg);
+                    kpMap.put("KPLSH", kpls.getKplsh());
+                    fpclService.updateKpls(kpMap);
                 }
-                // 机器编号
-                kpMap.put("JQBH", UDiskSn);
-                kpMap.put("KPRQ", InvoiceTime);
+            }else{
+                Map kpMap=new HashMap(2);
                 if("0".equals(Code)){
                     kpMap.put("RETURNCODE", "0000");
                 }
                 kpMap.put("RETURNMSG", Msg);
-                kpMap.put("KPLSH", kpls.getKplsh());
                 fpclService.updateKpls(kpMap);
             }
         } catch (Exception e) {
