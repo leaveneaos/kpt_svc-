@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import sun.misc.BASE64Decoder;
 
+import java.io.*;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,49 @@ public class ServerHandler extends IoHandlerAdapter {
         IoSession session=SocketSession.getInstance().getSession();
         sendMessage(session,message);
     }
+
+    /**
+     * 发送消息
+     * @param message
+     */
+    public static void sendSocketMessage( Object message) {
+        try {
+            //1.创建客户端Socket，指定服务器地址和端口号
+            Socket socket = new Socket(PasswordConfig.ip, PasswordConfig.port);
+            //2.获取输出流，用来向服务器发送信息
+            //字节输出流
+            OutputStream os = socket.getOutputStream();
+            //转换为打印流
+            PrintWriter pw = new PrintWriter(os);
+            pw.write((String)message);
+            pw.flush();//刷新缓存，向服务器端输出信息
+            //关闭输出流
+            socket.shutdownOutput();
+            //3.获取输入流，用来读取服务器端的响应信息
+            InputStream is = socket.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String info = null;
+            while ((info = br.readLine()) != null) {
+                logger.info("服务应答：" + info);
+                ReceiveTask receiveTask = new ReceiveTask();
+                receiveTask.setMsg((String)message);
+                if (taskExecutor == null) {
+                    taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
+                }
+                taskExecutor.execute(receiveTask);
+            }
+            //4.关闭资源
+            br.close();
+            is.close();
+            pw.close();
+            os.close();
+            socket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            logger.info(ex.getMessage());
+        }
+    }
+
     /**
      * 发送消息
      *
@@ -104,7 +149,7 @@ public class ServerHandler extends IoHandlerAdapter {
     /**
      * 接收任务
      */
-    class ReceiveTask implements Runnable {
+    static class ReceiveTask implements Runnable {
 
         private Logger logger = LoggerFactory.getLogger(this.getClass());
 
