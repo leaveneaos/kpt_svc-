@@ -130,7 +130,12 @@ public class PacketBody {
             item.CatalogShortName=kpspmx.getSpfljc();
             item.CatalogCode=kpspmx.getSpdm();
             item.HasPreferentialPolicy=kpspmx.getYhzcbs();
-            item.PreferentialPolicy=kpspmx.getYhzcmc();
+            if(kpspmx.getYhzcmc()==null){
+                item.PreferentialPolicy="";
+            }else{
+                item.PreferentialPolicy=kpspmx.getYhzcmc();
+            }
+
             if(kpspmx.getLslbz()==null){
                 item.TaxFreeType="";
             }else{
