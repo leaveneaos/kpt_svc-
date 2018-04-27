@@ -51,7 +51,11 @@ public class PacketBody {
         newInvoice.MerchantPhone=kpls.getXfdh();
         newInvoice.MerchantBank=kpls.getXfyh();
         newInvoice.MerchantBankAccount=kpls.getXfyhzh();
-        newInvoice.PurchaserTaxID=kpls.getGfsh();
+        if(kpls.getGfsh()==null){
+            newInvoice.PurchaserTaxID="";
+        }else{
+            newInvoice.PurchaserTaxID=kpls.getGfsh();
+        }
         newInvoice.PurchaserName=kpls.getGfmc();
         newInvoice.PurchaserPhone=kpls.getGfdh();
         newInvoice.PurchaserMobile=jyls.getGfsjh();
@@ -88,7 +92,11 @@ public class PacketBody {
         newInvoice.OriginInvoiceCode=kpls.getHzyfpdm();
         newInvoice.OriginInvoiceNum=kpls.getHzyfphm();
         newInvoice.Payee=kpls.getSkr();
-        newInvoice.Remarks=kpls.getBz();
+        if(kpls.getBz()==null){
+            newInvoice.Remarks="";
+        }else{
+            newInvoice.Remarks=kpls.getBz();
+        }
         newInvoice.Reviewer=kpls.getFhr();
         newInvoice.TotalAmount=kpls.getJshj().toString();
         newInvoice.TotalAmountTaxExcluded=kpls.getHjje().toString();
