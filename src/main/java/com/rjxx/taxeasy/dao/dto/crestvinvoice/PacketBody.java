@@ -13,7 +13,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -183,6 +185,18 @@ public class PacketBody {
         deviceState.DeviceKey=skp.getDevicekey();
         System.out.println(JSON.toJSONString(deviceState));
         return AESUtils.aesEncrypt(JSON.toJSONString(deviceState),AppKey);
+    }
+    public String Packet_InputUDiskPassword(Skp skp)throws Exception{
+        Packet.InputUDiskPassword inputUDiskPassword=new Packet().new InputUDiskPassword();
+        inputUDiskPassword.CaPwd=skp.getSkph();
+        inputUDiskPassword.UDiskPwd=skp.getSkpmm();
+        inputUDiskPassword.CaPwd=skp.getZsmm();
+        inputUDiskPassword.TaxDiskPwd="";
+        List UDiskList=new ArrayList();
+        UDiskList.add(inputUDiskPassword);
+        Map  UDiskMap=new HashMap(1);
+        UDiskMap.put("UDiskList",UDiskList);
+        return AESUtils.aesEncrypt(JSON.toJSONString(UDiskMap),skp.getDevicekey());
     }
     /***
      * 解压GZip

@@ -138,6 +138,10 @@ public class Packet {
          * CA 密码
          */
         public String CaPwd;
+        /**
+         * 报税盘密码
+         */
+        public String TaxDiskPwd;
     }
 
     /**

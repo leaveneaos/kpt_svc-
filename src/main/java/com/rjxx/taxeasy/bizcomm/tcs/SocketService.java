@@ -793,6 +793,21 @@ public class SocketService {
     }
 
     /**
+     *  终端装置设置
+     * @param skpid
+     * @return
+     */
+    public String inputUDiskPassword(int skpid) throws Exception{
+        Skp skp=skpService.findOne(skpid);
+        String  InputUDiskPassword= PacketBody.getInstance().Packet_InputUDiskPassword(skp);
+        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skpid),"InputUDiskPassword",InputUDiskPassword,skp,PasswordConfig.AppKey);
+        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+        ServerHandler.sendMessage(Ruquest);
+        return null;
+    }
+
+
+    /**
      *  终端授权
      * @param skpid
      * @return

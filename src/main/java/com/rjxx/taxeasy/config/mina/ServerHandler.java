@@ -192,7 +192,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 kpMap.put("JYM", VerifyCode);
                 // 二维码
                 if(null!=QrCode){
-                    kpMap.put("EWM", QrCode);
+                    kpMap.put("EWM", "");
                 }
                 // 机器编号
                 kpMap.put("JQBH", UDiskSn);
