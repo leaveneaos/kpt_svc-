@@ -799,7 +799,7 @@ public class SocketService {
     public String inputUDiskPassword(int skpid) throws Exception{
         Skp skp=skpService.findOne(skpid);
         String  InputUDiskPassword= PacketBody.getInstance().Packet_InputUDiskPassword(skp);
-        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skpid),"InputUDiskPassword",InputUDiskPassword,skp,PasswordConfig.AppKey);
+        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skpid+1),"InputUDiskPassword",InputUDiskPassword,skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
         ServerHandler.sendMessage(Ruquest);
         return null;
