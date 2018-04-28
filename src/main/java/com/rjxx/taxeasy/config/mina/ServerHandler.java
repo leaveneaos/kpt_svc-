@@ -116,7 +116,6 @@ public class ServerHandler extends IoHandlerAdapter {
         ReceiveTask receiveTask = new ReceiveTask();
         receiveTask.setMsg((String)message);
         receiveTask.setSession(session);
-        logger.info("-------消息---------"+message);
         if (taskExecutor == null) {
             taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
         }
@@ -168,13 +167,21 @@ public class ServerHandler extends IoHandlerAdapter {
                 switch (ReqType){
                     case "DeviceAuth":
                         OnReceive_DeviceAuth(ReqData,ReqType);
+                        break;
+                    case "DeviceState":
+                        OnReceive_DeviceState(ReqData,ReqType);
+                        break;
                     case "DeviceCmd":
                         OnReceive_DeviceCmd(ReqData,ReqType);
+                        break;
                 }
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
+
+
+
         public void setMsg(String msg) {
             this.msg = msg;
         }
@@ -182,6 +189,29 @@ public class ServerHandler extends IoHandlerAdapter {
         public void setSession(IoSession session) {
             this.session = session;
         }
+    }
+    private static String OnReceive_DeviceState(String reqData, String reqType) {
+
+        String ResultCode=null;
+        try {
+            Map DeviceAuthMap=XmltoJson.strJson2Map(reqData);
+            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+            String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
+            ResultCode=DeviceAuthMap.get("ResultCode").toString();
+            String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+            BASE64Decoder decoder = new BASE64Decoder();
+            //DeviceKey=DesUtils.bytesToHexString(decoder.decodeBuffer(DeviceKey)).toUpperCase();
+            //logger.info("------终端密钥--------"+DeviceKey);
+            SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+            Map skpMap =new HashMap(1);
+            skpMap.put("devicesn",DeviceSN);
+            Skp skp= skpService.findOneByParams(skpMap);
+            //skp.setDevicekey(DeviceKey);
+            skpService.save(skp);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultCode;
     }
     private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
