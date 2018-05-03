@@ -28,6 +28,7 @@ import java.util.zip.GZIPOutputStream;
  **/
 public class PacketBody {
 
+
     /**
      * 静态内部类懒汉式单列模式
      */
@@ -208,7 +209,15 @@ public class PacketBody {
         System.out.println(JSON.toJSONString(deviceState));
         return AESUtils.aesEncrypt(JSON.toJSONString(deviceState),AppKey);
     }
+
+    /**
+     * 生成税控装置密码设置请求报文
+     * @param skp
+     * @return
+     * @throws Exception
+     */
     public String Packet_InputUDiskPassword(Skp skp)throws Exception{
+
         Packet.InputUDiskPassword inputUDiskPassword=new Packet().new InputUDiskPassword();
         inputUDiskPassword.UDiskSn=skp.getSkph();
         inputUDiskPassword.UDiskPwd=skp.getSkpmm();
@@ -219,6 +228,90 @@ public class PacketBody {
         Map  UDiskMap=new HashMap(1);
         UDiskMap.put("UDiskList",UDiskList);
         return AESUtils.aesEncrypt(JSON.toJSONString(UDiskMap),skp.getDevicekey());
+    }
+
+    /**
+     * 生成发票作废请求报文
+     * @param kpls
+     * @return
+     */
+    public String Packet_InvalidateInvoice(Kpls kpls,Skp skp) throws Exception{
+        Packet.InvalidateInvoice invalidateInvoice=new Packet().new InvalidateInvoice();
+        invalidateInvoice.InvalidateType="1";
+        String fpzldm="";
+        if("01".equals(kpls.getFpczlxdm())){
+            fpzldm="1";
+        }else if("02".equals(kpls.getFpzldm())){
+            fpzldm="2";
+        }else if("12".equals(kpls.getFpzldm())){
+            fpzldm="4";
+        }else if("03".equals(kpls.getFpzldm())){
+            fpzldm="3";
+        }
+        invalidateInvoice.InvoiceType=fpzldm;
+        invalidateInvoice.InvoiceCode=kpls.getFpdm();
+        invalidateInvoice.InvoiceNum=kpls.getFphm();
+        String zfr="";
+        if(null==kpls.getZfr()){
+               zfr=kpls.getKpr();
+        }
+        invalidateInvoice.Operator=zfr;
+        return AESUtils.aesEncrypt(JSON.toJSONString(invalidateInvoice),skp.getDevicekey());
+    }
+
+    /**
+     * 生成查询发票上传的请求报文
+     *
+     * @param skp
+     * @return
+     */
+    public String Packet_GetUploadStates(Skp skp) throws Exception {
+        String GetUploadStates="{}";
+        return AESUtils.aesEncrypt(GetUploadStates,skp.getDevicekey());
+    }
+
+    /**
+     * 生成发票上传的请求报文
+     * @param skp
+     * @return
+     * @throws Exception
+     */
+    public String Packet_TriggerUpload(Skp skp)throws  Exception {
+        String TriggerUpload="{}";
+        return AESUtils.aesEncrypt(TriggerUpload,skp.getDevicekey());
+    }
+    public String Packet_GetDeclareTaxStates(Skp skp)throws Exception {
+        String GetDeclareTaxStates="{}";
+        return AESUtils.aesEncrypt(GetDeclareTaxStates,skp.getDevicekey());
+    }
+    public String Packet_TriggerDeclareTax(Skp skp)throws  Exception{
+        String TriggerDeclareTax="{}";
+        return AESUtils.aesEncrypt(TriggerDeclareTax,skp.getDevicekey());
+    }
+    public String Packet_UDiskInfo(Skp skp) throws Exception{
+        String UDiskInfo="{}";
+        return AESUtils.aesEncrypt(UDiskInfo,skp.getDevicekey());
+    }
+    public String Packet_InvoiceControlInfo(Skp skp) throws Exception {
+        String InvoiceControlInfo="{}";
+        return AESUtils.aesEncrypt(InvoiceControlInfo,skp.getDevicekey());
+    }
+    public String Packet_GetCurrentInvoiceInfo(Kpls kpls, Skp skp) throws Exception{
+        Packet.GetCurrentInvoiceInfo getCurrentInvoiceInfo=new Packet().new GetCurrentInvoiceInfo();
+        String fpzldm="";
+        if("01".equals(kpls.getFpczlxdm())){
+            fpzldm="1";
+        }else if("02".equals(kpls.getFpzldm())){
+            fpzldm="2";
+        }else if("12".equals(kpls.getFpzldm())){
+            fpzldm="4";
+        }else if("03".equals(kpls.getFpzldm())){
+            fpzldm="3";
+        }else{
+            fpzldm="200";
+        }
+        getCurrentInvoiceInfo.InvoiceType=fpzldm;
+        return AESUtils.aesEncrypt(JSON.toJSONString(getCurrentInvoiceInfo),skp.getDevicekey());
     }
     /***
      * 解压GZip

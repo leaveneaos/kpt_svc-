@@ -1,172 +1,105 @@
 package com.rjxx.taxeasy.config.mina;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.util.Enumeration;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @ClassName SocketManager
  * @Description* SocketManager
- *   如果管理socket客户端长连接
- *   假设连接在10000以内,可以使用10个concurrenthashmap来进行管理
- *   如果使用的是apache mina或者netty的，socket连接id就不用自己管理，
- *   其内部有实现id的一套管理方法
+ * socket tcp 客户端
  * @Author 许黎明
  * @Date 2018-04-27 10:41
  * @Version 1.0
  **/
 public class SocketManager {
-    /**
-     * 全局字符编码
-     */
-    private static final Charset charset;
-    /**
-     * 数组长度
-     */
-    private static int table_length = 10;
-    /**
-     * 初始id为从1开始
-     */
-    private final static AtomicInteger common_id = new AtomicInteger(1);
-    /**
-     * 在线人数
-     */
-    private final static AtomicInteger onlineCount = new AtomicInteger(0);
+
+    private static Logger logger = LoggerFactory.getLogger(SocketManager.class);
 
     /**
-     * 客户端管理类
+     * socket对象池
      */
-    static ConcurrentHashMap<Integer, Session>[] clients = new ConcurrentHashMap[table_length];
-    static {
-        for (int i = 0; i < table_length; i ++) {
-            clients[i] = new ConcurrentHashMap<>();
+    public static ObjectPool<Socket> op;
+
+    public static String sendMessage( String message) {
+        if (SocketManager.op == null) {
+            createPool();
         }
-        charset = Charset.forName("UTF-8");
-    }
-    /**
-     * socket客户端轻装类
-     */
-    static class Session {
-        /**
-         * id标识
-         */
-        private int id;
-        /**
-         * socket连接
-         */
-        private Socket socket;
-        public Session(Socket socket) {
-            id = common_id.getAndAdd(1);
-            this.socket = socket;
-        }
-        public void close() throws IOException {
-            this.socket.close();
-        }
-        public Integer getId() {
-            return id;
-        }
-        public Socket getSocket() {
-            return socket;
-        }
-    }
-
-    /**
-     * 获取对应的map
-     * @param id
-     * @return
-     */
-    private static ConcurrentHashMap<Integer, Session> getTable (int id) {
-        return clients[id % table_length];
-    }
-
-    /**
-     * 进入一个连接,因为id是均匀增加的，所以连接会均匀分布到10个map中
-     * @param socket
-     */
-    public static Integer online (Socket socket) {
-        Session session = new Session(socket);
-        ConcurrentHashMap<Integer, Session> client = getTable(session.getId());
-        client.put(session.getId(), session);
-        onlineCount.incrementAndGet();
-        return session.getId();
-    }
-
-    /**
-     * 某一个id下线
-     * @param id
-     */
-    public static void offline (int id) throws IOException {
-        Session session = getTable(id).remove(id);
-        if (session != null) {
-            onlineCount.decrementAndGet();
-            session.close();
-        }
-    }
-
-    /**
-     * 这里可以扩展字符编码
-     * @param id
-     * @param message
-     * @throws IOException
-     */
-    public static void sendMessageOne (Integer id, String message) throws IOException {
-        sendMessageOne(id, message.getBytes(charset));
-    }
-
-    public static void sendMessageOne(Integer id, byte[] message) throws IOException {
-        Session session = getTable(id).get(id);
-        if (session != null) {
-            writeMsg(message, session.getSocket());
-        }
-    }
-
-    /**
-     * 千万不要关闭，不然长连接会断开
-     * @param message
-     * @param socket
-     * @throws IOException
-     */
-    private static void writeMsg (byte[] message, Socket socket) throws IOException {
-        OutputStream os = socket.getOutputStream();
-        os.write(message);
-        os.flush();
-    }
-
-    /**
-     * 为一个map下群发消息
-     * @param index
-     */
-    public static void sendMessageOneMap(int index, String message) {
-        ConcurrentHashMap<Integer, Session> client = clients[index];
-        Enumeration<Integer> keys = client.keys();
-        while (keys.hasMoreElements()) {
+        ObjectPool<Socket> op = SocketManager.op;
+        Socket soc = null;
+        boolean sucess = false;
+        try {
             try {
-                writeMsg(message.getBytes(charset), client.get(keys.nextElement()).getSocket());
-            } catch (IOException e) {
-                //可以对异常的连接进行处理，最终清理出离线人员。
+                soc = (Socket)op.borrowObject();
+                sendData(message, soc);
+            }catch (Exception ie) {
+                logger.error("-----socket发送数据失败-----", (Throwable)ie);
+                if (soc != null) {
+                    op.invalidateObject(soc);
+                }
+                soc = (Socket)op.borrowObject();
+                sendData(message, soc);
+            }
+            String str;
+            str = readData(soc);
+            sucess = true;
+            return str;
+        }
+        catch (Exception e) {
+            if (soc != null) {
+                try {
+                    op.invalidateObject(soc);
+                }catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            logger.error("----Socket发送数据失败---", (Throwable)e);
+            return e.getMessage();
+        }
+        finally {
+            if (sucess) {
+                try {
+                    op.returnObject(soc);
+                }
+                catch (Exception e2) {
+                    logger.error("------Socket归还对象失败-----", (Throwable)e2);
+                    e2.printStackTrace();
+                }
             }
         }
     }
 
-    /**
-     * 广播消息
-     * @param message
-     */
-    public static void broadcast(String message) {
-        for (int i = 0; i < table_length; i ++) {
-            sendMessageOneMap(i, message);
+    public static String readData(Socket soc) throws IOException {
+        logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
+        //输入流
+        InputStream is=soc.getInputStream();
+        BufferedReader br=new BufferedReader(new InputStreamReader(is));
+        //接收服务器的相应
+        String reply=null;
+        while(!((reply=br.readLine())==null)){
+            logger.info("接收服务器的信息："+reply);
         }
+        return reply;
+    }
+    public static void sendData(String messsge,Socket soc) throws Exception {
+        logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
+        final OutputStream os = soc.getOutputStream();
+        PrintWriter pw=new PrintWriter(os);
+        pw.write(messsge);
+        pw.flush();
     }
 
-    /**
-     * 获取当前在线人数
-     * @return
-     */
-    public static int currentOnline() {
-        return onlineCount.get();
+
+    public static void createPool() {
+        final GenericObjectPool.Config cfg = new GenericObjectPool.Config();
+        cfg.maxActive = 500;
+        cfg.maxIdle = -1;
+        SocketManager.op = (ObjectPool<Socket>)new GenericObjectPool((PoolableObjectFactory)new PoolFactory(), cfg);
     }
+
 }

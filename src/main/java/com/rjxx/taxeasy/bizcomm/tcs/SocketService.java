@@ -784,7 +784,7 @@ public class SocketService {
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            ServerHandler.sendMessage(Ruquest);
+            ServerHandler.sendSocketMessage(Ruquest);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -792,7 +792,7 @@ public class SocketService {
     }
 
     /**
-     *  终端装置设置
+     *  税控盘密码，证书密码装置设置
      * @param skpid
      * @return
      */
@@ -829,6 +829,181 @@ public class SocketService {
         String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceState",deviceState);
         ServerHandler.sendMessage(Ruquest);
+        return null;
+    }
+
+    /**
+     * 凯盈查询发票
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    public String skInvoiceQuery(String p) throws Exception{
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 凯盈设置销方银行、账号等信息(不包括名称和税号)
+     * @param xfid
+     * @return
+     */
+    public String xfSetConfig(int xfid) {
+        return null;
+    }
+
+    /**
+     * 凯盈发票作废方法
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    public String InvalidateInvoice(String p) throws  Exception{
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            Kpls kpls=kplsService.findOne(kplsh);
+            Jyls jyls=jylsService.findOne(kpls.getDjh());
+            Skp skp=skpService.findOne(kpls.getSkpid());
+            String  InvalidateInvoice= PacketBody.getInstance().Packet_InvalidateInvoice(kpls,skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kpls.getKplsh()),"InvalidateInvoice",InvalidateInvoice,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 凯盈查询发票上传状态
+     * @param skpid
+     * @return
+     */
+    public String GetUploadStates(int skpid) {
+        try {
+            Skp skp=skpService.findOne(skpid);
+            String  GetUploadStates= PacketBody.getInstance().Packet_GetUploadStates(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"GetUploadStates",GetUploadStates,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 凯盈立即上传发票
+     * @param skpid
+     * @return
+     */
+    public String TriggerUpload(int skpid) {
+        try{
+            Skp skp=skpService.findOne(skpid);
+            String  TriggerUpload= PacketBody.getInstance().Packet_TriggerUpload(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"TriggerUpload",TriggerUpload,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+            return null;
+    }
+
+    /**
+     * 凯盈 抄报状态查询
+     * @param skpid
+     * @return
+     */
+    public String GetDeclareTaxStates(int skpid) {
+        try {
+            Skp skp=skpService.findOne(skpid);
+            String  GetDeclareTaxStates= PacketBody.getInstance().Packet_GetDeclareTaxStates(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"GetDeclareTaxStates",GetDeclareTaxStates,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+            return null;
+    }
+
+    /**
+     * 凯盈立即抄报
+     * @param skpid
+     * @return
+     */
+    public String TriggerDeclareTax(int skpid) {
+        try {
+            Skp skp=skpService.findOne(skpid);
+            String  TriggerDeclareTax= PacketBody.getInstance().Packet_TriggerDeclareTax(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"TriggerDeclareTax",TriggerDeclareTax,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取税控装置信息
+     * @param skpid
+     * @return
+     */
+    public String UDiskInfo(int skpid) {
+        try {
+            Skp skp=skpService.findOne(skpid);
+            String  UDiskInfo= PacketBody.getInstance().Packet_UDiskInfo(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"UDiskInfo",UDiskInfo,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String InvoiceControlInfo(int skpid) {
+        try {
+            Skp skp=skpService.findOne(skpid);
+            String  InvoiceControlInfo= PacketBody.getInstance().Packet_InvoiceControlInfo(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"InvoiceControlInfo",InvoiceControlInfo,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String GetCurrentInvoiceInfo(String p) throws Exception{
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            Kpls kpls=kplsService.findOne(kplsh);
+            Jyls jyls=jylsService.findOne(kpls.getDjh());
+            Skp skp=skpService.findOne(kpls.getSkpid());
+            String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(kpls,skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kpls.getKplsh()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return null;
     }
 }
