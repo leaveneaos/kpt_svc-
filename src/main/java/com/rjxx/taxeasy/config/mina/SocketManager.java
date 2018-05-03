@@ -81,14 +81,16 @@ public class SocketManager {
         BufferedReader br=new BufferedReader(new InputStreamReader(is));
         //接收服务器的相应
         String reply=null;
+        String result=null;
         while(!((reply=br.readLine())==null)){
             logger.info("接收服务器的信息："+reply);
+            result=reply;
         }
-        return reply;
+        return result;
     }
     public static void sendData(String messsge,Socket soc) throws Exception {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
-        final OutputStream os = soc.getOutputStream();
+        OutputStream os = soc.getOutputStream();
         PrintWriter pw=new PrintWriter(os);
         pw.write(messsge);
         pw.flush();
