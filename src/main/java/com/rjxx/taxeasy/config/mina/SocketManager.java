@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 
 /**
  * @ClassName SocketManager
@@ -82,16 +81,14 @@ public class SocketManager {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
         //输入流
         InputStream is=soc.getInputStream();
-        final byte[] buf = new byte[4096];
-        byte[] dst = new byte[0];
-        int real = -1;
-        do {
-            real = is.read(buf);
-            final int oldLen = dst.length;
-            dst = Arrays.copyOf(dst, oldLen + real);
-            System.arraycopy(buf, 0, dst, oldLen, real);
-        } while (real != -1 && !checkEnd(dst));
-        return new String(dst, "utf-8");
+        byte[] buf = new byte[4096];
+        int len;
+        String result=null;
+        while ((len = is.read(buf)) != -1) {
+            //注意指定编码格式，发送方和接收方一定要统一，建议使用UTF-8
+            result=new String(buf, 0, len,"UTF-8");
+        }
+        return result;
     }
     private static boolean checkEnd(final byte[] dst) {
         final int pos = dst.length - 1;
