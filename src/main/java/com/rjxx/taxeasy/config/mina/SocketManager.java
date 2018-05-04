@@ -101,10 +101,7 @@ public class SocketManager {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
         OutputStream os = soc.getOutputStream();
         byte[] ba= messsge.getBytes("utf-8");
-        //获得长度
-        int pos=ba.length;
-        byte[] lengthbytes = integerToBytes(pos, 4);
-        os.write(lengthbytes);
+        os.write(ba);
         os.flush();
     }
     public static byte[] integerToBytes(int integer, int len) {

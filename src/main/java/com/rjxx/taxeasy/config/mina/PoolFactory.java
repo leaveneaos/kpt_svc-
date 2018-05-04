@@ -23,7 +23,7 @@ public class PoolFactory implements PoolableObjectFactory<Socket> {
     @Override
     public Socket makeObject() throws Exception {
         Socket socket = new Socket(PasswordConfig.ip, PasswordConfig.port);
-        socket.setSoTimeout(1200000);
+        socket.setSoTimeout(0);
         socket.setKeepAlive(true);
         //设置socket发包缓冲为32k；
         socket.setSendBufferSize(32*1024);
