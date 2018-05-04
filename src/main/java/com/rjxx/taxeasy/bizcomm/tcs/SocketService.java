@@ -784,7 +784,7 @@ public class SocketService {
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            ServerHandler.sendSocketMessage(Ruquest);
+            ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
             e.printStackTrace();
         }
