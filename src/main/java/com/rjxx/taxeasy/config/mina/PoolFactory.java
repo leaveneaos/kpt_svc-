@@ -24,6 +24,14 @@ public class PoolFactory implements PoolableObjectFactory<Socket> {
     public Socket makeObject() throws Exception {
         Socket socket = new Socket(PasswordConfig.ip, PasswordConfig.port);
         socket.setSoTimeout(1200000);
+        socket.setKeepAlive(true);
+        //设置socket发包缓冲为32k；
+        socket.setSendBufferSize(32*1024);
+        //设置socket底层接收缓冲为32k
+        socket.setReceiveBufferSize(32*1024);
+        //关闭Nagle算法.立即发包
+        socket.setTcpNoDelay(true);
+        //socket.
         return socket;
     }
 

@@ -6,8 +6,11 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * @ClassName SocketManager
@@ -78,27 +81,34 @@ public class SocketManager {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
         //输入流
         InputStream is=soc.getInputStream();
-        BufferedReader br=new BufferedReader(new InputStreamReader(is));
-        //接收服务器的相应
-        String reply=null;
-        String result=null;
-        while(!((reply=br.readLine())==null)){
-            logger.info("接收服务器的信息："+reply);
-            result=reply;
-        }
-        return result;
+        final byte[] buf = new byte[4096];
+        byte[] dst = new byte[0];
+        int real = -1;
+        do {
+            real = is.read(buf);
+            final int oldLen = dst.length;
+            dst = Arrays.copyOf(dst, oldLen + real);
+            System.arraycopy(buf, 0, dst, oldLen, real);
+        } while (real != -1 && !checkEnd(dst));
+        return new String(dst, "utf-8");
+    }
+    private static boolean checkEnd(final byte[] dst) {
+        final int pos = dst.length - 1;
+        return dst[pos] == 62 && dst[pos - 1] == 115 && dst[pos - 2] == 115 && dst[pos - 3] == 101 && dst[pos - 4] == 110 && dst[pos - 5] == 105 && dst[pos - 6] == 115 && dst[pos - 7] == 117 && dst[pos - 8] == 98 && dst[pos - 9] == 47 && dst[pos - 10] == 60;
     }
     public static void sendData(String messsge,Socket soc) throws Exception {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
         OutputStream os = soc.getOutputStream();
-        PrintWriter pw=new PrintWriter(os);
-        pw.write(messsge);
-        pw.flush();
+        byte[] ba;
+        int pos;
+        for (ba = messsge.getBytes("utf-8"), pos = ba.length - 1; ba[pos] != 62; --pos) {}
+        os.write(ba, 0, pos + 1);
+        os.flush();
     }
 
 
     public static void createPool() {
-        final GenericObjectPool.Config cfg = new GenericObjectPool.Config();
+        GenericObjectPool.Config cfg = new GenericObjectPool.Config();
         cfg.maxActive = 500;
         cfg.maxIdle = -1;
         SocketManager.op = (ObjectPool<Socket>)new GenericObjectPool((PoolableObjectFactory)new PoolFactory(), cfg);
