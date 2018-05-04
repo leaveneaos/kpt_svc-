@@ -8,6 +8,7 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.filter.keepalive.KeepAliveFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,11 @@ public class SocketConfig {
                 }
             }
         });
+        /**检测每一个连接的IoSession的心跳包，定时进入Idle状态，用一下方法，以上备注不可行**/
+        KeepAliveMessageFactoryImpl kamfi = new KeepAliveMessageFactoryImpl();
+        KeepAliveFilter kaf = new KeepAliveFilter(kamfi);
+        kaf.setRequestInterval(30);
+        nioSocketConnector.getFilterChain().addLast("heart", kaf);
         TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"));
         textLineCodecFactory.setDecoderMaxLineLength(Integer.MAX_VALUE);
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
@@ -79,6 +85,7 @@ public class SocketConfig {
         nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 120);
         // Create Session Configuration
         nioSocketConnector.getSessionConfig().setReuseAddress(true);
+        nioSocketConnector.getSessionConfig().setKeepAlive(true);
         logger.info("Starting Client......" + "------ip----" + ip + "---port---" + port);
         //链接服务端
         // 设置默认访问地址
