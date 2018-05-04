@@ -6,6 +6,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -99,13 +100,21 @@ public class SocketManager {
     public static void sendData(String messsge,Socket soc) throws Exception {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
         OutputStream os = soc.getOutputStream();
-        byte[] ba;
-        int pos;
-        for (ba = messsge.getBytes("utf-8"), pos = ba.length - 1; ba[pos] != 62; --pos) {}
-        os.write(ba, 0, pos + 1);
+        byte[] ba= messsge.getBytes("utf-8");
+        //获得长度
+        int pos=ba.length;
+        byte[] lengthbytes = integerToBytes(pos, 4);
+        os.write(lengthbytes);
         os.flush();
     }
-
+    public static byte[] integerToBytes(int integer, int len) {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        for (int i = 0; i < len; i ++) {
+            bo.write(integer);
+            integer = integer >> 8;
+        }
+        return bo.toByteArray();
+    }
 
     public static void createPool() {
         GenericObjectPool.Config cfg = new GenericObjectPool.Config();
