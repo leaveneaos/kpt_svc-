@@ -485,4 +485,33 @@ public class Packet {
          */
         public String InvoiceQuantity;
     }
+
+    /**
+     *本指令可用于清空绑定列表，使终端可以绑定新的税控装置或纳税人。
+     */
+    public  class  UDiskBinding{
+        /**
+         * 清空列表
+         */
+        public String ClearList;
+    }
+
+    /**
+     * 切换至终端连接的另一个税控装置（不包括报税盘）并重新初始化。
+     */
+    public  class  SwitchUDisk{
+        /**
+         * 切换策略
+         */
+        public String Strategy;
+    }
+    /**
+     * 将终端恢复出厂设置
+     */
+    public  class  FactoryReset {
+        /**
+         * 恢复类型
+         */
+        public String Type;
+    }
 }

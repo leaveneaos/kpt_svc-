@@ -29,6 +29,7 @@ import java.util.zip.GZIPOutputStream;
 public class PacketBody {
 
 
+
     /**
      * 静态内部类懒汉式单列模式
      */
@@ -313,6 +314,50 @@ public class PacketBody {
         getCurrentInvoiceInfo.InvoiceType=fpzldm;
         return AESUtils.aesEncrypt(JSON.toJSONString(getCurrentInvoiceInfo),skp.getDevicekey());
     }
+
+    public String Packet_GetAllInvoiceSections(Skp skp,String InvoiceType) throws Exception{
+        Packet.GetAllInvoiceSections getAllInvoiceSections=new Packet().new GetAllInvoiceSections();
+        getAllInvoiceSections.UDiskNum=skp.getSkph();
+        getAllInvoiceSections.InvoiceType=InvoiceType;
+        return AESUtils.aesEncrypt(JSON.toJSONString(getAllInvoiceSections),skp.getDevicekey());
+
+    }
+
+    public String Packet_InvoiceDistribute(Map map, Skp skp) throws Exception{
+        Packet.InvoiceDistribute invoiceDistribute=new Packet().new InvoiceDistribute();
+        invoiceDistribute.DistributeType=map.get("DistributeType").toString();
+        invoiceDistribute.DstUDiskNum=map.get("DstUDiskNum").toString();
+        invoiceDistribute.InvoiceCode=map.get("InvoiceCode").toString();
+        invoiceDistribute.SrcUDiskNum=map.get("SrcUDiskNum").toString();
+        invoiceDistribute.InvoiceType=map.get("InvoiceType").toString();
+        invoiceDistribute.StartInvoiceNum=map.get("StartInvoiceNum").toString();
+        invoiceDistribute.InvoiceQuantity=map.get("InvoiceQuantity").toString();
+        return AESUtils.aesEncrypt(JSON.toJSONString(invoiceDistribute),skp.getDevicekey());
+    }
+    public String Packet_UDiskBinding(Skp skp) throws Exception{
+
+        Packet.UDiskBinding uDiskBinding=new Packet().new UDiskBinding();
+        uDiskBinding.ClearList="1";
+        return AESUtils.aesEncrypt(JSON.toJSONString(uDiskBinding),skp.getDevicekey());
+    }
+
+    public String Packet_SwitchUDisk(Skp skp) throws Exception{
+        Packet.SwitchUDisk switchUDisk=new Packet().new SwitchUDisk();
+        switchUDisk.Strategy="2";
+        return AESUtils.aesEncrypt(JSON.toJSONString(switchUDisk),skp.getDevicekey());
+    }
+
+    public String Packet_DeviceInfo(Skp skp) throws Exception{
+          String  DeviceInfo="{}";
+        return AESUtils.aesEncrypt(JSON.toJSONString(DeviceInfo),skp.getDevicekey());
+
+    }
+    public String Packet_FactoryReset(Skp skp) throws Exception{
+        Packet.FactoryReset factoryReset=new Packet().new FactoryReset();
+        factoryReset.Type="0";
+        return AESUtils.aesEncrypt(JSON.toJSONString(factoryReset),skp.getDevicekey());
+    }
+
     /***
      * 解压GZip
      *

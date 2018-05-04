@@ -1006,4 +1006,98 @@ public class SocketService {
         }
         return null;
     }
+
+    public String GetAllInvoiceSections(int skpid) {
+        try {
+            Skp skp=skpService.findOne(skpid);
+            String[] kplx=skp.getKplx().split(",");
+            String fpzldm="";
+            for(int i=0;i<kplx.length;i++){
+                if("01".equals(kplx[i])){
+                    fpzldm="1";
+                }else if("02".equals(kplx[i])){
+                    fpzldm="2";
+                }else if("12".equals(kplx[i])){
+                    fpzldm="4";
+                }else if("03".equals(kplx[i])){
+                    fpzldm="3";
+                }
+                String  GetAllInvoiceSections= PacketBody.getInstance().Packet_GetAllInvoiceSections(skp,fpzldm);
+                String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"GetAllInvoiceSections",GetAllInvoiceSections,skp,PasswordConfig.AppKey);
+                String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+                ServerHandler.sendMessage(Ruquest);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String InvoiceDistribute(Map map) {
+
+       try{
+           String skpid=map.get("skpid").toString();
+           Skp skp=skpService.findOne(Integer.valueOf(skpid));
+           String  InvoiceDistribute= PacketBody.getInstance().Packet_InvoiceDistribute(map,skp);
+           String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"InvoiceDistribute",InvoiceDistribute,skp,PasswordConfig.AppKey);
+           String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+           ServerHandler.sendMessage(Ruquest);
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+       return null;
+    }
+
+    public String UDiskBinding(int skpid) {
+        try{
+            Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            String  UDiskBinding= PacketBody.getInstance().Packet_UDiskBinding(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"UDiskBinding",UDiskBinding,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String SwitchUDisk(int skpid) {
+        try{
+            Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            String  SwitchUDisk= PacketBody.getInstance().Packet_SwitchUDisk(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"SwitchUDisk",SwitchUDisk,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String DeviceInfo(int skpid) {
+
+        try{
+            Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            String  DeviceInfo= PacketBody.getInstance().Packet_DeviceInfo(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"DeviceInfo",DeviceInfo,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String FactoryReset(int skpid) {
+        try{
+            Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            String  FactoryReset= PacketBody.getInstance().Packet_FactoryReset(skp);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"FactoryReset",FactoryReset,skp,PasswordConfig.AppKey);
+            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            ServerHandler.sendMessage(Ruquest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
