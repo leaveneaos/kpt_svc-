@@ -106,20 +106,12 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        String kpdid = (String) session.getAttribute("kpdid");
-        if (kpdid != null) {
-            logger.info("kpd:" + kpdid + " " + session + " idle time out!!!");
-        }
-        logger.info("Client will interrupt the connection with the client");
-        session.closeNow();
+
     }
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        String kpdid = (String) session.getAttribute("kpdid");
-        if (kpdid != null) {
-            logger.error("kpd:" + kpdid + " " + session + " exception caught!!!", cause);
-        }
+
     }
 
     /**
