@@ -2,7 +2,6 @@ package com.rjxx.taxeasy.config.mina;
 
 import com.rjxx.utils.StringUtils;
 import org.apache.mina.core.RuntimeIoException;
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -49,26 +48,11 @@ public class SocketConfig {
          * 设置IO处理器
          */
         nioSocketConnector.setHandler(new ServerHandler());
-        nioSocketConnector.getFilterChain().addFirst("reconnection", new IoFilterAdapter() {
+        nioSocketConnector.addListener(new IoListener() {
             @Override
-            public void sessionClosed(NextFilter nextFilter, IoSession ioSession) throws Exception {
-                for (; ; ) {
-                    try {
-                        Thread.sleep(29*000);
-                        ConnectFuture future = nioSocketConnector.connect();
-                        // 等待连接创建成功
-                        future.awaitUninterruptibly();
-                        // 获取会话
-                        ioSession = future.getSession();
-                        SocketSession.getInstance().setSession(ioSession);
-                        if (ioSession.isConnected()) {
-                            logger.info("断线重连[" + nioSocketConnector.getDefaultRemoteAddress().getHostName() + ":" + nioSocketConnector.getDefaultRemoteAddress().getPort() + "]成功");
-                            break;
-                        }
-                    } catch (Exception ex) {
-                        logger.info("重连服务器登录失败,3秒再连接一次:" + ex.getMessage());
-                    }
-                }
+            public void sessionDestroyed(IoSession ioSession) throws Exception {
+                ConnectionThread thread=new ConnectionThread(nioSocketConnector);
+                thread.start();
             }
         });
         TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"));
@@ -95,7 +79,7 @@ public class SocketConfig {
                 logger.error("连接服务端" + ip + ":" + port + "[成功]" + ",,时间:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 break;
             } catch (RuntimeIoException e) {
-                logger.error("连接服务端" + ip + ":" + port + "失败" + ",,时间:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ", 连接MSG异常,请检查MSG端口、IP是否正确,MSG服务是否启动,异常内容:" + e.getMessage(), e);
+                logger.error("连接服务端" + ip + ":" + port + "失败" + ",,时间:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ", 连接服务异常,请检查服务端口、IP是否正确,服务是否启动,异常内容:" + e.getMessage(), e);
                 // 连接失败后,重连间隔2s
                 Thread.sleep(2*000);
             }

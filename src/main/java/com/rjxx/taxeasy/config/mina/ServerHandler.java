@@ -199,7 +199,14 @@ public class ServerHandler extends IoHandlerAdapter {
         switch (OpType){
             case "NewInvoice":
                 OnReceive_NewInvoice(Data,OpType,SeqNumber);
+                break;
+            case "InputUDiskPassword":
+                OnReceive_InputUDiskPassword(Data,OpType,SeqNumber);
+                break;
         }
+    }
+
+    private static void OnReceive_InputUDiskPassword(String data, String opType, String seqNumber) {
     }
 
     private static void OnReceive_NewInvoice(String data, String opType, String seqNumber) {
