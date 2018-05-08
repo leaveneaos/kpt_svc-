@@ -798,11 +798,11 @@ public class FpclService {
                 System.out.println("传入开票流水号:" + key);
             }
             System.out.println("request url=" + url + ", exception, msg=" + e.getMessage());
-            e.printStackTrace();
             Kpls kpls=kplsService.findOne(Integer.parseInt(key));
             kpls.setFpztdm("04");
             kpls.setErrorReason(e.getMessage());
             kplsService.save(kpls);
+            e.printStackTrace();
         } finally {
             if (response != null) {
                 try {
