@@ -1,7 +1,9 @@
 package com.rjxx.taxeasy.dal;
 
 import com.rjxx.comm.mybatis.Pagination;
+import com.rjxx.taxeasy.config.rabbitmq.RabbitmqSend;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
+import com.rjxx.taxeasy.dao.bo.Cszb;
 import com.rjxx.taxeasy.dao.bo.Kpls;
 import com.rjxx.taxeasy.dao.orm.KplsJpaDao;
 import com.rjxx.taxeasy.dao.orm.KplsMapper;
@@ -33,10 +35,16 @@ public class KplsService {
     private KplsMapper kplsMapper;
 
     @Autowired
-    private RabbitmqUtils rabbitmqSend;
+    private RabbitmqUtils rabbitmqUtils;
+
+    @Autowired
+    private RabbitmqSend rabbitmqSend;
 
     @Autowired
     private SkpService skpService;
+
+    @Autowired
+    private CszbService cszbService;
 
     public Kpls findOne(int id) {
         return kplsJpaDao.findOne(id);
@@ -49,19 +57,27 @@ public class KplsService {
     @Transactional(rollbackFor = Exception.class)
     public void save(Kpls kpls) {
         kplsJpaDao.save(kpls);
+        Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "kpfs");
+
         if ("04".equals(kpls.getFpztdm())) {
-            /**
-             * 如果状态是04，发送的mq中
-             */
-            try {
-                String sksbh = skpService.findOne(kpls.getSkpid()).getSkph();
-                if(!"".equals(sksbh)&&null!=sksbh){
-                    rabbitmqSend.sendMsg(sksbh, kpls.getFpzldm(), kpls.getKplsh() + "");
-                }else{
-                    rabbitmqSend.sendMsg(skpService.findOne(kpls.getSkpid()).getId().toString(), kpls.getFpzldm(), kpls.getKplsh() + "");
+            if(cszb.getCsz().equals("01")) {
+                //如果状态是04，发送的mq中
+                try {
+                    String sksbh = skpService.findOne(kpls.getSkpid()).getSkph();
+                    if(!"".equals(sksbh)&&null!=sksbh){
+                        rabbitmqUtils.sendMsg(sksbh, kpls.getFpzldm(), kpls.getKplsh() + "");
+                    }else{
+                        rabbitmqUtils.sendMsg(skpService.findOne(kpls.getSkpid()).getId().toString(), kpls.getFpzldm(), kpls.getKplsh() + "");
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("发送队列失败，请联系管理员");
                 }
-            } catch (Exception e) {
-                throw new RuntimeException("发送队列失败，请联系管理员");
+            }else if(cszb.getCsz().equals("03")){
+                try {
+                    rabbitmqSend.send(kpls.getKplsh() + "");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -71,15 +87,13 @@ public class KplsService {
         kplsJpaDao.save(kplsList);
         for (Kpls kpls : kplsList) {
             if ("04".equals(kpls.getFpztdm())) {
-                /**
-                 * 如果状态是04，发送的mq中
-                 */
+                //如果状态是04，发送的mq中
                 try {
                     String sksbh = skpService.findOne(kpls.getSkpid()).getSkph();
                     if(!"".equals(sksbh)&&null!=sksbh){
-                        rabbitmqSend.sendMsg(sksbh, kpls.getFpzldm(), kpls.getKplsh() + "");
+                        rabbitmqUtils.sendMsg(sksbh, kpls.getFpzldm(), kpls.getKplsh() + "");
                     }else{
-                        rabbitmqSend.sendMsg(skpService.findOne(kpls.getSkpid()).getId().toString(), kpls.getFpzldm(), kpls.getKplsh() + "");
+                        rabbitmqUtils.sendMsg(skpService.findOne(kpls.getSkpid()).getId().toString(), kpls.getFpzldm(), kpls.getKplsh() + "");
                     }
                 } catch (Exception e) {
                     throw new RuntimeException("发送队列失败，请联系管理员");
