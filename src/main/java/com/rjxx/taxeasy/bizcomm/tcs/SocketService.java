@@ -29,6 +29,7 @@ import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,8 @@ public class SocketService {
 
     @Autowired
     private SpbmService spbmService;
+    @Autowired
+    private SeqnumberService seqnumberService;
 
 
 
@@ -766,6 +769,19 @@ public class SocketService {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
+            Map seqnumberMap=new HashMap();
+            seqnumberMap.put("jylsh",kplsh);
+            Seqnumber seqnumber=seqnumberService.findOneByParams(seqnumberMap);
+            if(seqnumber!=null){
+                seqnumber.setSeqnumber(seqnumber.getSeqnumber()+1);
+                seqnumber.setXgsj(new Date());
+            }else{
+
+                seqnumber=new Seqnumber();
+                seqnumber.setJylsh(String.valueOf(kplsh));
+                seqnumber.setOptype("NewInvoice");
+                seqnumber.setOptypemc("开具发票业务");
+            }
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Map params = new HashMap();

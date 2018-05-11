@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * 由GenJavaCode类自动生成
  * <p>
- * Fri May 11 11:55:56 CST 2018
+ * Fri May 11 14:40:00 CST 2018
  *
  * @administrator
  */ 

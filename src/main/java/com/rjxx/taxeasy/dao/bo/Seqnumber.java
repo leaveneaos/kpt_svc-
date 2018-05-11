@@ -1,31 +1,27 @@
 package com.rjxx.taxeasy.dao.bo;
 
-import java.util.Date;
-import javax.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-import com.rjxx.comm.json.JsonDateFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.rjxx.comm.json.JsonDatetimeFormat;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
 import java.io.Serializable;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Date;
 /**
  * t_seqnumber 实体类
  * 由GenEntityMysql类自动生成
- * Fri May 11 11:55:50 CST 2018
+ * Fri May 11 14:39:37 CST 2018
  * @administrator
  */ 
 @Entity
 @Table(name="t_seqnumber")
 public class Seqnumber  implements Serializable {
 
-@Id
-@GeneratedValue(strategy=GenerationType.IDENTITY)
-	protected Integer id;
-
 /**
- * 凯盈交易流水号每次加一
- */ 
-@Column(name="seqnumber")
+ * 凯盈交易流水号自动递增
+ */
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer seqnumber;
 
 /**
@@ -68,14 +64,6 @@ public class Seqnumber  implements Serializable {
 @Column(name="optypemc")
 	protected String optypemc;
 
-
-	public Integer getId(){
-		return id;
-	}
-
-	public void setId(Integer id){
-		this.id=id;
-	}
 
 	public Integer getSeqnumber(){
 		return seqnumber;
