@@ -4,8 +4,10 @@ import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.dal.KplsService;
+import com.rjxx.taxeasy.dal.SeqnumberService;
 import com.rjxx.taxeasy.dal.SkpService;
 import com.rjxx.taxeasy.dao.bo.Kpls;
+import com.rjxx.taxeasy.dao.bo.Seqnumber;
 import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.utils.AESUtils;
@@ -184,22 +186,30 @@ public class ServerHandler extends IoHandlerAdapter {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
         String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString();
         String SeqNumber=DeviceCmdMap.get("SeqNumber").toString();
-        KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
-        SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-        Kpls kpls=kplsService.findOne(Integer.valueOf(SeqNumber));
-        Skp skp=skpService.findOne(kpls.getSkpid());
+        String OpType=DeviceCmdMap.get("OpType").toString();
         String ZipType=DeviceCmdMap.get("ZipType").toString();
         String EncryptType=DeviceCmdMap.get("EncryptType").toString();
         String DeviceSN=DeviceCmdMap.get("DeviceSN").toString();
         String UserID=DeviceCmdMap.get("UserID").toString();
-        String OpType=DeviceCmdMap.get("OpType").toString();
+        KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
+        SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+        SeqnumberService seqnumberService = ApplicationContextUtils.getBean(SeqnumberService.class);
+        Seqnumber seqNumber=seqnumberService.findOne(Integer.valueOf(SeqNumber));
+        Kpls kpls=null;
+        Skp skp=null;
+        if(("GetCurrentInvoiceInfo").equals(OpType)||"InvalidateInvoice".equals(OpType)||"NewInvoice".equals(OpType)){
+             kpls=kplsService.findOne(Integer.valueOf(seqNumber.getJylsh()));
+             skp=skpService.findOne(kpls.getSkpid());
+        }else{
+            skp=skpService.findOne(Integer.valueOf(seqNumber.getJylsh()));
+        }
         String Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
         switch (OpType){
             case "NewInvoice":
-                OnReceive_NewInvoice(Data,OpType,SeqNumber);
+                OnReceive_NewInvoice(Data,OpType,kpls.getKplsh().toString());
                 break;
             case "InputUDiskPassword":
-                OnReceive_InputUDiskPassword(Data,OpType,SeqNumber);
+                OnReceive_InputUDiskPassword(Data,OpType,skp.getId().toString());
                 break;
         }
     }
