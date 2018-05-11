@@ -166,12 +166,11 @@ public class ServerHandler extends IoHandlerAdapter {
         String ResultCode=null;
         try {
             Map DeviceAuthMap=XmltoJson.strJson2Map(reqData);
-            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
-            String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+            String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
             BASE64Decoder decoder = new BASE64Decoder();
-
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
             Map skpMap =new HashMap(1);
             skpMap.put("devicesn",DeviceSN);
