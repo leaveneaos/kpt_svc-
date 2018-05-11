@@ -769,19 +769,14 @@ public class SocketService {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
-            Map seqnumberMap=new HashMap();
-            seqnumberMap.put("jylsh",kplsh);
-            Seqnumber seqnumber=seqnumberService.findOneByParams(seqnumberMap);
-            if(seqnumber!=null){
-                seqnumber.setSeqnumber(seqnumber.getSeqnumber()+1);
-                seqnumber.setXgsj(new Date());
-            }else{
-
-                seqnumber=new Seqnumber();
-                seqnumber.setJylsh(String.valueOf(kplsh));
-                seqnumber.setOptype("NewInvoice");
-                seqnumber.setOptypemc("开具发票业务");
-            }
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(kplsh));
+            seqnumber.setOptype("NewInvoice");
+            seqnumber.setOptypemc("开具发票业务");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Map params = new HashMap();
@@ -798,7 +793,7 @@ public class SocketService {
             Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
             String spbmbbh = "";
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kplsh),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumber.getSeqnumber().toString(),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -814,8 +809,16 @@ public class SocketService {
      */
     public String inputUDiskPassword(int skpid) throws Exception{
         Skp skp=skpService.findOne(skpid);
+        Seqnumber  seqnumber=new Seqnumber();
+        seqnumber.setJylsh(String.valueOf(skpid));
+        seqnumber.setOptype("InputUDiskPassword");
+        seqnumber.setOptypemc("初始化税控盘密码");
+        seqnumber.setXgsj(new Date());
+        seqnumber.setLrsj(new Date());
+        seqnumber.setYxbz(1);
+        seqnumberService.save(seqnumber);
         String  InputUDiskPassword= PacketBody.getInstance().Packet_InputUDiskPassword(skp);
-        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skpid+2),"InputUDiskPassword",InputUDiskPassword,skp,PasswordConfig.AppKey);
+        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumber.getSeqnumber().toString(),"InputUDiskPassword",InputUDiskPassword,skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
         ServerHandler.sendMessage(Ruquest);
         return null;
@@ -829,6 +832,14 @@ public class SocketService {
      */
     public String deviceAuth(int skpid) throws Exception{
         Skp skp=skpService.findOne(skpid);
+        Seqnumber  seqnumber=new Seqnumber();
+        seqnumber.setJylsh(String.valueOf(skpid));
+        seqnumber.setOptype("DeviceAuth");
+        seqnumber.setOptypemc("终端盒子授权");
+        seqnumber.setXgsj(new Date());
+        seqnumber.setLrsj(new Date());
+        seqnumber.setYxbz(1);
+        seqnumberService.save(seqnumber);
         String deviceAuth=PacketBody.getInstance().Packet_DeviceAuth(skp,PasswordConfig.AppKey);
         String Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceAuth",deviceAuth);
         ServerHandler.sendMessage(Ruquest);
@@ -842,6 +853,14 @@ public class SocketService {
      */
     public String deviceState(int skpid) throws Exception{
         Skp skp=skpService.findOne(skpid);
+        Seqnumber  seqnumber=new Seqnumber();
+        seqnumber.setJylsh(String.valueOf(skpid));
+        seqnumber.setOptype("DeviceState");
+        seqnumber.setOptypemc("终端盒子在线状态");
+        seqnumber.setXgsj(new Date());
+        seqnumber.setLrsj(new Date());
+        seqnumber.setYxbz(1);
+        seqnumberService.save(seqnumber);
         String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceState",deviceState);
         ServerHandler.sendMessage(Ruquest);
@@ -887,11 +906,19 @@ public class SocketService {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(kplsh));
+            seqnumber.setOptype("InvalidateInvoice");
+            seqnumber.setOptypemc("凯盈发票作废");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Skp skp=skpService.findOne(kpls.getSkpid());
             String  InvalidateInvoice= PacketBody.getInstance().Packet_InvalidateInvoice(kpls,skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kpls.getKplsh()),"InvalidateInvoice",InvalidateInvoice,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvalidateInvoice",InvalidateInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -908,8 +935,16 @@ public class SocketService {
     public String GetUploadStates(int skpid) {
         try {
             Skp skp=skpService.findOne(skpid);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("GetUploadStates");
+            seqnumber.setOptypemc("凯盈查询发票上传状态");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  GetUploadStates= PacketBody.getInstance().Packet_GetUploadStates(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"GetUploadStates",GetUploadStates,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetUploadStates",GetUploadStates,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -926,8 +961,16 @@ public class SocketService {
     public String TriggerUpload(int skpid) {
         try{
             Skp skp=skpService.findOne(skpid);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("TriggerUpload");
+            seqnumber.setOptypemc("凯盈立即上传发票");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  TriggerUpload= PacketBody.getInstance().Packet_TriggerUpload(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"TriggerUpload",TriggerUpload,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"TriggerUpload",TriggerUpload,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -944,8 +987,16 @@ public class SocketService {
     public String GetDeclareTaxStates(int skpid) {
         try {
             Skp skp=skpService.findOne(skpid);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("GetDeclareTaxStates");
+            seqnumber.setOptypemc("凯盈盒子抄报状态查询");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  GetDeclareTaxStates= PacketBody.getInstance().Packet_GetDeclareTaxStates(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"GetDeclareTaxStates",GetDeclareTaxStates,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetDeclareTaxStates",GetDeclareTaxStates,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -962,8 +1013,16 @@ public class SocketService {
     public String TriggerDeclareTax(int skpid) {
         try {
             Skp skp=skpService.findOne(skpid);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("TriggerDeclareTax");
+            seqnumber.setOptypemc("凯盈立即抄报");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  TriggerDeclareTax= PacketBody.getInstance().Packet_TriggerDeclareTax(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"TriggerDeclareTax",TriggerDeclareTax,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"TriggerDeclareTax",TriggerDeclareTax,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -980,8 +1039,16 @@ public class SocketService {
     public String UDiskInfo(int skpid) {
         try {
             Skp skp=skpService.findOne(skpid);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("UDiskInfo");
+            seqnumber.setOptypemc("获取税控装置信息");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  UDiskInfo= PacketBody.getInstance().Packet_UDiskInfo(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"UDiskInfo",UDiskInfo,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"UDiskInfo",UDiskInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -993,8 +1060,16 @@ public class SocketService {
     public String InvoiceControlInfo(int skpid) {
         try {
             Skp skp=skpService.findOne(skpid);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("InvoiceControlInfo");
+            seqnumber.setOptypemc("监控管理信息");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  InvoiceControlInfo= PacketBody.getInstance().Packet_InvoiceControlInfo(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"InvoiceControlInfo",InvoiceControlInfo,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvoiceControlInfo",InvoiceControlInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -1010,11 +1085,19 @@ public class SocketService {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(kplsh));
+            seqnumber.setOptype("GetCurrentInvoiceInfo");
+            seqnumber.setOptypemc("获取当前发票信息");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Skp skp=skpService.findOne(kpls.getSkpid());
             String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(kpls,skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(kpls.getKplsh()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -1038,8 +1121,16 @@ public class SocketService {
                 }else if("03".equals(kplx[i])){
                     fpzldm="3";
                 }
+                Seqnumber  seqnumber=new Seqnumber();
+                seqnumber.setJylsh(String.valueOf(skpid));
+                seqnumber.setOptype("GetAllInvoiceSections");
+                seqnumber.setOptypemc("获取发票段信息");
+                seqnumber.setXgsj(new Date());
+                seqnumber.setLrsj(new Date());
+                seqnumber.setYxbz(1);
+                seqnumberService.save(seqnumber);
                 String  GetAllInvoiceSections= PacketBody.getInstance().Packet_GetAllInvoiceSections(skp,fpzldm);
-                String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"GetAllInvoiceSections",GetAllInvoiceSections,skp,PasswordConfig.AppKey);
+                String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetAllInvoiceSections",GetAllInvoiceSections,skp,PasswordConfig.AppKey);
                 String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
                 ServerHandler.sendMessage(Ruquest);
             }
@@ -1054,8 +1145,16 @@ public class SocketService {
        try{
            String skpid=map.get("skpid").toString();
            Skp skp=skpService.findOne(Integer.valueOf(skpid));
+           Seqnumber  seqnumber=new Seqnumber();
+           seqnumber.setJylsh(String.valueOf(skpid));
+           seqnumber.setOptype("InvoiceDistribute");
+           seqnumber.setOptypemc("发票分发回收");
+           seqnumber.setXgsj(new Date());
+           seqnumber.setLrsj(new Date());
+           seqnumber.setYxbz(1);
+           seqnumberService.save(seqnumber);
            String  InvoiceDistribute= PacketBody.getInstance().Packet_InvoiceDistribute(map,skp);
-           String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"InvoiceDistribute",InvoiceDistribute,skp,PasswordConfig.AppKey);
+           String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvoiceDistribute",InvoiceDistribute,skp,PasswordConfig.AppKey);
            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
            ServerHandler.sendMessage(Ruquest);
        }catch (Exception e){
@@ -1067,8 +1166,16 @@ public class SocketService {
     public String UDiskBinding(int skpid) {
         try{
             Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("UDiskBinding");
+            seqnumber.setOptypemc("税控装置绑定");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  UDiskBinding= PacketBody.getInstance().Packet_UDiskBinding(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"UDiskBinding",UDiskBinding,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"UDiskBinding",UDiskBinding,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -1080,8 +1187,16 @@ public class SocketService {
     public String SwitchUDisk(int skpid) {
         try{
             Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("SwitchUDisk");
+            seqnumber.setOptypemc("切换税控装置");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  SwitchUDisk= PacketBody.getInstance().Packet_SwitchUDisk(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"SwitchUDisk",SwitchUDisk,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"SwitchUDisk",SwitchUDisk,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -1094,8 +1209,16 @@ public class SocketService {
 
         try{
             Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("DeviceInfo");
+            seqnumber.setOptypemc("设备信息");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  DeviceInfo= PacketBody.getInstance().Packet_DeviceInfo(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"DeviceInfo",DeviceInfo,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"DeviceInfo",DeviceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
@@ -1107,8 +1230,16 @@ public class SocketService {
     public String FactoryReset(int skpid) {
         try{
             Skp skp=skpService.findOne(Integer.valueOf(skpid));
+            Seqnumber  seqnumber=new Seqnumber();
+            seqnumber.setJylsh(String.valueOf(skpid));
+            seqnumber.setOptype("FactoryReset");
+            seqnumber.setOptypemc("恢复出厂设置");
+            seqnumber.setXgsj(new Date());
+            seqnumber.setLrsj(new Date());
+            seqnumber.setYxbz(1);
+            seqnumberService.save(seqnumber);
             String  FactoryReset= PacketBody.getInstance().Packet_FactoryReset(skp);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(skp.getId()),"FactoryReset",FactoryReset,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"FactoryReset",FactoryReset,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             ServerHandler.sendMessage(Ruquest);
         }catch (Exception e){
