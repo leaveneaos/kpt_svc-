@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.config.mina;
 
+import com.alibaba.fastjson.JSON;
 import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
@@ -12,6 +13,7 @@ import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
+import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmltoJson;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -24,6 +26,7 @@ import sun.misc.BASE64Decoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *@ClassName SocketService
@@ -37,17 +40,37 @@ public class ServerHandler extends IoHandlerAdapter {
 
 
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+
+    private static Map<String, SocketRequest> cachedRequestMap = new ConcurrentHashMap<>();
+
     /**
      * 线程池执行任务
      */
     private static ThreadPoolTaskExecutor taskExecutor = null;
+
     /**
      * 发送消息
+     * @param commandId
      * @param message
+     * @param wait
+     * @param timeout
      */
-    public static void sendMessage( Object message) {
+    public static String sendMessage(String commandId, Object message,boolean wait, long timeout)throws Exception {
         IoSession session=SocketSession.getInstance().getSession();
         sendMessage(session,message);
+        if (wait && timeout > 0) {
+            SocketRequest socketRequest = new SocketRequest();
+            socketRequest.setCommandId(commandId);
+            cachedRequestMap.put(commandId, socketRequest);
+            synchronized (socketRequest) {
+                socketRequest.wait(timeout);
+            }
+            if (socketRequest.getException() != null) {
+                throw socketRequest.getException();
+            }
+            return socketRequest.getReturnMessage();
+        }
+        return null;
     }
 
     /**
@@ -161,13 +184,18 @@ public class ServerHandler extends IoHandlerAdapter {
             this.session = session;
         }
     }
+
     private static String OnReceive_DeviceState(String reqData, String reqType) {
 
         String ResultCode=null;
+        Map DeviceAuthMap=null;
         try {
-            Map DeviceAuthMap=XmltoJson.strJson2Map(reqData);
+            DeviceAuthMap=XmltoJson.strJson2Map(reqData);
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+            if(!"0".equals(ResultCode)){
+               return JSON.toJSONString(DeviceAuthMap);
+            }
             String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
             String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
             BASE64Decoder decoder = new BASE64Decoder();
@@ -176,12 +204,27 @@ public class ServerHandler extends IoHandlerAdapter {
             skpMap.put("devicesn",DeviceSN);
             Skp skp= skpService.findOneByParams(skpMap);
             skpService.save(skp);
+            //存在commanId，需要唤醒原来的线程
+            if (StringUtils.isNotBlank(reqData)) {
+                SocketRequest socketRequest = cachedRequestMap.remove(reqType);
+                if (socketRequest != null) {
+                    if (StringUtils.isNotBlank(reqData)) {
+                        socketRequest.setReturnMessage(reqData);
+                    } else {
+                        socketRequest.setReturnMessage("");
+                    }
+                    synchronized (socketRequest) {
+                        socketRequest.notifyAll();
+                    }
+                } else {
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return ResultCode;
+        return JSON.toJSONString(DeviceAuthMap);
     }
-    private static void OnReceive_DeviceCmd(String reqData, String reqType) {
+    private static String OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
         String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString();
         String SeqNumber=DeviceCmdMap.get("SeqNumber").toString();
@@ -211,6 +254,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 OnReceive_InputUDiskPassword(Data,OpType,skp.getId().toString());
                 break;
         }
+        return null;
     }
 
     private static void OnReceive_InputUDiskPassword(String data, String opType, String seqNumber) {
@@ -295,6 +339,21 @@ public class ServerHandler extends IoHandlerAdapter {
             Skp skp= skpService.findOneByParams(skpMap);
             skp.setDevicekey(DeviceKey);
             skpService.save(skp);
+            //存在commanId，需要唤醒原来的线程
+            if (StringUtils.isNotBlank(ReqData)) {
+                SocketRequest socketRequest = cachedRequestMap.remove(ReqType);
+                if (socketRequest != null) {
+                    if (StringUtils.isNotBlank(ReqData)) {
+                        socketRequest.setReturnMessage(ReqData);
+                    } else {
+                        socketRequest.setReturnMessage("");
+                    }
+                    synchronized (socketRequest) {
+                        socketRequest.notifyAll();
+                    }
+                } else {
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
