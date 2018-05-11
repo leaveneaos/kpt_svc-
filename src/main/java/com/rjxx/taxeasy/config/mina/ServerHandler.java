@@ -185,7 +185,7 @@ public class ServerHandler extends IoHandlerAdapter {
         }
     }
 
-    private static String OnReceive_DeviceState(String reqData, String reqType) {
+    private static void OnReceive_DeviceState(String reqData, String reqType) {
 
         String ResultCode=null;
         Map DeviceAuthMap=null;
@@ -193,38 +193,36 @@ public class ServerHandler extends IoHandlerAdapter {
             DeviceAuthMap=XmltoJson.strJson2Map(reqData);
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
-            if(!"0".equals(ResultCode)){
-               return JSON.toJSONString(DeviceAuthMap);
-            }
-            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
-            String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
-            BASE64Decoder decoder = new BASE64Decoder();
-            SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-            Map skpMap =new HashMap(1);
-            skpMap.put("devicesn",DeviceSN);
-            Skp skp= skpService.findOneByParams(skpMap);
-            skpService.save(skp);
-            //存在commanId，需要唤醒原来的线程
-            if (StringUtils.isNotBlank(reqData)) {
-                SocketRequest socketRequest = cachedRequestMap.remove(reqType);
-                if (socketRequest != null) {
-                    if (StringUtils.isNotBlank(reqData)) {
-                        socketRequest.setReturnMessage(reqData);
+            if("0".equals(ResultCode)){
+                String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+                String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
+                BASE64Decoder decoder = new BASE64Decoder();
+                SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+                Map skpMap =new HashMap(1);
+                skpMap.put("devicesn",DeviceSN);
+                Skp skp= skpService.findOneByParams(skpMap);
+                skpService.save(skp);
+                //存在commanId，需要唤醒原来的线程
+                if (StringUtils.isNotBlank(reqData)) {
+                    SocketRequest socketRequest = cachedRequestMap.remove(reqType);
+                    if (socketRequest != null) {
+                        if (StringUtils.isNotBlank(reqData)) {
+                            socketRequest.setReturnMessage(reqData);
+                        } else {
+                            socketRequest.setReturnMessage("");
+                        }
+                        synchronized (socketRequest) {
+                            socketRequest.notifyAll();
+                        }
                     } else {
-                        socketRequest.setReturnMessage("");
                     }
-                    synchronized (socketRequest) {
-                        socketRequest.notifyAll();
-                    }
-                } else {
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return JSON.toJSONString(DeviceAuthMap);
     }
-    private static String OnReceive_DeviceCmd(String reqData, String reqType) {
+    private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
         String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString();
         String SeqNumber=DeviceCmdMap.get("SeqNumber").toString();
@@ -321,7 +319,7 @@ public class ServerHandler extends IoHandlerAdapter {
         }
     }
 
-    public static String OnReceive_DeviceAuth(String ReqData,String ReqType)throws Exception{
+    public static void OnReceive_DeviceAuth(String ReqData,String ReqType)throws Exception{
 
         String ResultCode=null;
         try {
@@ -357,7 +355,6 @@ public class ServerHandler extends IoHandlerAdapter {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return ResultCode;
     }
 
     public static void main(String[] args) throws Exception{
