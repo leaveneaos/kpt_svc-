@@ -1,6 +1,5 @@
 package com.rjxx.taxeasy.config.mina;
 
-import com.alibaba.fastjson.JSON;
 import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
@@ -252,7 +251,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 OnReceive_InputUDiskPassword(Data,OpType,skp.getId().toString());
                 break;
         }
-        return null;
     }
 
     private static void OnReceive_InputUDiskPassword(String data, String opType, String seqNumber) {
