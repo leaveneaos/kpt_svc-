@@ -1,16 +1,17 @@
 package com.rjxx.taxeasy.dao.bo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Date;
+import javax.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+import com.rjxx.comm.json.JsonDateFormat;
 import com.rjxx.comm.json.JsonDatetimeFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * t_seqnumber 实体类
  * 由GenEntityMysql类自动生成
- * Fri May 11 11:38:47 CST 2018
+ * Fri May 11 11:55:50 CST 2018
  * @administrator
  */ 
 @Entity
@@ -39,11 +40,17 @@ public class Seqnumber  implements Serializable {
 @Column(name="optype")
 	protected String optype;
 
+/**
+ * 录入时间
+ */ 
 @Column(name="lrsj")
 @JsonSerialize(using = JsonDatetimeFormat.class)
 @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	protected Date lrsj;
 
+/**
+ * 修改时间
+ */ 
 @Column(name="xgsj")
 @JsonSerialize(using = JsonDatetimeFormat.class)
 @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -54,6 +61,12 @@ public class Seqnumber  implements Serializable {
  */ 
 @Column(name="yxbz")
 	protected Integer yxbz;
+
+/**
+ * 业务类型名称
+ */ 
+@Column(name="optypemc")
+	protected String optypemc;
 
 
 	public Integer getId(){
@@ -110,6 +123,14 @@ public class Seqnumber  implements Serializable {
 
 	public void setYxbz(Integer yxbz){
 		this.yxbz=yxbz;
+	}
+
+	public String getOptypemc(){
+		return optypemc;
+	}
+
+	public void setOptypemc(String optypemc){
+		this.optypemc=optypemc;
 	}
 
 }
