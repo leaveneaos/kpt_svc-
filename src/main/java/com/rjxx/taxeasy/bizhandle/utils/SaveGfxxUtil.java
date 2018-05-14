@@ -1,7 +1,8 @@
 package com.rjxx.taxeasy.bizhandle.utils;
 
-import com.rjxx.taxeasy.dao.GfxxJpaDao;
-import com.rjxx.taxeasy.domains.Gfxx;
+
+import com.rjxx.taxeasy.dao.bo.Gfxx;
+import com.rjxx.taxeasy.dao.orm.GfxxJpaDao;
 import com.rjxx.utils.ChinaInitial;
 import com.rjxx.utils.StringUtils;
 import org.slf4j.Logger;
