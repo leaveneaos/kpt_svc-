@@ -172,9 +172,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 e.printStackTrace();
             }
         }
-
-
-
         public void setMsg(String msg) {
             this.msg = msg;
         }
@@ -201,19 +198,18 @@ public class ServerHandler extends IoHandlerAdapter {
                 skpMap.put("devicesn",DeviceSN);
                 Skp skp= skpService.findOneByParams(skpMap);
                 skpService.save(skp);
-                //存在commanId，需要唤醒原来的线程
-                if (StringUtils.isNotBlank(reqData)) {
-                    SocketRequest socketRequest = cachedRequestMap.remove(reqType);
-                    if (socketRequest != null) {
-                        if (StringUtils.isNotBlank(reqData)) {
-                            socketRequest.setReturnMessage(reqData);
-                        } else {
-                            socketRequest.setReturnMessage("");
-                        }
-                        synchronized (socketRequest) {
-                            socketRequest.notifyAll();
-                        }
+            }
+            //存在commanId，需要唤醒原来的线程
+            if (StringUtils.isNotBlank(reqType)) {
+                SocketRequest socketRequest = cachedRequestMap.remove(reqType);
+                if (socketRequest != null) {
+                    if (StringUtils.isNotBlank(reqData)) {
+                        socketRequest.setReturnMessage(reqData);
                     } else {
+                        socketRequest.setReturnMessage("");
+                    }
+                    synchronized (socketRequest) {
+                        socketRequest.notifyAll();
                     }
                 }
             }
@@ -322,10 +318,11 @@ public class ServerHandler extends IoHandlerAdapter {
         String ResultCode=null;
         try {
             Map DeviceAuthMap=XmltoJson.strJson2Map(ReqData);
-            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
-            String DeviceKey=DeviceAuthMap.get("DeviceKey").toString();
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+            if("0".equals(ResultCode)){
+            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+            String DeviceKey=DeviceAuthMap.get("DeviceKey").toString();
             BASE64Decoder decoder = new BASE64Decoder();
             DeviceKey=DesUtils.bytesToHexString(decoder.decodeBuffer(DeviceKey)).toUpperCase();
             logger.info("------终端密钥--------"+DeviceKey);
@@ -335,8 +332,9 @@ public class ServerHandler extends IoHandlerAdapter {
             Skp skp= skpService.findOneByParams(skpMap);
             skp.setDevicekey(DeviceKey);
             skpService.save(skp);
+            }
             //存在commanId，需要唤醒原来的线程
-            if (StringUtils.isNotBlank(ReqData)) {
+            if (StringUtils.isNotBlank(ReqType)) {
                 SocketRequest socketRequest = cachedRequestMap.remove(ReqType);
                 if (socketRequest != null) {
                     if (StringUtils.isNotBlank(ReqData)) {
@@ -347,7 +345,6 @@ public class ServerHandler extends IoHandlerAdapter {
                     synchronized (socketRequest) {
                         socketRequest.notifyAll();
                     }
-                } else {
                 }
             }
         }catch (Exception e){
@@ -356,19 +353,12 @@ public class ServerHandler extends IoHandlerAdapter {
     }
 
     public static void main(String[] args) throws Exception{
-
         BASE64Decoder decoder = new BASE64Decoder();
-
         String Appkey="1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA";
         String miwen="LodVKHBP6PfYeYgWr4qeEnSsUVPAaZTCFLkYAQtFTjw=";
         byte[] ReqData=new BASE64Decoder().decodeBuffer(miwen);
         String DeviceKey=DesUtils.bytesToHexString(ReqData).toUpperCase();
         logger.info("-------解密后字符DeviceKey----------"+DeviceKey);
-
-
-
-
-
         //BASE64Decoder decoder = new BASE64Decoder();
        // String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
        // byte[] str2=decoder.decodeBuffer(str);
