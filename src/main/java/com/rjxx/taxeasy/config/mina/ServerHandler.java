@@ -168,6 +168,8 @@ public class ServerHandler extends IoHandlerAdapter {
                     case "DeviceCmd":
                         OnReceive_DeviceCmd(ReqData,ReqType);
                         break;
+                    default:
+                        break;
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -252,6 +254,242 @@ public class ServerHandler extends IoHandlerAdapter {
             case "InvalidateInvoice":
                 OnReceive_InvalidateInvoice(Data,OpType,kpls.getKplsh().toString());
                 break;
+            case "GetUploadStates":
+                OnReceive_GetUploadStates(Data,OpType,skp.getId().toString());
+                break;
+            case "TriggerUpload":
+                OnReceive_TriggerUpload(Data,OpType,skp.getId().toString());
+                break;
+            case "GetDeclareTaxStates":
+                OnReceive_GetDeclareTaxStates(Data,OpType,skp.getId().toString());
+                break;
+            case "TriggerDeclareTax":
+                OnReceive_TriggerDeclareTax(Data,OpType,skp.getId().toString());
+                break;
+            case "UDiskInfo":
+                OnReceive_UDiskInfo(Data,OpType,skp.getId().toString());
+                break;
+            case "InvoiceControlInfo":
+                OnReceive_InvoiceControlInfo(Data,OpType,skp.getId().toString());
+                break;
+            case "GetCurrentInvoiceInfo":
+                OnReceive_GetCurrentInvoiceInfo(Data,OpType,skp.getId().toString());
+                break;
+            case "GetAllInvoiceSections":
+                OnReceive_GetAllInvoiceSections(Data,OpType,skp.getId().toString());
+                break;
+            case "InvoiceDistribute":
+                OnReceive_InvoiceDistribute(Data,OpType,skp.getId().toString());
+                break;
+            case "UDiskBinding":
+                OnReceive_UDiskBinding(Data,OpType,skp.getId().toString());
+                break;
+            case "SwitchUDisk":
+                OnReceive_SwitchUDisk(Data,OpType,skp.getId().toString());
+                break;
+            case "DeviceInfo":
+                OnReceive_DeviceInfo(Data,OpType,skp.getId().toString());
+                break;
+            case "FactoryReset":
+                OnReceive_FactoryReset(Data,OpType,skp.getId().toString());
+                break;
+            default:
+                break;
+        }
+    }
+
+    private static void OnReceive_FactoryReset(String data, String opType, String s) {
+        String ResultCode=null;
+        Map FactoryResetMap=null;
+        try {
+            FactoryResetMap=XmltoJson.strJson2Map(data);
+            ResultCode=FactoryResetMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=FactoryResetMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_DeviceInfo(String data, String opType, String s) {
+        String ResultCode=null;
+        Map DeviceInfoMap=null;
+        try {
+            DeviceInfoMap=XmltoJson.strJson2Map(data);
+            ResultCode=DeviceInfoMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=DeviceInfoMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_SwitchUDisk(String data, String opType, String s) {
+        String ResultCode=null;
+        Map SwitchUDiskMap=null;
+        try {
+            SwitchUDiskMap=XmltoJson.strJson2Map(data);
+            ResultCode=SwitchUDiskMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=SwitchUDiskMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_UDiskBinding(String data, String opType, String s) {
+        String ResultCode=null;
+        Map UDiskBindingMap=null;
+        try {
+            UDiskBindingMap=XmltoJson.strJson2Map(data);
+            ResultCode=UDiskBindingMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=UDiskBindingMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_InvoiceDistribute(String data, String opType, String s) {
+        String ResultCode=null;
+        Map InvoiceDistributeMap=null;
+        try {
+            InvoiceDistributeMap=XmltoJson.strJson2Map(data);
+            ResultCode=InvoiceDistributeMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=InvoiceDistributeMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_GetAllInvoiceSections(String data, String opType, String s) {
+        String ResultCode=null;
+        Map GetAllInvoiceSectionsMap=null;
+        try {
+            GetAllInvoiceSectionsMap=XmltoJson.strJson2Map(data);
+            ResultCode=GetAllInvoiceSectionsMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=GetAllInvoiceSectionsMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_GetCurrentInvoiceInfo(String data, String opType, String s) {
+        String ResultCode=null;
+        Map GetCurrentInvoiceInfoMap=null;
+        try {
+            GetCurrentInvoiceInfoMap=XmltoJson.strJson2Map(data);
+            ResultCode=GetCurrentInvoiceInfoMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=GetCurrentInvoiceInfoMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_InvoiceControlInfo(String data, String opType, String s) {
+        String ResultCode=null;
+        Map InvoiceControlInfoMap=null;
+        try {
+            InvoiceControlInfoMap=XmltoJson.strJson2Map(data);
+            ResultCode=InvoiceControlInfoMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=InvoiceControlInfoMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_UDiskInfo(String data, String opType, String s) {
+        String ResultCode=null;
+        Map UDiskInfoMap=null;
+        try {
+            UDiskInfoMap=XmltoJson.strJson2Map(data);
+            ResultCode=UDiskInfoMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=UDiskInfoMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_TriggerDeclareTax(String data, String opType, String s) {
+        String ResultCode=null;
+        Map TriggerDeclareTaxMap=null;
+        try {
+            TriggerDeclareTaxMap=XmltoJson.strJson2Map(data);
+            ResultCode=TriggerDeclareTaxMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=TriggerDeclareTaxMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_GetDeclareTaxStates(String data, String opType, String s) {
+        String ResultCode=null;
+        Map GetDeclareTaxStatesMap=null;
+        try {
+            GetDeclareTaxStatesMap=XmltoJson.strJson2Map(data);
+            ResultCode=GetDeclareTaxStatesMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=GetDeclareTaxStatesMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_TriggerUpload(String data, String opType, String s) {
+        String ResultCode=null;
+        Map TriggerUploadMap=null;
+        try {
+            TriggerUploadMap=XmltoJson.strJson2Map(data);
+            ResultCode=TriggerUploadMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=TriggerUploadMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_GetUploadStates(String data, String opType, String s) {
+        String ResultCode=null;
+        Map GetUploadStatesMap=null;
+        try {
+            GetUploadStatesMap=XmltoJson.strJson2Map(data);
+            ResultCode=GetUploadStatesMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=GetUploadStatesMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
