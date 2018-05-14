@@ -1,6 +1,6 @@
 package com.rjxx.taxeasy.dao.orm;
 
-import com.rjxx.taxeasy.domains.Gfxx;
+import com.rjxx.taxeasy.dao.bo.Gfxx;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
