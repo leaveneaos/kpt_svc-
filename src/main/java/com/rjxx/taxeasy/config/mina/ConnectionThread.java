@@ -21,17 +21,18 @@ public class ConnectionThread extends Thread{
     private NioSocketConnector connector;
 
     private boolean isConnection=false;
-    //构造
-    public ConnectionThread(NioSocketConnector nioSocketConnector) {
-        //初始化连接管理者
-        connector=nioSocketConnector;
+
+
+
+    public void setConnector(NioSocketConnector connector) {
+        this.connector = connector;
     }
 
     @Override
     public void run(){
         for(;;){
             try {
-                Thread.sleep(29*000);
+                Thread.sleep(20*000);
                 ConnectFuture future = connector.connect();
                 // 等待连接创建成功
                 future.awaitUninterruptibly();
@@ -46,6 +47,5 @@ public class ConnectionThread extends Thread{
                 logger.info("重连服务器登录失败,3秒再连接一次:" + e.getMessage());
             }
         }
-
     }
 }

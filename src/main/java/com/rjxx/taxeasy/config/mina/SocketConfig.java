@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.config.mina;
 
+import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.utils.StringUtils;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
@@ -11,6 +12,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,6 +39,11 @@ public class SocketConfig {
     @Value("${CRESTV.server}")
     private String  ip;
 
+    /**
+     * 线程池执行任务
+     */
+    private static ThreadPoolTaskExecutor taskExecutor = null;
+
     @PostConstruct
     public void initialize() throws Exception {
 
@@ -51,8 +58,12 @@ public class SocketConfig {
         nioSocketConnector.addListener(new IoListener() {
             @Override
             public void sessionDestroyed(IoSession ioSession) throws Exception {
-                ConnectionThread thread=new ConnectionThread(nioSocketConnector);
-                thread.start();
+                ConnectionThread thread = new ConnectionThread();
+                thread.setConnector(nioSocketConnector);
+                if (taskExecutor == null) {
+                    taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
+                }
+                taskExecutor.execute(thread);
             }
         });
         TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"));
