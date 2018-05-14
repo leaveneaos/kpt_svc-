@@ -2,7 +2,7 @@ package com.rjxx.taxeasy.dao.orm;
 
 import com.rjxx.comm.mybatis.MybatisRepository;
 import com.rjxx.comm.mybatis.Pagination;
-import com.rjxx.taxeasy.dao.bo.Gfxx;
+import com.rjxx.taxeasy.domains.Gfxx;
 
 import java.util.List;
 import java.util.Map;
