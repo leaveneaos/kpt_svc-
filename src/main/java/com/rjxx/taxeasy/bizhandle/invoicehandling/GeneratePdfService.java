@@ -2,6 +2,7 @@ package com.rjxx.taxeasy.bizhandle.invoicehandling;
 
 import com.alibaba.fastjson.JSON;
 import com.jcraft.jsch.JSchException;
+import com.rjxx.taxeasy.bizcomm.utils.SaveGfxxUtil;
 import com.rjxx.taxeasy.bizhandle.pdf.PdfDocumentGenerator;
 import com.rjxx.taxeasy.bizhandle.pdf.TwoDimensionCode;
 import com.rjxx.taxeasy.bizhandle.plugincard.ImputationCardUtil;
@@ -105,6 +106,9 @@ public class GeneratePdfService {
 
     @Autowired
     private RabbitmqUtils rabbitmqSend;
+
+    @Autowired
+    private SaveGfxxUtil saveGfxxUtil;
 
     @Value("${emailInfoUrl:}")
     private String emailInfoUrl;
@@ -400,6 +404,9 @@ public class GeneratePdfService {
                  * 开具成功后写入卡包或发票管家
                  */
                 imputationCardUtil.invoice2card(jyxxsq,kpls);
+                //开具成功后写入购方管理 gfxx
+                saveGfxxUtil.saveGfxx(xfid,jyls.getGsdm(),jyls.getGfmc(),jyls.getGfsh(),jyls.getGfdz(),jyls.getGfdh(),
+                        jyls.getGfyh(),jyls.getGfyhzh(),jyls.getGfemail());
             } else {
                 dc.updateFlag(jyls, "92");
                 logger.info("------1、生成pdf出现异常：---------" + kplsh);
