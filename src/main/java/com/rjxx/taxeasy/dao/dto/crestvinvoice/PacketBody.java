@@ -8,6 +8,7 @@ import com.rjxx.taxeasy.dao.vo.Kpspmxvo;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.StringUtils;
 import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -206,7 +207,7 @@ public class PacketBody {
         Packet.DeviceState deviceState=new Packet().new DeviceState();
         deviceState.ReqType="DeviceState";
         deviceState.DeviceSN=skp.getDevicesn();
-        deviceState.DeviceKey=skp.getDevicekey();
+        deviceState.DeviceKey=new BASE64Encoder().encode(skp.getDevicekey().getBytes("utf-8"));
         System.out.println(JSON.toJSONString(deviceState));
         return AESUtils.aesEncrypt(JSON.toJSONString(deviceState),AppKey);
     }

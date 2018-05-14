@@ -10,6 +10,7 @@ import com.rjxx.taxeasy.dao.bo.Kpls;
 import com.rjxx.taxeasy.dao.bo.Seqnumber;
 import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
+import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.StringUtils;
@@ -180,7 +181,22 @@ public class ServerHandler extends IoHandlerAdapter {
             this.session = session;
         }
     }
-
+    public static void setSocketRequest(String reqType,String reqData){
+        //存在commanId，需要唤醒原来的线程
+        if (StringUtils.isNotBlank(reqType)) {
+            SocketRequest socketRequest = cachedRequestMap.remove(reqType);
+            if (socketRequest != null) {
+                if (StringUtils.isNotBlank(reqData)) {
+                    socketRequest.setReturnMessage(reqData);
+                } else {
+                    socketRequest.setReturnMessage("");
+                }
+                synchronized (socketRequest) {
+                    socketRequest.notifyAll();
+                }
+            }
+        }
+    }
     private static void OnReceive_DeviceState(String reqData, String reqType) {
 
         String ResultCode=null;
@@ -199,20 +215,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 Skp skp= skpService.findOneByParams(skpMap);
                 skpService.save(skp);
             }
-            //存在commanId，需要唤醒原来的线程
-            if (StringUtils.isNotBlank(reqType)) {
-                SocketRequest socketRequest = cachedRequestMap.remove(reqType);
-                if (socketRequest != null) {
-                    if (StringUtils.isNotBlank(reqData)) {
-                        socketRequest.setReturnMessage(reqData);
-                    } else {
-                        socketRequest.setReturnMessage("");
-                    }
-                    synchronized (socketRequest) {
-                        socketRequest.notifyAll();
-                    }
-                }
-            }
+            setSocketRequest(reqType,reqData);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -246,10 +249,48 @@ public class ServerHandler extends IoHandlerAdapter {
             case "InputUDiskPassword":
                 OnReceive_InputUDiskPassword(Data,OpType,skp.getId().toString());
                 break;
+            case "InvalidateInvoice":
+                OnReceive_InvalidateInvoice(Data,OpType,kpls.getKplsh().toString());
+                break;
+        }
+    }
+
+    private static void OnReceive_InvalidateInvoice(String data, String opType, String seqNumber) {
+        String ResultCode=null;
+        Map InvalidateInvoiceMap=null;
+        try {
+            InvalidateInvoiceMap=XmltoJson.strJson2Map(data);
+            ResultCode=InvalidateInvoiceMap.get("Code").toString();
+            String ResultMsg=InvalidateInvoiceMap.get("Msg").toString();
+            if("0".equals(ResultCode)){
+                String InvoiceType=InvalidateInvoiceMap.get("InvoiceType").toString();
+                String InvoiceCode=InvalidateInvoiceMap.get("InvoiceCode").toString();
+                String InvoiceNum=InvalidateInvoiceMap.get("InvoiceNum").toString();
+                String InvalidateTime=InvalidateInvoiceMap.get("InvalidateTime").toString();
+                KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
+                Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
+                kpls.setZfrq(TimeUtil.getSysDateInDate(InvalidateTime, null));
+                kplsService.save(kpls);
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private static void OnReceive_InputUDiskPassword(String data, String opType, String seqNumber) {
+        String ResultCode=null;
+        Map DeviceAuthMap=null;
+        try {
+            DeviceAuthMap=XmltoJson.strJson2Map(data);
+            ResultCode=DeviceAuthMap.get("ResultCode").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private static void OnReceive_NewInvoice(String data, String opType, String seqNumber) {
@@ -333,20 +374,7 @@ public class ServerHandler extends IoHandlerAdapter {
             skp.setDevicekey(DeviceKey);
             skpService.save(skp);
             }
-            //存在commanId，需要唤醒原来的线程
-            if (StringUtils.isNotBlank(ReqType)) {
-                SocketRequest socketRequest = cachedRequestMap.remove(ReqType);
-                if (socketRequest != null) {
-                    if (StringUtils.isNotBlank(ReqData)) {
-                        socketRequest.setReturnMessage(ReqData);
-                    } else {
-                        socketRequest.setReturnMessage("");
-                    }
-                    synchronized (socketRequest) {
-                        socketRequest.notifyAll();
-                    }
-                }
-            }
+            setSocketRequest(ReqType,ReqData);
         }catch (Exception e){
             e.printStackTrace();
         }

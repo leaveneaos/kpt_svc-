@@ -864,7 +864,6 @@ public class SocketService {
         String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceState",deviceState);
         String  result= ServerHandler.sendMessage("DeviceState",Ruquest,true, 60000);
-        logger.info("------返回数据-------"+result);
         return  result;
     }
 
