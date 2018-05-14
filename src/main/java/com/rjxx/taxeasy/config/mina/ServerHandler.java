@@ -12,6 +12,7 @@ import com.rjxx.taxeasy.dao.bo.Skp;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
+import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmltoJson;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -24,6 +25,7 @@ import sun.misc.BASE64Decoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *@ClassName SocketService
@@ -37,17 +39,37 @@ public class ServerHandler extends IoHandlerAdapter {
 
 
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+
+    private static Map<String, SocketRequest> cachedRequestMap = new ConcurrentHashMap<>();
+
     /**
      * 线程池执行任务
      */
     private static ThreadPoolTaskExecutor taskExecutor = null;
+
     /**
      * 发送消息
+     * @param commandId
      * @param message
+     * @param wait
+     * @param timeout
      */
-    public static void sendMessage( Object message) {
+    public static String sendMessage(String commandId, Object message,boolean wait, long timeout)throws Exception {
         IoSession session=SocketSession.getInstance().getSession();
         sendMessage(session,message);
+        if (wait && timeout > 0) {
+            SocketRequest socketRequest = new SocketRequest();
+            socketRequest.setCommandId(commandId);
+            cachedRequestMap.put(commandId, socketRequest);
+            synchronized (socketRequest) {
+                socketRequest.wait(timeout);
+            }
+            if (socketRequest.getException() != null) {
+                throw socketRequest.getException();
+            }
+            return socketRequest.getReturnMessage();
+        }
+        return null;
     }
 
     /**
@@ -150,9 +172,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 e.printStackTrace();
             }
         }
-
-
-
         public void setMsg(String msg) {
             this.msg = msg;
         }
@@ -161,25 +180,42 @@ public class ServerHandler extends IoHandlerAdapter {
             this.session = session;
         }
     }
-    private static String OnReceive_DeviceState(String reqData, String reqType) {
+
+    private static void OnReceive_DeviceState(String reqData, String reqType) {
 
         String ResultCode=null;
+        Map DeviceAuthMap=null;
         try {
-            Map DeviceAuthMap=XmltoJson.strJson2Map(reqData);
+            DeviceAuthMap=XmltoJson.strJson2Map(reqData);
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
-            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
-            String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
-            BASE64Decoder decoder = new BASE64Decoder();
-            SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-            Map skpMap =new HashMap(1);
-            skpMap.put("devicesn",DeviceSN);
-            Skp skp= skpService.findOneByParams(skpMap);
-            skpService.save(skp);
+            if("0".equals(ResultCode)){
+                String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+                String LatestOnlineTime=DeviceAuthMap.get("LatestOnlineTime").toString();
+                BASE64Decoder decoder = new BASE64Decoder();
+                SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+                Map skpMap =new HashMap(1);
+                skpMap.put("devicesn",DeviceSN);
+                Skp skp= skpService.findOneByParams(skpMap);
+                skpService.save(skp);
+            }
+            //存在commanId，需要唤醒原来的线程
+            if (StringUtils.isNotBlank(reqType)) {
+                SocketRequest socketRequest = cachedRequestMap.remove(reqType);
+                if (socketRequest != null) {
+                    if (StringUtils.isNotBlank(reqData)) {
+                        socketRequest.setReturnMessage(reqData);
+                    } else {
+                        socketRequest.setReturnMessage("");
+                    }
+                    synchronized (socketRequest) {
+                        socketRequest.notifyAll();
+                    }
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return ResultCode;
     }
     private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
@@ -277,15 +313,16 @@ public class ServerHandler extends IoHandlerAdapter {
         }
     }
 
-    public static String OnReceive_DeviceAuth(String ReqData,String ReqType)throws Exception{
+    public static void OnReceive_DeviceAuth(String ReqData,String ReqType)throws Exception{
 
         String ResultCode=null;
         try {
             Map DeviceAuthMap=XmltoJson.strJson2Map(ReqData);
-            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
-            String DeviceKey=DeviceAuthMap.get("DeviceKey").toString();
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+            if("0".equals(ResultCode)){
+            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+            String DeviceKey=DeviceAuthMap.get("DeviceKey").toString();
             BASE64Decoder decoder = new BASE64Decoder();
             DeviceKey=DesUtils.bytesToHexString(decoder.decodeBuffer(DeviceKey)).toUpperCase();
             logger.info("------终端密钥--------"+DeviceKey);
@@ -295,26 +332,33 @@ public class ServerHandler extends IoHandlerAdapter {
             Skp skp= skpService.findOneByParams(skpMap);
             skp.setDevicekey(DeviceKey);
             skpService.save(skp);
+            }
+            //存在commanId，需要唤醒原来的线程
+            if (StringUtils.isNotBlank(ReqType)) {
+                SocketRequest socketRequest = cachedRequestMap.remove(ReqType);
+                if (socketRequest != null) {
+                    if (StringUtils.isNotBlank(ReqData)) {
+                        socketRequest.setReturnMessage(ReqData);
+                    } else {
+                        socketRequest.setReturnMessage("");
+                    }
+                    synchronized (socketRequest) {
+                        socketRequest.notifyAll();
+                    }
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return ResultCode;
     }
 
     public static void main(String[] args) throws Exception{
-
         BASE64Decoder decoder = new BASE64Decoder();
-
         String Appkey="1BE2E4DECA4C6EF2B0DB1455FD859C607EF55EE43B95204D22DFE29957A46AEA";
         String miwen="LodVKHBP6PfYeYgWr4qeEnSsUVPAaZTCFLkYAQtFTjw=";
         byte[] ReqData=new BASE64Decoder().decodeBuffer(miwen);
         String DeviceKey=DesUtils.bytesToHexString(ReqData).toUpperCase();
         logger.info("-------解密后字符DeviceKey----------"+DeviceKey);
-
-
-
-
-
         //BASE64Decoder decoder = new BASE64Decoder();
        // String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
        // byte[] str2=decoder.decodeBuffer(str);
