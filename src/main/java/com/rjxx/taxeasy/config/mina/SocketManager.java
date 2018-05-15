@@ -1,15 +1,13 @@
 package com.rjxx.taxeasy.config.mina;
 
+import com.rjxx.utils.DesUtils;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -81,13 +79,19 @@ public class SocketManager {
         logger.info("-----线程ID:" + Thread.currentThread().getId() + "----socket对象---" + soc + "----------");
         //输入流
         InputStream is=soc.getInputStream();
-        byte[] buf = new byte[4096];
+        BufferedInputStream bis = new BufferedInputStream(is);
+        DataInputStream dis = new DataInputStream(bis);
+        byte[] buf = new byte[1];
         int len;
-        String result=null;
-        while ((len = is.read(buf)) != -1) {
-            //注意指定编码格式，发送方和接收方一定要统一，建议使用UTF-8
-            result=new String(buf, 0, len,"UTF-8");
+        String result="";
+        while (dis.read(buf) != -1) {
+            result += DesUtils.bytesToHexString(buf);
+            if(result.contains("1A")){
+                break;
+            }
         }
+        result=new String(DesUtils.hexStringToBytes(result),"utf-8");
+
         return result;
     }
     private static boolean checkEnd(final byte[] dst) {
