@@ -48,7 +48,6 @@ public class SocketManager {
                 soc = (Socket)op.borrowObject();
                 sendData(message, soc);
             }
-            soc.shutdownOutput();
             String str;
             str = readData(soc);
             sucess = true;
