@@ -58,12 +58,14 @@ public class SocketConfig {
         nioSocketConnector.addListener(new IoListener() {
             @Override
             public void sessionDestroyed(IoSession ioSession) throws Exception {
-                ConnectionThread thread = new ConnectionThread();
-                thread.setConnector(nioSocketConnector);
-                if (taskExecutor == null) {
-                    taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
+                if(!ioSession.isConnected()){
+                    ConnectionThread thread = new ConnectionThread();
+                    thread.setConnector(nioSocketConnector);
+                    if (taskExecutor == null) {
+                        taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
+                    }
+                    taskExecutor.execute(thread);
                 }
-                taskExecutor.execute(thread);
             }
         });
         TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"));
