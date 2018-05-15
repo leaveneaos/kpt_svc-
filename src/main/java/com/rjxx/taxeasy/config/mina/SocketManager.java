@@ -81,7 +81,7 @@ public class SocketManager {
         InputStream is=soc.getInputStream();
         BufferedInputStream bis = new BufferedInputStream(is);
         DataInputStream dis = new DataInputStream(bis);
-        byte[] buf = new byte[1];
+        byte[] buf = new byte[1024];
         int len;
         String result="";
         while (dis.read(buf) != -1) {
@@ -91,7 +91,6 @@ public class SocketManager {
             }
         }
         result=new String(DesUtils.hexStringToBytes(result),"utf-8");
-
         return result;
     }
     private static boolean checkEnd(final byte[] dst) {
