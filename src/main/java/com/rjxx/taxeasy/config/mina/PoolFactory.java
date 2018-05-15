@@ -8,7 +8,7 @@ import java.net.Socket;
 
 /**
  * @ClassName PoolFactory
- * @Description 继承对象池工厂
+ * @Description 继承对象池工厂  socket 传统的BIO阻塞模式不适合现在的（高并发）应用中，故弃用
  * @Author 许黎明
  * @Date 2018-05-03 17:38
  * @Version 1.0

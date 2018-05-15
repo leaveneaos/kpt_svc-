@@ -322,7 +322,6 @@ public class PacketBody {
         getAllInvoiceSections.UDiskNum=skp.getSkph();
         getAllInvoiceSections.InvoiceType=InvoiceType;
         return AESUtils.aesEncrypt(JSON.toJSONString(getAllInvoiceSections),skp.getDevicekey());
-
     }
 
     public String Packet_InvoiceDistribute(Map map, Skp skp) throws Exception{
