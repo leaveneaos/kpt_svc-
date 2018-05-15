@@ -77,7 +77,9 @@ public class ServerHandler extends IoHandlerAdapter {
      * 使用socket发送消息
      * @param message
      */
-    public static void sendSocketMessage( Object message) {
+    public static String sendSocketMessage( String commandId, Object message,boolean wait, long timeout) {
+
+            String returnMessage=null;
         try {
             logger.info("socket发送message:" + message);
             String result=SocketManager.sendMessage((String)message);
@@ -88,9 +90,23 @@ public class ServerHandler extends IoHandlerAdapter {
                 taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
             taskExecutor.execute(receiveTask);
+            if (wait && timeout > 0) {
+                SocketRequest socketRequest = new SocketRequest();
+                socketRequest.setCommandId(commandId);
+                cachedRequestMap.put(commandId, socketRequest);
+                synchronized (socketRequest) {
+                    socketRequest.wait(timeout);
+                }
+                if (socketRequest.getException() != null) {
+                    throw socketRequest.getException();
+                }
+                returnMessage= socketRequest.getReturnMessage();
+            }
+            return returnMessage;
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.info(ex.getMessage());
+            return null;
         }
     }
 
