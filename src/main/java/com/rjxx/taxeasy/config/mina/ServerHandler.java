@@ -521,9 +521,9 @@ public class ServerHandler extends IoHandlerAdapter {
         Map DeviceAuthMap=null;
         try {
             DeviceAuthMap=XmltoJson.strJson2Map(data);
-            ResultCode=DeviceAuthMap.get("ResultCode").toString();
+            ResultCode=DeviceAuthMap.get("Code").toString();
             if("0".equals(ResultCode)){
-                String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
+                String ResultMsg=DeviceAuthMap.get("Msg").toString();
             }
             setSocketRequest(opType,data);
         }catch (Exception e){
