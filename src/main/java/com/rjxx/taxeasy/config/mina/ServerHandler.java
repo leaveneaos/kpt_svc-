@@ -15,9 +15,11 @@ import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmltoJson;
+import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -48,6 +50,12 @@ public class ServerHandler extends IoHandlerAdapter {
      */
     private static ThreadPoolTaskExecutor taskExecutor = null;
 
+    private static NioSocketConnector SocketConnector;
+
+    public ServerHandler(NioSocketConnector nioSocketConnector) {
+        SocketConnector=nioSocketConnector;
+    }
+
     /**
      * 发送消息
      * @param commandId
@@ -57,7 +65,16 @@ public class ServerHandler extends IoHandlerAdapter {
      */
     public static String sendMessage(String commandId, Object message,boolean wait, long timeout)throws Exception {
         IoSession session=SocketSession.getInstance().getSession();
-        sendMessage(session,message);
+        if(!session.isConnected()){
+            ConnectFuture future = SocketConnector.connect();
+            // 等待连接创建成功
+            future.awaitUninterruptibly();
+            // 获取会话
+            session = future.getSession();
+            sendMessage(session,message);
+        }else{
+            sendMessage(session,message);
+        }
         if (wait && timeout > 0) {
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);

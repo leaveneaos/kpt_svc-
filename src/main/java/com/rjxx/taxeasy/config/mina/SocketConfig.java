@@ -1,6 +1,5 @@
 package com.rjxx.taxeasy.config.mina;
 
-import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.utils.StringUtils;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
@@ -51,11 +50,7 @@ public class SocketConfig {
          * 创建一个NioSocketConnector 用于链接服务端
          */
         NioSocketConnector nioSocketConnector = new NioSocketConnector(Runtime.getRuntime().availableProcessors() + 1);
-        /**
-         * 设置IO处理器
-         */
-        nioSocketConnector.setHandler(new ServerHandler());
-        nioSocketConnector.addListener(new IoListener() {
+       /* nioSocketConnector.addListener(new IoListener() {
             @Override
             public void sessionDestroyed(IoSession ioSession) throws Exception {
                 if(!ioSession.isConnected()){
@@ -67,7 +62,7 @@ public class SocketConfig {
                     taskExecutor.execute(thread);
                 }
             }
-        });
+        });*/
         TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"));
         textLineCodecFactory.setDecoderMaxLineLength(Integer.MAX_VALUE);
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
@@ -78,6 +73,10 @@ public class SocketConfig {
         nioSocketConnector.getSessionConfig().setReuseAddress(true);
         nioSocketConnector.getSessionConfig().setKeepAlive(true);
         logger.info("Starting Client......" + "------ip----" + ip + "---port---" + port);
+        /**
+         * 设置IO处理器
+         */
+        nioSocketConnector.setHandler(new ServerHandler(nioSocketConnector));
         //链接服务端
         // 设置默认访问地址
         nioSocketConnector.setDefaultRemoteAddress(new InetSocketAddress(ip, port));
