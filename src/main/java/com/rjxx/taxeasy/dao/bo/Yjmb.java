@@ -10,69 +10,82 @@ import java.io.Serializable;
  * t_yjmb 实体类
  * 由GenEntityMysql类自动生成
  * Thu May 25 15:27:45 CST 2017
+ *
  * @ZhangBing
- */ 
-@Entity
-@Table(name="t_yjmb")
-public class Yjmb  implements Serializable {
-
-/**
- * 邮件模板代码
  */
-@Id
-@Column(name="yjmb_dm")
-	protected Integer yjmbDm;
+@Entity
+@Table(name = "t_yjmb")
+public class Yjmb implements Serializable {
 
-/**
- * 邮件模板名称
- */ 
-@Column(name="yjmb_mc")
-	protected String yjmbMc;
+    /**
+     * 邮件模板代码
+     */
+    @Id
+    @Column(name = "yjmb_dm")
+    protected Integer yjmbDm;
 
-/**
- * 邮件模板内容
- */ 
-@Column(name="yjmb_nr")
-	protected String yjmbNr;
+    /**
+     * 邮件模板名称
+     */
+    @Column(name = "yjmb_mc")
+    protected String yjmbMc;
+    /**
+     * 邮件模板主题
+     */
+    @Column(name = "yjmb_subject")
+    protected String yjmbSubject;
+    /**
+     * 邮件模板内容
+     */
+    @Column(name = "yjmb_nr")
+    protected String yjmbNr;
 
-/**
- * 有效标志（1：有效；0：无效）
- */ 
-@Column(name="yxbz")
-	protected Integer yxbz;
+    /**
+     * 有效标志（1：有效；0：无效）
+     */
+    @Column(name = "yxbz")
+    protected Integer yxbz;
 
 
-	public Integer getYjmbDm(){
-		return yjmbDm;
-	}
+    public Integer getYjmbDm() {
+        return yjmbDm;
+    }
 
-	public void setYjmbDm(Integer yjmbDm){
-		this.yjmbDm=yjmbDm;
-	}
+    public void setYjmbDm(Integer yjmbDm) {
+        this.yjmbDm = yjmbDm;
+    }
 
-	public String getYjmbMc(){
-		return yjmbMc;
-	}
+    public String getYjmbMc() {
+        return yjmbMc;
+    }
 
-	public void setYjmbMc(String yjmbMc){
-		this.yjmbMc=yjmbMc;
-	}
+    public String getYjmbSubject() {
+        return yjmbSubject;
+    }
 
-	public String getYjmbNr(){
-		return yjmbNr;
-	}
+    public void setYjmbSubject(String yjmbSubject) {
+        this.yjmbSubject = yjmbSubject;
+    }
 
-	public void setYjmbNr(String yjmbNr){
-		this.yjmbNr=yjmbNr;
-	}
+    public void setYjmbMc(String yjmbMc) {
+        this.yjmbMc = yjmbMc;
+    }
 
-	public Integer getYxbz(){
-		return yxbz;
-	}
+    public String getYjmbNr() {
+        return yjmbNr;
+    }
 
-	public void setYxbz(Integer yxbz){
-		this.yxbz=yxbz;
-	}
+    public void setYjmbNr(String yjmbNr) {
+        this.yjmbNr = yjmbNr;
+    }
+
+    public Integer getYxbz() {
+        return yxbz;
+    }
+
+    public void setYxbz(Integer yxbz) {
+        this.yxbz = yxbz;
+    }
 
 }
 
