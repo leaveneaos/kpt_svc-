@@ -64,7 +64,6 @@ public class ServerHandler extends IoHandlerAdapter {
                return "session已失效";
             }
         }else{
-            logger.info("----已有session----");
             sendMessage(session,message);
         }
         if (wait && timeout > 0) {
@@ -117,7 +116,7 @@ public class ServerHandler extends IoHandlerAdapter {
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
         if(session.isConnected()){
-            logger.info("-------session已连接,客户端发送信息成功  message:" + message);
+            logger.info("客户端发送信息成功  message:" + message);
         }
     }
 
