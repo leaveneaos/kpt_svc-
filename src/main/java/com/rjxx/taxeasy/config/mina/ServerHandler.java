@@ -71,8 +71,10 @@ public class ServerHandler extends IoHandlerAdapter {
             future.awaitUninterruptibly();
             // 获取会话
             session = future.getSession();
+            logger.info("----重新获取session----");
             sendMessage(session,message);
         }else{
+            logger.info("----已有session----");
             sendMessage(session,message);
         }
         if (wait && timeout > 0) {
@@ -217,7 +219,6 @@ public class ServerHandler extends IoHandlerAdapter {
         }
     }
     public static void setSocketRequest(String reqType,String reqData){
-        //存在commanId，需要唤醒原来的线程
         if (StringUtils.isNotBlank(reqType)) {
             SocketRequest socketRequest = cachedRequestMap.remove(reqType);
             if (socketRequest != null) {
