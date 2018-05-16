@@ -795,7 +795,11 @@ public class SocketService {
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumber.getSeqnumber().toString(),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            ServerHandler.sendMessage("NewInvoice",Ruquest,false, 0);
+            String  result=ServerHandler.sendMessage("NewInvoice",Ruquest,false, 0);
+            if(result.contains("session已失效")){
+                    kpls.setFpztdm("04");
+                    kplsService.save(kpls);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

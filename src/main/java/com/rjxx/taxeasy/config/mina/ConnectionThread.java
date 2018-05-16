@@ -38,8 +38,8 @@ public class ConnectionThread extends Thread{
                 future.awaitUninterruptibly();
                 // 获取会话
                 IoSession session = future.getSession();
-                SocketSession.getInstance().setSession(session);
                 if (session.isConnected()) {
+                    SocketSession.getInstance().setSession(session);
                     logger.info("断线重连[" + connector.getDefaultRemoteAddress().getHostName() + ":" + connector.getDefaultRemoteAddress().getPort() + "]成功");
                     break;
                 }
