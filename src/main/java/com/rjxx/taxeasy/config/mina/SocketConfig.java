@@ -50,19 +50,6 @@ public class SocketConfig {
          * 创建一个NioSocketConnector 用于链接服务端
          */
         NioSocketConnector nioSocketConnector = new NioSocketConnector(Runtime.getRuntime().availableProcessors() + 1);
-       /* nioSocketConnector.addListener(new IoListener() {
-            @Override
-            public void sessionDestroyed(IoSession ioSession) throws Exception {
-                if(!ioSession.isConnected()){
-                    ConnectionThread thread = new ConnectionThread();
-                    thread.setConnector(nioSocketConnector);
-                    if (taskExecutor == null) {
-                        taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
-                    }
-                    taskExecutor.execute(thread);
-                }
-            }
-        });*/
         TextLineCodecFactory textLineCodecFactory = new TextLineCodecFactory(Charset.forName("UTF-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"), new String(StringUtils.hexString2Bytes("1A"), "utf-8"));
         textLineCodecFactory.setDecoderMaxLineLength(Integer.MAX_VALUE);
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
