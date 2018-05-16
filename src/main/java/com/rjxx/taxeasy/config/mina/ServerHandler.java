@@ -72,6 +72,7 @@ public class ServerHandler extends IoHandlerAdapter {
             // 获取会话
             session = future.getSession();
             logger.info("----重新获取session----");
+            SocketSession.getInstance().setSession(session);
             sendMessage(session,message);
         }else{
             logger.info("----已有session----");
