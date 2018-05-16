@@ -131,7 +131,7 @@ public class ServerHandler extends IoHandlerAdapter {
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
         if(session.isConnected()){
-            logger.info("客户端发送信息成功  message:" + message);
+            logger.info("-------session已连接,客户端发送信息成功  message:" + message);
         }
     }
 
