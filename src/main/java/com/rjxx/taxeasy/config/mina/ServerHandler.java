@@ -58,7 +58,6 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param timeout
      */
     public static String sendMessage(String commandId, Object message,boolean wait, long timeout)throws Exception {
-        Thread.sleep(3*1000);
         IoSession session=SocketSession.getInstance().getSession();
         sendMessage(session,message);
         if (wait && timeout > 0) {
