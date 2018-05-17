@@ -30,9 +30,9 @@ public class ConnectionThread extends Thread{
 
     @Override
     public void run(){
-        for(;;){
+
             try {
-                Thread.sleep(20*000);
+                Thread.sleep(25*1000);
                 ConnectFuture future = connector.connect();
                 // 等待连接创建成功
                 future.awaitUninterruptibly();
@@ -41,11 +41,10 @@ public class ConnectionThread extends Thread{
                 if (session.isConnected()) {
                     SocketSession.getInstance().setSession(session);
                     logger.info("断线重连[" + connector.getDefaultRemoteAddress().getHostName() + ":" + connector.getDefaultRemoteAddress().getPort() + "]成功");
-                    break;
                 }
             }catch (Exception e){
                 logger.info("重连服务器登录失败,3秒再连接一次:" + e.getMessage());
             }
-        }
+
     }
 }
