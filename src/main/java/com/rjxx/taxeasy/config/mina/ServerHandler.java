@@ -111,6 +111,7 @@ public class ServerHandler extends IoHandlerAdapter {
             taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
         }
         taskExecutor.execute(receiveTask);
+        session.write(new String(StringUtils.hexString2Bytes("1A")));
     }
 
     @Override
