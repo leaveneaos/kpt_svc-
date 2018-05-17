@@ -2,6 +2,7 @@ package com.rjxx.taxeasy.bizcomm.tcs;
 
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
+import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.GeneratePdfService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.SkService;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -83,7 +85,10 @@ public class SocketService {
     @Autowired
     private SeqnumberService seqnumberService;
 
-
+    /**
+     * 线程池执行任务
+     */
+    private static ThreadPoolTaskExecutor taskExecutor = null;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -753,7 +758,44 @@ public class SocketService {
         return null;
     }
 
+    /**
+     * 开具发票
+     */
+    static class InvoiceTask implements Runnable {
 
+        private String commandId;
+
+        private String message;
+
+        private boolean wait;
+
+        private long timeout;
+
+        @Override
+        public void run() {
+            try {
+                ServerHandler.sendMessage(commandId,message,wait, timeout);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void setCommandId(String commandId) {
+            this.commandId = commandId;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public void setWait(boolean wait) {
+            this.wait = wait;
+        }
+
+        public void setTimeout(long timeout) {
+            this.timeout = timeout;
+        }
+    }
 
     /**
      * 税控盒子开票
@@ -795,11 +837,15 @@ public class SocketService {
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumber.getSeqnumber().toString(),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("NewInvoice",Ruquest,false, 0);
-            if(result!=null&&result.contains("session已失效")){
-                    kpls.setFpztdm("04");
-                    kplsService.save(kpls);
+            InvoiceTask invoiceTask=new InvoiceTask();
+            invoiceTask.setCommandId("NewInvoice");
+            invoiceTask.setMessage(Ruquest);
+            invoiceTask.setTimeout(0);
+            invoiceTask.setWait(false);
+            if (taskExecutor == null) {
+                taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
+            taskExecutor.execute(invoiceTask);
         }catch (Exception e){
             e.printStackTrace();
         }
