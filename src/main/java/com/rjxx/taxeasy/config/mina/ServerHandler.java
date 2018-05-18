@@ -89,11 +89,12 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
+        logger.info("客户端连接是否开启:" + session.isConnected());
     }
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-
+        logger.info("客户端连接是否关闭:" + session.isConnected());
     }
 
     @Override
@@ -117,12 +118,12 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-
+        logger.info("客户端连接空闲:" + session.isConnected());
     }
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-
+        logger.info("客户端连接异常信息:" + cause.getMessage());
     }
 
     /**
