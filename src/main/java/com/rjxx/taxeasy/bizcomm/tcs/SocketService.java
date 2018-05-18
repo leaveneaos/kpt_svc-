@@ -738,19 +738,45 @@ public class SocketService {
             Map resultMap= XmltoJson.strJson2Map(returnJson);
             String errcode=resultMap.get("errcode").toString();
             String errmsg=resultMap.get("errmsg").toString();
-            if(null!=resultMap.get("info")&&!"".equals(resultMap.get("info"))){
-                List infoList=(List)resultMap.get("info");
-                Map infpMap=(Map)infoList.get(0);
-                if(infpMap!=null){
-                    String orderId=infpMap.get("orderId").toString();
-                    String fpdm=infpMap.get("fpdm").toString();
-                    String fphm=infpMap.get("fphm").toString();
-                    String kprq=infpMap.get("kprq").toString();
-                    kpls.setKprq(com.rjxx.time.TimeUtil.getSysDateInDate(kprq, "yyyy-MM-dd HH:mm:ss"));
-                    kpls.setFpdm(fpdm);
-                    kpls.setFphm(fphm);
-                    kplsService.save(kpls);
-                }
+            if("200".equals(errcode)){
+                    if(null!=resultMap.get("info")&&!"".equals(resultMap.get("info"))){
+                            List infoList=(List)resultMap.get("info");
+                            Map infpMap=(Map)infoList.get(0);
+                            if(infpMap!=null){
+                                String orderId=infpMap.get("orderId").toString();
+                                String fpdm=infpMap.get("fpdm").toString();
+                                String fphm=infpMap.get("fphm").toString();
+                                String kprq=infpMap.get("kprq").toString();
+                                String jym=infpMap.get("jym").toString();
+                                String mmq=infpMap.get("mmq").toString().replace("&gt;",">").replace("&lt;","<");
+                                Map kpMap=new HashMap(10);
+                                // 返回结果，发票代码
+                                kpMap.put("FP_DM", fpdm);
+                                // 发票号码
+                                kpMap.put("FP_HM", fphm);
+                                // 发票密文
+                                kpMap.put("FP_MW", mmq);
+                                // 校验码
+                                kpMap.put("JYM", jym);
+                                // 二维码
+                                kpMap.put("EWM", "");
+                                // 机器编号
+                                kpMap.put("JQBH", skp.getSkph());
+                                kpMap.put("KPRQ",TimeUtil.formatDate(TimeUtil.getSysDateInDate(kprq, "yyyy-MM-dd HH:mm:ss"),"yyyyMMddHHmmss"));
+                                if("200".equals(errcode)){
+                                    kpMap.put("RETURNCODE", "0000");
+                                }
+                                kpMap.put("RETURNMSG", errmsg);
+                                kpMap.put("KPLSH", kpls.getKplsh());
+                                fpclService.updateKpls(kpMap);
+                            }
+                    }
+            }else{
+                Map kpMap=new HashMap(2);
+                kpMap.put("RETURNCODE", errcode);
+                kpMap.put("RETURNMSG", errmsg);
+                kpMap.put("KPLSH", kpls.getKplsh());
+                fpclService.updateKpls(kpMap);
             }
         }catch (Exception e){
             e.printStackTrace();
