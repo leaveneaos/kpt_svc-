@@ -73,7 +73,7 @@ public class SocketConfig {
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
         nioSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(textLineCodecFactory));
         nioSocketConnector.getSessionConfig().setReadBufferSize(2048 * 10);
-        nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 120);
+        nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 60*1000);
         // Create Session Configuration
         nioSocketConnector.getSessionConfig().setReuseAddress(true);
         nioSocketConnector.getSessionConfig().setKeepAlive(true);

@@ -118,7 +118,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        logger.info("客户端连接空闲:" + session.isConnected());
+        logger.info("客户端连接空闲:" + status.toString()+session.isConnected());
     }
 
     @Override
