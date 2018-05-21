@@ -888,7 +888,7 @@ public class SocketService {
             taskExecutor.execute(invoiceTask);*/
             String result= ServerHandler.sendMessage("NewInvoice",Ruquest,false,0 );
             if(null!=result&&result.equals("连接断开")){
-                rabbitmqSend.send(kpls.getKplsh());
+                rabbitmqSend.send(kpls.getKplsh() + "");
             }
         }catch (Exception e){
             e.printStackTrace();
