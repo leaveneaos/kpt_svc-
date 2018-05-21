@@ -23,5 +23,6 @@ public interface SeqnumberMapper {
 
     public List<Seqnumber> findByPage(Pagination pagination);
 
+    Seqnumber findMaxSeqnumber(Map parmMap);
 }
 

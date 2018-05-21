@@ -50,5 +50,8 @@ public class SeqnumberService {
         return seqnumberMapper.findByPage(pagination);
     }
 
+    public Seqnumber findMaxSeqnumber(Map parmMap) {
+        return seqnumberMapper.findMaxSeqnumber(parmMap);
+    }
 }
 

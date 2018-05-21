@@ -837,14 +837,19 @@ public class SocketService {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
-            Seqnumber  seqnumber=new Seqnumber();
-            seqnumber.setJylsh(String.valueOf(kplsh));
-            seqnumber.setOptype("NewInvoice");
-            seqnumber.setOptypemc("开具发票业务");
-            seqnumber.setXgsj(new Date());
-            seqnumber.setLrsj(new Date());
-            seqnumber.setYxbz(1);
-            seqnumberService.save(seqnumber);
+            Map parmMap=new HashMap(1);
+            parmMap.put("jylsh",kplsh);
+            Seqnumber  seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+            if(seqnumberOld!=null){
+                Seqnumber  seqnumber=new Seqnumber();
+                seqnumber.setJylsh(String.valueOf(kplsh));
+                seqnumber.setOptype("NewInvoice");
+                seqnumber.setOptypemc("开具发票业务");
+                seqnumber.setXgsj(new Date());
+                seqnumber.setLrsj(new Date());
+                seqnumber.setYxbz(1);
+                seqnumberService.save(seqnumber);
+            }
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Map params = new HashMap();
