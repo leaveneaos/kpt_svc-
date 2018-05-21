@@ -2,7 +2,6 @@ package com.rjxx.taxeasy.bizcomm.tcs;
 
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
-import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.GeneratePdfService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.SkService;
@@ -879,10 +878,11 @@ public class SocketService {
             invoiceTask.setMessage(Ruquest);
             invoiceTask.setTimeout(0);
             invoiceTask.setWait(false);
-            if (taskExecutor == null) {
+           /* if (taskExecutor == null) {
                 taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
-            taskExecutor.execute(invoiceTask);
+            taskExecutor.execute(invoiceTask);*/
+            ServerHandler.sendMessage("NewInvoice",Ruquest,false,0 );
         }catch (Exception e){
             e.printStackTrace();
         }
