@@ -103,7 +103,7 @@ public class AESUtils {
 	             * 解密
 	             */
 	            byte [] byte_decode=cipher.doFinal(byte_content);
-	            String AES_decode=new String(byte_decode,"GBK");
+	            String AES_decode=new String(byte_decode,"utf-8");
 	            return AES_decode;
 	        } catch (NoSuchAlgorithmException e) {
 	            e.printStackTrace();
@@ -122,4 +122,10 @@ public class AESUtils {
 	        //如果有错就返加nulll
 	        return null;
 	    }
+
+	public static void main(String[] args) {
+		String ss="wFUyyP5GOka/0odUENf2iGPvgj4qUxo8mnF1IWpXvTZlwXHN63TsXmh9tOxKQkeM9If3BgSKtYYU\\nWTvqO2wbDyHNtcWekiGv5RdPOOUShXkuDvwmWxytMyP3IrAshSfzEnUblZd6sBvuZ86d5TVPi7q+\\nNEOimV9MRbgMVGaYRCcG2MyYQjyCXi0DAsn6e6DzfGOl6wcFZ5OzyJA+AFcgr/aeArSmM+zHe8O2\\nDrwrShh/PFmTEZQSbWIrbMiKYcBVtIXJXf6gk+iRsDXoYb27DOJfHFcoPcPfmjlmqui5yMoayCN+\\naajygV6BrbJ5UWrrVIkGX5NtbUBdwwWHA2rvIVbSvwMwQ0w9fvhNlX0NexBzH7gYUgEbT/VDKaUd\\njmHk83PhkVXNYhMB3R5EnsExCt/SCzsATz27Vatwm4P/nJq8eQkNRTTFIp5u+uK9wG5lxPJISnA/\\nPtriIueCnW1/aMaZKbZZsf9eXXB14CFb/CSPgtUneuUa+z3/a67BNSFtB8f1KLy1zn7BManJH4H0\\naTIk7pWDVs3Ahx8usTcn+3IFDxMx2Dw0OYux/ZOhFcVFYeYw0asGZLpWukCkw5s9HAy6QTuyc5Ml\\ngI/J1mRyaZCJ8nBAe7/ghLoX59ez1kUbasUL36wGz7Gg/zEpempBerPFBRt7Bs7O28xS4V44abe0\\nGYeZjNuldtmLbaT5jYz/YcLuYyQ1DGxh58+PSP/nm0PL4pESvrvSMmQuya5967jrUWvgAgQD19c8\\nqOj8P5WIgJ0Nd0ll7jZVsADi0ez1SlQL1Ddl9f9EPK836XdGjqYVfhiEc6Y5V/Y0eNvHN726Zzsk\\naelMkWWoqdLkFTD5pQvEc3xlntI8PIzYjwSBVgpnOyRp6UyRZaip0uQVMPmlw4IsuKU+DGfMztHb\\nmJQZUKjKB7w1BAb00Vq92wMNUaJJZX7iSiGgqKOdtzOgztJNeapYuNfzlEfYMtgq8ob5aLTUMobk\\n1/0wuVbyq5bljBd8qevGuOXzEsCaRN8sB0yuVAvUN2X1/0Q8rzfpd0aOptRcGoyFgW3Hcu4ubRZ0\\nKQl5OPAgVfQQ3aDT4XRMyOAVJkOrOKi1wWZCwT9OBbEd5J4MumQ1jC+KuEo4gIX/MH07ihgmN5i7\\nCQW4iGD7IiqD+wCAcjdPRQxkcIBgq4FtEf5ZEpz0hXHKd2+xehPmnzE=";
+		System.out.println(AESDncode("91310112312480621D",ss));
+
+	}
 }

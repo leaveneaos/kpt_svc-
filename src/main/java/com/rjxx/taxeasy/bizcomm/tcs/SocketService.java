@@ -610,6 +610,7 @@ public class SocketService {
             params.put("mxCount", kpspmxListnew.size());
             String templateName = "skekyun.ftl";
             String content = TemplateUtils.generateContent(templateName, params);
+            logger.info("------xml字符-------"+content);
             Map invoiceMap=new HashMap(7);
             invoiceMap.put("invoice",kpls.getXfsh());
             invoiceMap.put("kpjh",skp.getKpjh());
