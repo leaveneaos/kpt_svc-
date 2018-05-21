@@ -94,7 +94,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        logger.info("客户端连接是否关闭:" + session.isConnected());
+        logger.info("客户端连接是否关闭:" + session.isClosing());
     }
 
     @Override
