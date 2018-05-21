@@ -837,10 +837,11 @@ public class SocketService {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
+            String seqnumberRequest="";
             Map parmMap=new HashMap(1);
             parmMap.put("jylsh",kplsh);
             Seqnumber  seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
-            if(seqnumberOld!=null){
+            if(null==seqnumberOld){
                 Seqnumber  seqnumber=new Seqnumber();
                 seqnumber.setJylsh(String.valueOf(kplsh));
                 seqnumber.setOptype("NewInvoice");
@@ -849,6 +850,9 @@ public class SocketService {
                 seqnumber.setLrsj(new Date());
                 seqnumber.setYxbz(1);
                 seqnumberService.save(seqnumber);
+                seqnumberRequest=seqnumber.getSeqnumber().toString();
+            }else{
+                seqnumberRequest=seqnumberOld.getSeqnumber().toString();
             }
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
@@ -866,7 +870,7 @@ public class SocketService {
             Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
             String spbmbbh = "";
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
-            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumber.getSeqnumber().toString(),"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
+            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumberRequest,"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             InvoiceTask invoiceTask=new InvoiceTask();
             invoiceTask.setCommandId("NewInvoice");
