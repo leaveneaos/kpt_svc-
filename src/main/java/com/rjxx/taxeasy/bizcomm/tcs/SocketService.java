@@ -620,6 +620,7 @@ public class SocketService {
             Map parmMap=new HashMap(1);
             parmMap.put("gsdm",kpls.getGsdm());
             Gsxx gsxx=gsxxService.findOneByParams(parmMap);
+            logger.info("------发票JSON数据-----"+invoiceXml);
             /**
              * http://ek.caikaixin.cn/sendFpInfo
              */
