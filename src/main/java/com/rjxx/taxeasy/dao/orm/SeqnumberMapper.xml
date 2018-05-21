@@ -4,7 +4,15 @@
 <mapper namespace="com.rjxx.taxeasy.dao.orm.SeqnumberMapper">
 
     <select id="findOneByParams" parameterType="map" resultType="seqnumber">
-        select * from Seqnumber where yxbz = '1'
+        select * from t_seqnumber where yxbz = '1'
+        <if test="jylsh != null and jylsh != ''">
+            and jylsh = #{jylsh}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findMaxSeqnumber" parameterType="map" resultType="seqnumber">
+        select max(seqnumber) seqnumber from t_seqnumber where yxbz = '1';
         <if test="jylsh != null and jylsh != ''">
             and jylsh = #{jylsh}
         </if>
@@ -12,14 +20,14 @@
     </select>
 
     <select id="findAllByParams" parameterType="map" resultType="seqnumber">
-        select * from Seqnumber where yxbz = '1'
+        select * from t_seqnumber where yxbz = '1'
         <if test="orderBy != null">
             order by ${orderBy}
         </if>
     </select>
 
     <select id="findByPage" parameterType="pagination" resultType="seqnumber">
-        select * from Seqnumber where yxbz = '1'
+        select * from t_seqnumber where yxbz = '1'
         <if test="params.orderBy != null">
             order by ${params.orderBy}
         </if>

@@ -26,7 +26,7 @@ public class GenJavaCode {
     String baseOutputFiePath = javaFilePath + "/src/main/java/";
 
     private String fullDomainClassName = "com.rjxx.taxeasy.dao.bo.Seqnumber";
-    private String tableName = "Seqnumber";
+    private String tableName = "t_Seqnumber";
     private String simpleDomainClassName = null;
     private String domainParamsName = null;
     private String servicePackageName = "com.rjxx.taxeasy.dal";
