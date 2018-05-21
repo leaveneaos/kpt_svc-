@@ -12,7 +12,7 @@
     </select>
 
     <select id="findMaxSeqnumber" parameterType="map" resultType="seqnumber">
-        select max(seqnumber) seqnumber,jylsh,opType,lrsj,xgsj,yxbz,opTypemc from t_seqnumber where yxbz = '1';
+        select max(seqnumber) seqnumber,jylsh,opType,lrsj,xgsj,yxbz,opTypemc from t_seqnumber where yxbz = '1'
         <if test="jylsh != null and jylsh != ''">
             and jylsh = #{jylsh}
         </if>
