@@ -12,6 +12,7 @@ import com.rjxx.taxeasy.bizhandle.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizhandle.utils.SeperateInvoiceUtils;
 import com.rjxx.taxeasy.config.mina.ServerHandler;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
+import com.rjxx.taxeasy.config.rabbitmq.RabbitmqSend;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
 import com.rjxx.taxeasy.dal.*;
 import com.rjxx.taxeasy.dao.bo.*;
@@ -54,6 +55,9 @@ public class SocketService {
 
     @Autowired
     private RabbitmqUtils rabbitmqUtils;
+
+    @Autowired
+    private RabbitmqSend rabbitmqSend;
 
     @Autowired
     private CszbService cszbService;
@@ -882,7 +886,10 @@ public class SocketService {
                 taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
             taskExecutor.execute(invoiceTask);*/
-            ServerHandler.sendMessage("NewInvoice",Ruquest,false,0 );
+            String result= ServerHandler.sendMessage("NewInvoice",Ruquest,false,0 );
+            if(null!=result&&result.equals("连接断开")){
+                rabbitmqSend.send(kpls.getKplsh());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

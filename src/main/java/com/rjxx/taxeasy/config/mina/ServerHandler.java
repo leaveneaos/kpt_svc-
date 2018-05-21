@@ -59,7 +59,11 @@ public class ServerHandler extends IoHandlerAdapter {
      */
     public static String sendMessage(String commandId, Object message,boolean wait, long timeout)throws Exception {
         IoSession session=SocketSession.getInstance().getSession();
-        sendMessage(session,message);
+        if(session.isConnected()){
+            sendMessage(session,message);
+        }else{
+            return "连接断开";
+        }
         if (wait && timeout > 0) {
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);
