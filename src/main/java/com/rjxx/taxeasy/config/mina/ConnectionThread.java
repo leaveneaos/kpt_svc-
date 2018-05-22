@@ -32,7 +32,6 @@ public class ConnectionThread extends Thread{
     public void run(){
 
             try {
-                Thread.sleep(25*1000);
                 ConnectFuture future = connector.connect();
                 // 等待连接创建成功
                 future.awaitUninterruptibly();
@@ -43,6 +42,7 @@ public class ConnectionThread extends Thread{
                     logger.info("断线重连[" + connector.getDefaultRemoteAddress().getHostName() + ":" + connector.getDefaultRemoteAddress().getPort() + "]成功");
                 }
             }catch (Exception e){
+                e.printStackTrace();
                 logger.info("重连服务器登录失败,3秒再连接一次:" + e.getMessage());
             }
 
