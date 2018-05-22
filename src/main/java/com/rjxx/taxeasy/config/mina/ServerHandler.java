@@ -18,11 +18,13 @@ import com.rjxx.utils.XmltoJson;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolDecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import sun.misc.BASE64Decoder;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +129,18 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        logger.info("客户端连接异常信息:" + cause.getMessage());
+        if (cause instanceof IOException) {
+            logger.info("客户端连接IO异常信息:" + cause.getMessage());
+            session.closeNow();
+        }
+        else if (cause instanceof ProtocolDecoderException) {
+            logger.info("客户端连接编码与解码异常信息:" + cause.getMessage());
+            session.closeNow();
+        }
+        else {
+            logger.info("客户端连接其他异常信息:" + cause.getMessage());
+            session.closeNow();
+        }
     }
 
     /**
