@@ -112,7 +112,7 @@ public class ServerHandler extends IoHandlerAdapter {
             taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
         }
         taskExecutor.execute(receiveTask);
-        session.write(new String(StringUtils.hexString2Bytes("1A")));
+        //session.write(new String(StringUtils.hexString2Bytes("1A")));
     }
 
     @Override
@@ -227,6 +227,10 @@ public class ServerHandler extends IoHandlerAdapter {
     }
     private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
+        String ResultCode=DeviceCmdMap.get("ResultCode").toString();
+        if(){
+
+        }
         String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString();
         String SeqNumber=DeviceCmdMap.get("SeqNumber").toString();
         String OpType=DeviceCmdMap.get("OpType").toString();
