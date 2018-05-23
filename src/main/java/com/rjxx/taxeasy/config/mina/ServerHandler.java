@@ -96,6 +96,7 @@ public class ServerHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(IoSession session) throws Exception {
         logger.info("客户端连接是否开启:" + session.isConnected());
+        logger.info("客户端连接数:" +session.getService().getManagedSessionCount());
     }
 
     @Override
@@ -131,6 +132,7 @@ public class ServerHandler extends IoHandlerAdapter {
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         if (cause instanceof IOException) {
             logger.info("客户端连接IO异常信息:" + cause.getMessage());
+            logger.info("客户端连接IO异常时发送的消息:"+session.getCurrentWriteMessage());
             session.closeNow();
         }
         else if (cause instanceof ProtocolDecoderException) {
