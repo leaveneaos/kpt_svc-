@@ -230,13 +230,13 @@ public class ServerHandler extends IoHandlerAdapter {
     }
     private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
-        String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString()==null?"":DeviceCmdMap.get("ProtocolVer").toString();
-        String SeqNumber=DeviceCmdMap.get("SeqNumber").toString()==null?"":DeviceCmdMap.get("SeqNumber").toString();
-        String OpType=DeviceCmdMap.get("OpType").toString()==null?"":DeviceCmdMap.get("OpType").toString();
-        String ZipType=DeviceCmdMap.get("ZipType").toString()==null?"":DeviceCmdMap.get("ZipType").toString();
-        String EncryptType=DeviceCmdMap.get("EncryptType").toString()==null?"":DeviceCmdMap.get("EncryptType").toString();
-        String DeviceSN=DeviceCmdMap.get("DeviceSN").toString()==null?"":DeviceCmdMap.get("DeviceSN").toString();
-        String UserID=DeviceCmdMap.get("UserID").toString()==null?"":DeviceCmdMap.get("UserID").toString();
+        String ProtocolVer=DeviceCmdMap.get("ProtocolVer")==null?"":DeviceCmdMap.get("ProtocolVer").toString();
+        String SeqNumber=DeviceCmdMap.get("SeqNumber")==null?"":DeviceCmdMap.get("SeqNumber").toString();
+        String OpType=DeviceCmdMap.get("OpType")==null?"":DeviceCmdMap.get("OpType").toString();
+        String ZipType=DeviceCmdMap.get("ZipType")==null?"":DeviceCmdMap.get("ZipType").toString();
+        String EncryptType=DeviceCmdMap.get("EncryptType")==null?"":DeviceCmdMap.get("EncryptType").toString();
+        String DeviceSN=DeviceCmdMap.get("DeviceSN")==null?"":DeviceCmdMap.get("DeviceSN").toString();
+        String UserID=DeviceCmdMap.get("UserID")==null?"":DeviceCmdMap.get("UserID").toString();
         KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
         SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
         SeqnumberService seqnumberService = ApplicationContextUtils.getBean(SeqnumberService.class);
@@ -257,8 +257,8 @@ public class ServerHandler extends IoHandlerAdapter {
              Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
         }else{
             Map errorMap=new HashMap();
-            errorMap.put("Code",DeviceCmdMap.get("ResultCode")==null?"":DeviceCmdMap.get("ResultCode"));
-            errorMap.put("Msg",DeviceCmdMap.get("ResultMsg")==null?"":DeviceCmdMap.get("ResultMsg"));
+            errorMap.put("Code",DeviceCmdMap.get("ResultCode")==null?"":DeviceCmdMap.get("ResultCode").toString());
+            errorMap.put("Msg",DeviceCmdMap.get("ResultMsg")==null?"":DeviceCmdMap.get("ResultMsg").toString());
             Data= JSON.toJSONString(errorMap);
         }
         switch (OpType){
