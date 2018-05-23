@@ -253,7 +253,7 @@ public class ServerHandler extends IoHandlerAdapter {
             skp=skpService.findOne(Integer.valueOf(seqNumber.getJylsh()));
         }
         String Data=null;
-        if(null==DeviceCmdMap.get("Data").toString()){
+        if(null!=DeviceCmdMap.get("Data")){
              Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
         }else{
             Map errorMap=new HashMap();
