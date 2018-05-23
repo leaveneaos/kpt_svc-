@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.config.mina;
 
+import com.alibaba.fastjson.JSON;
 import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
@@ -229,17 +230,20 @@ public class ServerHandler extends IoHandlerAdapter {
     }
     private static void OnReceive_DeviceCmd(String reqData, String reqType) {
         Map DeviceCmdMap=XmltoJson.strJson2Map(reqData);
-        String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString();
-        String SeqNumber=DeviceCmdMap.get("SeqNumber").toString();
-        String OpType=DeviceCmdMap.get("OpType").toString();
-        String ZipType=DeviceCmdMap.get("ZipType").toString();
-        String EncryptType=DeviceCmdMap.get("EncryptType").toString();
-        String DeviceSN=DeviceCmdMap.get("DeviceSN").toString();
-        String UserID=DeviceCmdMap.get("UserID").toString();
+        String ProtocolVer=DeviceCmdMap.get("ProtocolVer").toString()==null?"":DeviceCmdMap.get("ProtocolVer").toString();
+        String SeqNumber=DeviceCmdMap.get("SeqNumber").toString()==null?"":DeviceCmdMap.get("SeqNumber").toString();
+        String OpType=DeviceCmdMap.get("OpType").toString()==null?"":DeviceCmdMap.get("OpType").toString();
+        String ZipType=DeviceCmdMap.get("ZipType").toString()==null?"":DeviceCmdMap.get("ZipType").toString();
+        String EncryptType=DeviceCmdMap.get("EncryptType").toString()==null?"":DeviceCmdMap.get("EncryptType").toString();
+        String DeviceSN=DeviceCmdMap.get("DeviceSN").toString()==null?"":DeviceCmdMap.get("DeviceSN").toString();
+        String UserID=DeviceCmdMap.get("UserID").toString()==null?"":DeviceCmdMap.get("UserID").toString();
         KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
         SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
         SeqnumberService seqnumberService = ApplicationContextUtils.getBean(SeqnumberService.class);
         Seqnumber seqNumber=seqnumberService.findOne(Integer.valueOf(SeqNumber));
+        if("".equals(OpType)){
+            OpType=seqNumber.getOptype();
+        }
         Kpls kpls=null;
         Skp skp=null;
         if(("GetCurrentInvoiceInfo").equals(OpType)||"InvalidateInvoice".equals(OpType)||"NewInvoice".equals(OpType)){
@@ -248,7 +252,15 @@ public class ServerHandler extends IoHandlerAdapter {
         }else{
             skp=skpService.findOne(Integer.valueOf(seqNumber.getJylsh()));
         }
-        String Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
+        String Data=null;
+        if(null==DeviceCmdMap.get("Data").toString()){
+             Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
+        }else{
+            Map errorMap=new HashMap();
+            errorMap.put("Code",DeviceCmdMap.get("ResultCode")==null?"":DeviceCmdMap.get("ResultCode"));
+            errorMap.put("Msg",DeviceCmdMap.get("ResultMsg")==null?"":DeviceCmdMap.get("ResultMsg"));
+            Data= JSON.toJSONString(errorMap);
+        }
         switch (OpType){
             case "NewInvoice":
                 OnReceive_NewInvoice(Data,OpType,kpls.getKplsh().toString());
