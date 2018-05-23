@@ -8,6 +8,7 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.filter.executor.ExecutorFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +73,7 @@ public class SocketConfig {
         textLineCodecFactory.setDecoderMaxLineLength(Integer.MAX_VALUE);
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
         nioSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(textLineCodecFactory));
+        nioSocketConnector.getFilterChain().addLast("ThreadPool",new ExecutorFilter(taskExecutor));
         nioSocketConnector.getSessionConfig().setReadBufferSize(2048 * 10);
         nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 65*1000);
         // Create Session Configuration
