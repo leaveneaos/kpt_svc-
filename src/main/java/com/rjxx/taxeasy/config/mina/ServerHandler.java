@@ -133,7 +133,7 @@ public class ServerHandler extends IoHandlerAdapter {
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         if (cause instanceof IOException) {
             logger.info("客户端连接IO异常信息:" + cause.getMessage());
-            logger.info("客户端连接IO异常时发送的消息:"+session.getCurrentWriteMessage());
+            logger.info("客户端连接IO异常时发送的消息:"+session.getCurrentWriteRequest().getMessage());
             session.closeNow();
         }
         else if (cause instanceof ProtocolDecoderException) {
