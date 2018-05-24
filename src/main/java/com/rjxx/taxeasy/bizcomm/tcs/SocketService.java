@@ -851,7 +851,14 @@ public class SocketService {
             String seqnumberRequest="";
             Map parmMap=new HashMap(1);
             parmMap.put("jylsh",kplsh);
-            Seqnumber  seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+            Kpls kpls=kplsService.findOne(kplsh);
+            Jyls jyls=jylsService.findOne(kpls.getDjh());
+            Seqnumber  seqnumberOld=null;
+            if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")){
+                seqnumberOld=null;
+            }else{
+                seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+            }
             if(null==seqnumberOld){
                 Seqnumber  seqnumber=new Seqnumber();
                 seqnumber.setJylsh(String.valueOf(kplsh));
@@ -865,8 +872,6 @@ public class SocketService {
             }else{
                 seqnumberRequest=seqnumberOld.getSeqnumber().toString();
             }
-            Kpls kpls=kplsService.findOne(kplsh);
-            Jyls jyls=jylsService.findOne(kpls.getDjh());
             Map params = new HashMap();
             params.put("kplsh", kpls.getKplsh());
             List<Kpspmxvo> kpspmxList = kpspmxService.findSkMxList(params);
