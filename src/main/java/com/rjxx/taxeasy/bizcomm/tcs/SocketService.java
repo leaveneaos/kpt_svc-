@@ -854,10 +854,12 @@ public class SocketService {
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
             Seqnumber  seqnumberOld=null;
-            if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")){
-                seqnumberOld=null;
-            }else{
-                seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+            if(null!=kpls.getErrorReason()&&!"".contains(kpls.getErrorReason())){
+                if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")){
+                    seqnumberOld=null;
+                }else{
+                    seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+                }
             }
             if(null==seqnumberOld){
                 Seqnumber  seqnumber=new Seqnumber();
