@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
+import com.rjxx.taxeasy.config.rabbitmq.RabbitmqSend;
 import com.rjxx.taxeasy.dal.KplsService;
 import com.rjxx.taxeasy.dal.SeqnumberService;
 import com.rjxx.taxeasy.dal.SkpService;
@@ -141,6 +142,8 @@ public class ServerHandler extends IoHandlerAdapter {
             if(session.getAttribute("lsh")!=null){
                 String lsh=session.getAttribute("lsh").toString();
                 logger.info("----发送异常流水号----"+lsh);
+                RabbitmqSend rabbitmqSend = ApplicationContextUtils.getBean(RabbitmqSend.class);
+                rabbitmqSend.sendbox(lsh + "");
             }
             session.closeNow();
         }
