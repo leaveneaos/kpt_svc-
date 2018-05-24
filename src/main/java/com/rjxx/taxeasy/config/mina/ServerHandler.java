@@ -59,11 +59,12 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param message
      * @param wait
      * @param timeout
+     * @param lsh
      */
-    public static String sendMessage(String commandId, Object message,boolean wait, long timeout)throws Exception {
+    public static String sendMessage(String commandId, Object message,boolean wait, long timeout,int lsh)throws Exception {
         IoSession session=SocketSession.getInstance().getSession();
         if(session.isConnected()){
-            sendMessage(session,message);
+            sendMessage(session,message,lsh,commandId);
         }else{
             return "连接断开";
         }
@@ -90,7 +91,10 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param session
      * @param message
      */
-    public static void sendMessage(IoSession session, Object message) throws Exception{
+    public static void sendMessage(IoSession session, Object message,int lsh,String commandId) throws Exception{
+        if("NewInvoice".equals(commandId)){
+            session.setAttribute("lsh",lsh);
+        }
         session.write(message);
     }
 
@@ -134,6 +138,10 @@ public class ServerHandler extends IoHandlerAdapter {
         if (cause instanceof IOException) {
             logger.info("客户端连接IO异常信息:" + cause.getMessage());
             logger.info("客户端连接IO异常时发送的消息:");
+            if(session.getAttribute("lsh")!=null){
+                String lsh=session.getAttribute("lsh").toString();
+                logger.info("----发送异常流水号----"+lsh);
+            }
             session.closeNow();
         }
         else if (cause instanceof ProtocolDecoderException) {

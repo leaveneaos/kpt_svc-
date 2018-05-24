@@ -802,10 +802,12 @@ public class SocketService {
 
         private long timeout;
 
+        private int kplsh;
+
         @Override
         public void run() {
             try {
-                ServerHandler.sendMessage(commandId,message,wait, timeout);
+                ServerHandler.sendMessage(commandId,message,wait, timeout,kplsh);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -825,6 +827,10 @@ public class SocketService {
 
         public void setTimeout(long timeout) {
             this.timeout = timeout;
+        }
+
+        public void setKplsh(int kplsh) {
+            this.kplsh = kplsh;
         }
     }
 
@@ -882,13 +888,14 @@ public class SocketService {
             invoiceTask.setMessage(Ruquest);
             invoiceTask.setTimeout(0);
             invoiceTask.setWait(false);
+            invoiceTask.setKplsh(kplsh);
            /* if (taskExecutor == null) {
                 taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
             taskExecutor.execute(invoiceTask);*/
-            String result= ServerHandler.sendMessage("NewInvoice",Ruquest,false,0 );
+            String result= ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
             if(null!=result&&result.equals("连接断开")){
-                rabbitmqSend.send(kpls.getKplsh() + "");
+                rabbitmqSend.sendbox(kpls.getKplsh() + "");
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -914,7 +921,7 @@ public class SocketService {
         String  InputUDiskPassword= PacketBody.getInstance().Packet_InputUDiskPassword(skp);
         String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumber.getSeqnumber().toString(),"InputUDiskPassword",InputUDiskPassword,skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-        String  result= ServerHandler.sendMessage("InputUDiskPassword",Ruquest,true, 60000);
+        String  result= ServerHandler.sendMessage("InputUDiskPassword",Ruquest,true, 60000,skpid);
         return  result;
     }
 
@@ -936,7 +943,7 @@ public class SocketService {
         seqnumberService.save(seqnumber);
         String deviceAuth=PacketBody.getInstance().Packet_DeviceAuth(skp,PasswordConfig.AppKey);
         String Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceAuth",deviceAuth);
-        String  result=ServerHandler.sendMessage("DeviceAuth",Ruquest,true, 60000);
+        String  result=ServerHandler.sendMessage("DeviceAuth",Ruquest,true, 60000,skpid);
         return  result;
     }
 
@@ -957,7 +964,7 @@ public class SocketService {
         seqnumberService.save(seqnumber);
         String deviceState=PacketBody.getInstance().Packet_DeviceState(skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceState",deviceState);
-        String  result= ServerHandler.sendMessage("DeviceState",Ruquest,true, 60000);
+        String  result= ServerHandler.sendMessage("DeviceState",Ruquest,true, 60000,skpid);
         return  result;
     }
 
@@ -1014,7 +1021,7 @@ public class SocketService {
             String  InvalidateInvoice= PacketBody.getInstance().Packet_InvalidateInvoice(kpls,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvalidateInvoice",InvalidateInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("InvalidateInvoice",Ruquest,true, 60000);
+            String  result=ServerHandler.sendMessage("InvalidateInvoice",Ruquest,true, 60000,kplsh);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1041,7 +1048,7 @@ public class SocketService {
             String  GetUploadStates= PacketBody.getInstance().Packet_GetUploadStates(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetUploadStates",GetUploadStates,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String result= ServerHandler.sendMessage("GetUploadStates",Ruquest,true, 60000);
+            String result= ServerHandler.sendMessage("GetUploadStates",Ruquest,true, 60000,skpid);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1068,7 +1075,7 @@ public class SocketService {
             String  TriggerUpload= PacketBody.getInstance().Packet_TriggerUpload(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"TriggerUpload",TriggerUpload,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("TriggerUpload",Ruquest,true, 60000);
+            String  result=ServerHandler.sendMessage("TriggerUpload",Ruquest,true, 60000,skpid);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1095,7 +1102,7 @@ public class SocketService {
             String  GetDeclareTaxStates= PacketBody.getInstance().Packet_GetDeclareTaxStates(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetDeclareTaxStates",GetDeclareTaxStates,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String result=ServerHandler.sendMessage("GetDeclareTaxStates",Ruquest,true, 60000);
+            String result=ServerHandler.sendMessage("GetDeclareTaxStates",Ruquest,true, 60000,skpid);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1122,7 +1129,7 @@ public class SocketService {
             String  TriggerDeclareTax= PacketBody.getInstance().Packet_TriggerDeclareTax(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"TriggerDeclareTax",TriggerDeclareTax,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result= ServerHandler.sendMessage("TriggerDeclareTax",Ruquest,true, 60000);
+            String  result= ServerHandler.sendMessage("TriggerDeclareTax",Ruquest,true, 60000,skpid);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1149,7 +1156,7 @@ public class SocketService {
             String  UDiskInfo= PacketBody.getInstance().Packet_UDiskInfo(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"UDiskInfo",UDiskInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result = ServerHandler.sendMessage("UDiskInfo",Ruquest,true, 60000);
+            String  result = ServerHandler.sendMessage("UDiskInfo",Ruquest,true, 60000,skpid);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1171,7 +1178,7 @@ public class SocketService {
             String  InvoiceControlInfo= PacketBody.getInstance().Packet_InvoiceControlInfo(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvoiceControlInfo",InvoiceControlInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result =ServerHandler.sendMessage("InvoiceControlInfo",Ruquest,true, 60000);
+            String  result =ServerHandler.sendMessage("InvoiceControlInfo",Ruquest,true, 60000,skpid);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1200,7 +1207,7 @@ public class SocketService {
             String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(kpls,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 60000);
+            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 60000,kplsh);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1235,7 +1242,7 @@ public class SocketService {
                 String  GetAllInvoiceSections= PacketBody.getInstance().Packet_GetAllInvoiceSections(skp,fpzldm);
                 String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetAllInvoiceSections",GetAllInvoiceSections,skp,PasswordConfig.AppKey);
                 String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-                String  result=ServerHandler.sendMessage("GetAllInvoiceSections",Ruquest,true, 60000);
+                String  result=ServerHandler.sendMessage("GetAllInvoiceSections",Ruquest,true, 60000,skpid);
                 resultThree+=result;
             }
             return resultThree;
@@ -1261,7 +1268,7 @@ public class SocketService {
            String  InvoiceDistribute= PacketBody.getInstance().Packet_InvoiceDistribute(map,skp);
            String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvoiceDistribute",InvoiceDistribute,skp,PasswordConfig.AppKey);
            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-           String  result=ServerHandler.sendMessage("InvoiceDistribute",Ruquest,true, 60000);
+           String  result=ServerHandler.sendMessage("InvoiceDistribute",Ruquest,true, 60000,Integer.valueOf(skpid));
            return  result;
        }catch (Exception e){
            e.printStackTrace();
@@ -1283,7 +1290,7 @@ public class SocketService {
             String  UDiskBinding= PacketBody.getInstance().Packet_UDiskBinding(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"UDiskBinding",UDiskBinding,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String result=ServerHandler.sendMessage("UDiskBinding",Ruquest,true, 60000);
+            String result=ServerHandler.sendMessage("UDiskBinding",Ruquest,true, 60000,skpid);
             return result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1305,7 +1312,7 @@ public class SocketService {
             String  SwitchUDisk= PacketBody.getInstance().Packet_SwitchUDisk(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"SwitchUDisk",SwitchUDisk,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String result=ServerHandler.sendMessage("SwitchUDisk",Ruquest,true, 60000);
+            String result=ServerHandler.sendMessage("SwitchUDisk",Ruquest,true, 60000,skpid);
             return result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1328,7 +1335,7 @@ public class SocketService {
             String  DeviceInfo= PacketBody.getInstance().Packet_DeviceInfo(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"DeviceInfo",DeviceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String result= ServerHandler.sendMessage("DeviceInfo",Ruquest,true, 60000);
+            String result= ServerHandler.sendMessage("DeviceInfo",Ruquest,true, 60000,skpid);
             return result;
         }catch (Exception e){
             e.printStackTrace();
@@ -1350,7 +1357,7 @@ public class SocketService {
             String  FactoryReset= PacketBody.getInstance().Packet_FactoryReset(skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"FactoryReset",FactoryReset,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String result=ServerHandler.sendMessage("FactoryReset",Ruquest,true, 60000);
+            String result=ServerHandler.sendMessage("FactoryReset",Ruquest,true, 60000,skpid);
             return result;
         }catch (Exception e){
             e.printStackTrace();
