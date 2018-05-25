@@ -6,7 +6,7 @@
     <select id="findOneByParams" parameterType="map" resultType="crestvbusiness">
         select * from t_crestvbusiness where
         <if test="kplsh != null and kplsh != ''">
-            and kplsh = #{kplsh}
+             kplsh = #{kplsh}
         </if>
         limit 1
     </select>
