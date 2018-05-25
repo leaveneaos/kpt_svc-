@@ -573,7 +573,9 @@ public class ServerHandler extends IoHandlerAdapter {
             Map parmsMap=new HashMap(1);
             parmsMap.put("kplsh",kpls.getKplsh());
             Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
-            crestvbusinessService.delete(crestvbusiness);
+            if(null!=crestvbusiness){
+                crestvbusinessService.delete(crestvbusiness);
+            }
             String result= data;
             Map resultMap=XmltoJson.strJson2Map(result);
             String Code=resultMap.get("Code").toString();
