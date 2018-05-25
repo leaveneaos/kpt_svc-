@@ -28,7 +28,7 @@ public class GenEntityMysql {
     /**
      * 表名
      */
-    private String tablename = "t_seqnumber";
+    private String tablename = "t_crestvbusiness";
     /**
      * 表注释
      */

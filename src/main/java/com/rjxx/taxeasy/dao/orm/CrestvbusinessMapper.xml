@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rjxx.taxeasy.dao.orm.CrestvbusinessMapper">
+
+    <select id="findOneByParams" parameterType="map" resultType="crestvbusiness">
+        select * from t_crestvbusiness where
+        <if test="kplsh != null and kplsh != ''">
+            and kplsh = #{kplsh}
+        </if>
+        limit 1
+    </select>
+
+    <select id="findAllByParams" parameterType="map" resultType="crestvbusiness">
+        select * from t_crestvbusiness
+
+    </select>
+
+    <select id="findByPage" parameterType="pagination" resultType="crestvbusiness">
+        select * from t_crestvbusiness
+
+    </select>
+
+</mapper>
+

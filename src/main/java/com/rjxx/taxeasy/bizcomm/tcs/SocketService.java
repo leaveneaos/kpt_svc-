@@ -85,8 +85,12 @@ public class SocketService {
 
     @Autowired
     private SpbmService spbmService;
+
     @Autowired
     private SeqnumberService seqnumberService;
+
+    @Autowired
+    private CrestvbusinessService crestvbusinessService;
 
     /**
      * 线程池执行任务
@@ -853,6 +857,15 @@ public class SocketService {
             parmMap.put("jylsh",kplsh);
             Kpls kpls=kplsService.findOne(kplsh);
             Jyls jyls=jylsService.findOne(kpls.getDjh());
+            Map parmsMap=new HashMap(1);
+            parmsMap.put("kplsh",kpls.getKplsh());
+            Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
+            if(null==crestvbusiness){
+                crestvbusiness.setKplsh(kpls.getKplsh().toString());
+                crestvbusiness.setLrsj(new Date());
+                crestvbusiness.setXgsj(new Date());
+                crestvbusinessService.save(crestvbusiness);
+            }
             Seqnumber  seqnumberOld=null;
             if(null!=kpls.getErrorReason()&&!"".contains(kpls.getErrorReason())){
                 if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")){
