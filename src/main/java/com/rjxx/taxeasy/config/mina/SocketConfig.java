@@ -79,6 +79,7 @@ public class SocketConfig {
         nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 65*1000);
         // Create Session Configuration
         nioSocketConnector.getSessionConfig().setReuseAddress(true);
+        nioSocketConnector.setConnectTimeoutMillis(3600*1000L);
         nioSocketConnector.getSessionConfig().setKeepAlive(true);
         logger.info("Starting Client......" + "------ip----" + ip + "---port---" + port);
         //链接服务端
