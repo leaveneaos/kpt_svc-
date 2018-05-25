@@ -861,6 +861,7 @@ public class SocketService {
             parmsMap.put("kplsh",kpls.getKplsh());
             Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
             if(null==crestvbusiness){
+                crestvbusiness=new Crestvbusiness();
                 crestvbusiness.setKplsh(kpls.getKplsh().toString());
                 crestvbusiness.setLrsj(new Date());
                 crestvbusiness.setXgsj(new Date());
