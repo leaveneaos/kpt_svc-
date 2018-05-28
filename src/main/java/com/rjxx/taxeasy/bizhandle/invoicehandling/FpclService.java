@@ -802,7 +802,6 @@ public class FpclService {
             kpls.setFpztdm("04");
             kpls.setErrorReason(e.getMessage());
             kplsService.save(kpls);
-            e.printStackTrace();
         } finally {
             if (response != null) {
                 try {
