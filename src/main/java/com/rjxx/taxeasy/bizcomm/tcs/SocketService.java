@@ -861,11 +861,13 @@ public class SocketService {
             parmsMap.put("kplsh",kpls.getKplsh());
             Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
             if(null==crestvbusiness){
-                crestvbusiness=new Crestvbusiness();
-                crestvbusiness.setKplsh(kpls.getKplsh().toString());
-                crestvbusiness.setLrsj(new Date());
-                crestvbusiness.setXgsj(new Date());
-                crestvbusinessService.save(crestvbusiness);
+                if(!"00".equals(kpls.getFpztdm())&&!"05".equals(kpls.getFpztdm())&&!"02".equals(kpls.getFpztdm())){
+                    crestvbusiness=new Crestvbusiness();
+                    crestvbusiness.setKplsh(kpls.getKplsh().toString());
+                    crestvbusiness.setLrsj(new Date());
+                    crestvbusiness.setXgsj(new Date());
+                    crestvbusinessService.save(crestvbusiness);
+                }
             }
             Seqnumber  seqnumberOld=null;
             if(null!=kpls.getErrorReason()&&!"".contains(kpls.getErrorReason())){
