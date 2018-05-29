@@ -866,6 +866,7 @@ public class SocketService {
                     crestvbusiness.setKplsh(kpls.getKplsh().toString());
                     crestvbusiness.setLrsj(new Date());
                     crestvbusiness.setXgsj(new Date());
+                    crestvbusiness.setMqbz("0");
                     crestvbusinessService.save(crestvbusiness);
                 }
             }
