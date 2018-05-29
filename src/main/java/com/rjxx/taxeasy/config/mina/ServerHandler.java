@@ -140,7 +140,6 @@ public class ServerHandler extends IoHandlerAdapter {
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         if (cause instanceof IOException) {
             logger.info("客户端连接IO异常信息:" + cause.getMessage());
-            logger.info("客户端连接IO异常时发送的消息:");
             if(session.getAttribute("lsh")!=null){
                 String lsh=session.getAttribute("lsh").toString();
                 logger.info("----发送异常流水号----"+lsh);

@@ -861,7 +861,7 @@ public class SocketService {
             parmsMap.put("kplsh",kpls.getKplsh());
             Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
             if(null==crestvbusiness){
-                if(!"00".equals(kpls.getFpztdm())&&!"05".equals(kpls.getFpztdm())&&!"02".equals(kpls.getFpztdm())){
+                if("04".equals(kpls.getFpztdm())){
                     crestvbusiness=new Crestvbusiness();
                     crestvbusiness.setKplsh(kpls.getKplsh().toString());
                     crestvbusiness.setLrsj(new Date());
@@ -912,6 +912,8 @@ public class SocketService {
             invoiceTask.setTimeout(0);
             invoiceTask.setWait(false);
             invoiceTask.setKplsh(kplsh);
+            kpls.setFpztdm("14");
+            kplsService.save(kpls);
            /* if (taskExecutor == null) {
                 taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
