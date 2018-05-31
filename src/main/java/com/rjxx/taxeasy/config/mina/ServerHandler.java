@@ -620,6 +620,10 @@ public class ServerHandler extends IoHandlerAdapter {
                 Map kpMap=new HashMap(2);
                 kpMap.put("RETURNCODE", Code);
                 kpMap.put("RETURNMSG", Msg);
+                if(Msg.contains("相同请求处理中")){
+                    kpls.setFpztdm("14");
+                    kplsService.save(kpls);
+                }
                 kpMap.put("KPLSH", kpls.getKplsh());
                 fpclService.updateKpls(kpMap);
             }
