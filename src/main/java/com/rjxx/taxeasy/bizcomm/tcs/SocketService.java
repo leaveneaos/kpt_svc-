@@ -872,7 +872,7 @@ public class SocketService {
             }
             Seqnumber  seqnumberOld=null;
             if(null!=kpls.getErrorReason()&&!"".contains(kpls.getErrorReason())){
-                if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")||kpls.getErrorReason().contains("税控设备未初始化")){
+                if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")||kpls.getErrorReason().contains("税控设备未初始化")||kpls.getErrorReason().contains("离线开票上传限定")){
                     seqnumberOld=null;
                 }else{
                     seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
