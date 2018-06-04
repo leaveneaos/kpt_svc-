@@ -1230,7 +1230,7 @@ public class FpclService {
                 kpls.setJylsh(jyls.getJylsh());
                 kplsService.save(kpls);
                 if(null==kpls.getPdfurl()){
-                    if(!"12".equals(kpls.getFpzldm())){
+                    if("12".equals(kpls.getFpzldm())){
                         //此处生成PDF
                         PdfTask pdfTask=new PdfTask();
                         pdfTask.setKplsh(kpls.getKplsh());
