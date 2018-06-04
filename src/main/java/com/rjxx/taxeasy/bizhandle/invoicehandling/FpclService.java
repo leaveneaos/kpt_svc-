@@ -1230,13 +1230,15 @@ public class FpclService {
                 kpls.setJylsh(jyls.getJylsh());
                 kplsService.save(kpls);
                 if(null==kpls.getPdfurl()){
-                    //此处生成PDF
-                    PdfTask pdfTask=new PdfTask();
-                    pdfTask.setKplsh(kpls.getKplsh());
-                    if (taskExecutor == null) {
-                        taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
+                    if(!"12".equals(kpls.getFpzldm())){
+                        //此处生成PDF
+                        PdfTask pdfTask=new PdfTask();
+                        pdfTask.setKplsh(kpls.getKplsh());
+                        if (taskExecutor == null) {
+                            taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
+                        }
+                        taskExecutor.execute(pdfTask);
                     }
-                    taskExecutor.execute(pdfTask);
                 }
             } else {
                 kpls.setFpztdm("05");
