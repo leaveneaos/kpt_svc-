@@ -299,16 +299,16 @@ public class PacketBody {
         String InvoiceControlInfo="{}";
         return AESUtils.aesEncrypt(InvoiceControlInfo,skp.getDevicekey());
     }
-    public String Packet_GetCurrentInvoiceInfo(Kpls kpls, Skp skp) throws Exception{
+    public String Packet_GetCurrentInvoiceInfo(String fplxdm, Skp skp) throws Exception{
         Packet.GetCurrentInvoiceInfo getCurrentInvoiceInfo=new Packet().new GetCurrentInvoiceInfo();
         String fpzldm="";
-        if("01".equals(kpls.getFpczlxdm())){
+        if("01".equals(fplxdm)){
             fpzldm="1";
-        }else if("02".equals(kpls.getFpzldm())){
+        }else if("02".equals(fplxdm)){
             fpzldm="2";
-        }else if("12".equals(kpls.getFpzldm())){
+        }else if("12".equals(fplxdm)){
             fpzldm="4";
-        }else if("03".equals(kpls.getFpzldm())){
+        }else if("03".equals(fplxdm)){
             fpzldm="3";
         }else{
             fpzldm="200";

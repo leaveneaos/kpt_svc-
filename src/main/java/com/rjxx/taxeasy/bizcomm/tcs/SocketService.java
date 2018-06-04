@@ -1217,23 +1217,24 @@ public class SocketService {
             if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
             }
-            String kplshStr = skService.decryptSkServerParameter(p);
-            int kplsh = Integer.valueOf(kplshStr);
+            String params = skService.decryptSkServerParameter(p);
+            Map<String, String> map = HtmlUtils.parseQueryString(params);
+            String kpdid = map.get("kpdid");
+            String fplxdm = map.get("fplxdm");
+            logger.debug("------传输数据-------"+params);
+            Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
             Seqnumber  seqnumber=new Seqnumber();
-            seqnumber.setJylsh(String.valueOf(kplsh));
+            seqnumber.setJylsh(String.valueOf(kpdid));
             seqnumber.setOptype("GetCurrentInvoiceInfo");
             seqnumber.setOptypemc("获取当前发票信息");
             seqnumber.setXgsj(new Date());
             seqnumber.setLrsj(new Date());
             seqnumber.setYxbz(1);
             seqnumberService.save(seqnumber);
-            Kpls kpls=kplsService.findOne(kplsh);
-            Jyls jyls=jylsService.findOne(kpls.getDjh());
-            Skp skp=skpService.findOne(kpls.getSkpid());
-            String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(kpls,skp);
+            String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(fplxdm,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 60000,kplsh);
+            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 60000,skp.getId());
             return  result;
         }catch (Exception e){
             e.printStackTrace();
