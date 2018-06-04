@@ -13,12 +13,10 @@ import com.rjxx.taxeasy.dao.bo.Crestvbusiness;
 import com.rjxx.taxeasy.dao.bo.Kpls;
 import com.rjxx.taxeasy.dao.bo.Seqnumber;
 import com.rjxx.taxeasy.dao.bo.Skp;
+import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.time.TimeUtil;
-import com.rjxx.utils.AESUtils;
-import com.rjxx.utils.DesUtils;
-import com.rjxx.utils.StringUtils;
-import com.rjxx.utils.XmltoJson;
+import com.rjxx.utils.*;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -258,7 +256,7 @@ public class ServerHandler extends IoHandlerAdapter {
         }
         Kpls kpls=null;
         Skp skp=null;
-        if(("GetCurrentInvoiceInfo").equals(OpType)||"InvalidateInvoice".equals(OpType)||"NewInvoice".equals(OpType)){
+        if("InvalidateInvoice".equals(OpType)||"NewInvoice".equals(OpType)){
              kpls=kplsService.findOne(Integer.valueOf(seqNumber.getJylsh()));
              skp=skpService.findOne(kpls.getSkpid());
         }else{
@@ -423,10 +421,23 @@ public class ServerHandler extends IoHandlerAdapter {
         try {
             GetCurrentInvoiceInfoMap=XmltoJson.strJson2Map(data);
             ResultCode=GetCurrentInvoiceInfoMap.get("Code").toString();
+            InvoiceResponse invoiceResponse=new InvoiceResponse();
             if("0".equals(ResultCode)){
                 String ResultMsg=GetCurrentInvoiceInfoMap.get("Msg").toString();
+                if(null!=GetCurrentInvoiceInfoMap.get("InvoiceList")){
+                    List InvoiceList=(List)GetCurrentInvoiceInfoMap.get("InvoiceList");
+                    Map InvoiceMap=(Map)InvoiceList.get(0);
+                    String InvoiceType=(String)InvoiceMap.get("InvoiceType");
+                    String InvoiceCode=(String)InvoiceMap.get("InvoiceCode");
+                    String CurrentInvoiceNum=(String)InvoiceMap.get("CurrentInvoiceNum");
+                    invoiceResponse.setFpdm(InvoiceCode);
+                    invoiceResponse.setFphm(CurrentInvoiceNum);
+                    invoiceResponse.setFplxdm(InvoiceType);
+                    invoiceResponse.setReturnCode("0000");
+                    invoiceResponse.setReturnMessage("获取号码成功");
+                }
             }
-            setSocketRequest(opType,data);
+            setSocketRequest(opType, XmlJaxbUtils.toXml(invoiceResponse));
         }catch (Exception e){
             e.printStackTrace();
         }
