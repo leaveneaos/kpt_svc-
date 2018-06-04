@@ -55,7 +55,7 @@ public class KplsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void save(Kpls kpls) {
+    public void save(Kpls kpls) throws Exception{
         kplsJpaDao.save(kpls);
         Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "kpfs");
 
@@ -92,7 +92,7 @@ public class KplsService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void save(List<Kpls> kplsList) {
+    public void save(List<Kpls> kplsList) throws Exception{
         kplsJpaDao.save(kplsList);
         for (Kpls kpls : kplsList) {
             if ("04".equals(kpls.getFpztdm())) {
