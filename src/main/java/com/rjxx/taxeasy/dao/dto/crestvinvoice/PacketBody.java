@@ -147,7 +147,11 @@ public class PacketBody {
 /**
     *        item.CatalogCode=kpspmx.getSpdm();
 */
-            item.HasPreferentialPolicy=kpspmx.getYhzcbs();
+            if(null==kpspmx.getYhzcbs()||"".equals(kpspmx.getYhzcbs())){
+                item.HasPreferentialPolicy="0";
+            }else{
+                item.HasPreferentialPolicy=kpspmx.getYhzcbs();
+            }
             if(kpspmx.getYhzcmc()==null){
                 item.PreferentialPolicy="";
             }else{
