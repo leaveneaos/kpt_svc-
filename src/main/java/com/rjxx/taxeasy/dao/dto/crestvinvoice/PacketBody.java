@@ -144,7 +144,9 @@ public class PacketBody {
              * 商品分类简称
              */
             item.CatalogShortName=kpspmx.getSpfljc();
-            item.CatalogCode=kpspmx.getSpdm();
+/**
+    *        item.CatalogCode=kpspmx.getSpdm();
+*/
             item.HasPreferentialPolicy=kpspmx.getYhzcbs();
             if(kpspmx.getYhzcmc()==null){
                 item.PreferentialPolicy="";
