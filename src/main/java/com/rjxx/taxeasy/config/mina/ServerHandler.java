@@ -143,6 +143,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 logger.info("----发送异常流水号----"+lsh);
                 RabbitmqSend rabbitmqSend = ApplicationContextUtils.getBean(RabbitmqSend.class);
                 rabbitmqSend.sendbox(lsh + "");
+                session.setAttribute("lsh",null);
             }
             session.closeNow();
         }

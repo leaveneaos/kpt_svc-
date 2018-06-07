@@ -905,6 +905,7 @@ public class SocketService {
             Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
             String spbmbbh = "";
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
+            logger.info("------发送开票数据------"+newInvoice);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumberRequest,"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             InvoiceTask invoiceTask=new InvoiceTask();
