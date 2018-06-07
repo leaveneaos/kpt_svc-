@@ -272,6 +272,7 @@ public class ServerHandler extends IoHandlerAdapter {
             errorMap.put("Msg",DeviceCmdMap.get("ResultMsg")==null?"":DeviceCmdMap.get("ResultMsg").toString());
             Data= JSON.toJSONString(errorMap);
         }
+        logger.info("-------凯盈返回明文信息------");
         switch (OpType){
             case "NewInvoice":
                 OnReceive_NewInvoice(Data,OpType,kpls.getKplsh().toString());
