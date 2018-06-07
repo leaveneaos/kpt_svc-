@@ -8,6 +8,8 @@ import com.rjxx.taxeasy.dao.vo.Kpspmxvo;
 import com.rjxx.utils.AESUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -30,7 +32,7 @@ import java.util.zip.GZIPOutputStream;
  **/
 public class PacketBody {
 
-
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 静态内部类懒汉式单列模式
@@ -45,6 +47,7 @@ public class PacketBody {
     public String Packet_Invoice_Json(Kpls kpls, Jyls jyls, List<Kpspmxvo>kpspmxList, Skp skp,String spbmbbh)throws Exception{
         Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList,spbmbbh);
         String Invoice_Json= JSON.toJSONString(newInvoice);
+        logger.info("------发送开票数据------"+Invoice_Json);
         return AESUtils.aesEncrypt(Invoice_Json,skp.getDevicekey());
     }
 
