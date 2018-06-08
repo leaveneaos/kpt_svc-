@@ -14,5 +14,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface PpJpaDao extends CrudRepository<Pp, Integer> {
     @Query(nativeQuery = true, value = "select * from t_pp where id=?1 and yxbz='1'")
     Pp findOneById(Integer id);
+    @Query(nativeQuery = true, value = "select * from t_pp where ppdm=?1 and yxbz='1' ")
+    Pp findOneByPpdm(String ppdm);
 }
 
