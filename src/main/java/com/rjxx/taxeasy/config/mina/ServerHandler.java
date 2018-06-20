@@ -17,6 +17,8 @@ import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.*;
+import org.apache.mina.core.future.IoFutureListener;
+import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -67,6 +69,7 @@ public class ServerHandler extends IoHandlerAdapter {
         if(session.isConnected()){
             sendMessage(session,message,lsh,commandId);
         }else{
+            logger.info("##########The socket connection has been disconnected.#####");
             return "连接断开";
         }
         if (wait && timeout > 0) {
@@ -96,7 +99,24 @@ public class ServerHandler extends IoHandlerAdapter {
         if("NewInvoice".equals(commandId)){
             session.setAttribute("lsh",lsh);
         }
-        session.write(message);
+
+        WriteFuture writeFuture = session.write(message);
+        writeFuture.addListener(new IoFutureListener<WriteFuture>() {
+            @Override
+            public void operationComplete(WriteFuture future) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                boolean flag = future.isWritten();
+                if(!flag){
+                    logger.info("################Mina send message failed!!!");
+                }else{
+                    System.out.println("----发送数据成功！------");
+                }
+            }
+        });
     }
 
     @Override
@@ -143,7 +163,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 logger.info("----发送异常流水号----"+lsh);
                 RabbitmqSend rabbitmqSend = ApplicationContextUtils.getBean(RabbitmqSend.class);
                 rabbitmqSend.sendbox(lsh + "");
-                session.setAttribute("lsh",null);
             }
             session.closeNow();
         }
@@ -258,21 +277,20 @@ public class ServerHandler extends IoHandlerAdapter {
         Kpls kpls=null;
         Skp skp=null;
         if("InvalidateInvoice".equals(OpType)||"NewInvoice".equals(OpType)){
-             kpls=kplsService.findOne(Integer.valueOf(seqNumber.getJylsh()));
-             skp=skpService.findOne(kpls.getSkpid());
+            kpls=kplsService.findOne(Integer.valueOf(seqNumber.getJylsh()));
+            skp=skpService.findOne(kpls.getSkpid());
         }else{
             skp=skpService.findOne(Integer.valueOf(seqNumber.getJylsh()));
         }
         String Data=null;
         if(null!=DeviceCmdMap.get("Data")){
-             Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
+            Data=PacketBody.jiemiData(DeviceCmdMap.get("Data").toString(),skp.getDevicekey());
         }else{
             Map errorMap=new HashMap();
             errorMap.put("Code",DeviceCmdMap.get("ResultCode")==null?"":DeviceCmdMap.get("ResultCode").toString());
             errorMap.put("Msg",DeviceCmdMap.get("ResultMsg")==null?"":DeviceCmdMap.get("ResultMsg").toString());
             Data= JSON.toJSONString(errorMap);
         }
-        logger.info("-------凯盈返回明文信息------"+Data);
         switch (OpType){
             case "NewInvoice":
                 OnReceive_NewInvoice(Data,OpType,kpls.getKplsh().toString());
@@ -653,17 +671,17 @@ public class ServerHandler extends IoHandlerAdapter {
             ResultCode=DeviceAuthMap.get("ResultCode").toString();
             String ResultMsg=DeviceAuthMap.get("ResultMsg").toString();
             if("0".equals(ResultCode)){
-            String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
-            String DeviceKey=DeviceAuthMap.get("DeviceKey").toString();
-            BASE64Decoder decoder = new BASE64Decoder();
-            DeviceKey=DesUtils.bytesToHexString(decoder.decodeBuffer(DeviceKey)).toUpperCase();
-            logger.info("------终端密钥--------"+DeviceKey);
-            SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-            Map skpMap =new HashMap(1);
-            skpMap.put("devicesn",DeviceSN);
-            Skp skp= skpService.findOneByParams(skpMap);
-            skp.setDevicekey(DeviceKey);
-            skpService.save(skp);
+                String DeviceSN=DeviceAuthMap.get("DeviceSN").toString();
+                String DeviceKey=DeviceAuthMap.get("DeviceKey").toString();
+                BASE64Decoder decoder = new BASE64Decoder();
+                DeviceKey=DesUtils.bytesToHexString(decoder.decodeBuffer(DeviceKey)).toUpperCase();
+                logger.info("------终端密钥--------"+DeviceKey);
+                SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+                Map skpMap =new HashMap(1);
+                skpMap.put("devicesn",DeviceSN);
+                Skp skp= skpService.findOneByParams(skpMap);
+                skp.setDevicekey(DeviceKey);
+                skpService.save(skp);
             }
             setSocketRequest(ReqType,ReqData);
         }catch (Exception e){
@@ -679,10 +697,10 @@ public class ServerHandler extends IoHandlerAdapter {
         String DeviceKey=DesUtils.bytesToHexString(ReqData).toUpperCase();
         logger.info("-------解密后字符DeviceKey----------"+DeviceKey);
         //BASE64Decoder decoder = new BASE64Decoder();
-       // String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
-       // byte[] str2=decoder.decodeBuffer(str);
-       // //logger.info(new String(PacketBody.unGZip(str2)),"utf-8");
-       // String DeviceKey="B5934BCC952C0C1091DDF815FBABA29C88E127705BDE0D1B4BD44B1D8648809E";
-       // logger.info(new String(PacketBody.unGZip(AESUtils.aesDecrypt(str2,DeviceKey)),"utf-8"));
+        // String str="MiwEGYOEPSr1rb4ceasRAIB16qwiIyAiBFjAo4beGhZIOEJyZ5NIZI7E1wjjz9i6tUvJFwafaiZbNcMo/kbiZ+9uYPjo+cj8EOXbFouPiq4=";
+        // byte[] str2=decoder.decodeBuffer(str);
+        // //logger.info(new String(PacketBody.unGZip(str2)),"utf-8");
+        // String DeviceKey="B5934BCC952C0C1091DDF815FBABA29C88E127705BDE0D1B4BD44B1D8648809E";
+        // logger.info(new String(PacketBody.unGZip(AESUtils.aesDecrypt(str2,DeviceKey)),"utf-8"));
     }
 }
