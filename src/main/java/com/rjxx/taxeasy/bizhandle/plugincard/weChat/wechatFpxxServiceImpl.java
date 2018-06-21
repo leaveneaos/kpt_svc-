@@ -3,7 +3,9 @@ package com.rjxx.taxeasy.bizhandle.plugincard.weChat;
 import com.itextpdf.text.log.Logger;
 import com.itextpdf.text.log.LoggerFactory;
 import com.rjxx.taxeasy.bizhandle.plugincard.alipay.AlipayUtils;
+import com.rjxx.taxeasy.dal.CszbService;
 import com.rjxx.taxeasy.dal.GsxxService;
+import com.rjxx.taxeasy.dao.bo.Cszb;
 import com.rjxx.taxeasy.dao.bo.Gsxx;
 import com.rjxx.taxeasy.dao.bo.WxFpxx;
 import com.rjxx.taxeasy.dao.orm.WxfpxxJpaDao;
@@ -27,6 +29,8 @@ public class wechatFpxxServiceImpl {
 
     @Autowired
     private GsxxService gsxxService;
+    @Autowired
+    private CszbService cszbService;
 
 
     /**
@@ -63,6 +67,40 @@ public class wechatFpxxServiceImpl {
             return  orderNo;
         }
     }
+
+    /**
+     * 对上传给微信的订单号进行count计数
+     * 对订单号查询参数拼接
+     * @param orderNo,gsdm,xfid
+     * @return
+     */
+    public String getweixinOrderNo(String orderNo,String gsdm,Integer xfid){
+        WxFpxx wxFpxx = wxfpxxJpaDao.selsetByOrderNo(orderNo,gsdm);
+        String weixinOrderNo1 = "";
+        String weixinOrderno2 ="";
+        if(null!=wxFpxx){
+            Cszb cszb = cszbService.getSpbmbbh(gsdm,xfid, null, "prefix-OrderNo");
+            if(cszb!=null && cszb.getCsz()!=null){
+                weixinOrderNo1 = cszb.getCsz()+"-"+orderNo;
+            }else {
+                weixinOrderNo1 = orderNo;
+            }
+
+            if(wxFpxx.getCount() == 0){
+                wxFpxx.setWeixinOderno(weixinOrderNo1);
+                wxfpxxJpaDao.save(wxFpxx);
+                return weixinOrderNo1;
+            }else {
+                weixinOrderno2 = weixinOrderNo1 +"-"+ wxFpxx.getCount();
+                wxFpxx.setWeixinOderno(weixinOrderno2);
+                wxfpxxJpaDao.save(wxFpxx);
+                return weixinOrderno2;
+            }
+        }else {
+            return  orderNo;
+        }
+    }
+
 
     /**
      * 封装微信发票信息保存
