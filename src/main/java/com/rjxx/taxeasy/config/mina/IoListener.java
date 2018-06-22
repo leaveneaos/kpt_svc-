@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  **/
 public class IoListener implements IoServiceListener {
 
-    private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(IoListener.class);
     @Override
     public void serviceActivated(IoService service) throws Exception {
 
