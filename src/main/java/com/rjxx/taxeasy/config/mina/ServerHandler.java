@@ -73,6 +73,7 @@ public class ServerHandler extends IoHandlerAdapter {
             return "连接断开";
         }
         if (wait && timeout > 0) {
+            logger.info("####ServerHandler sendMessage waiting for timeout !!####");
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);
             cachedRequestMap.put(commandId, socketRequest);
@@ -152,6 +153,7 @@ public class ServerHandler extends IoHandlerAdapter {
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         logger.info("客户端连接空闲:" + status.toString()+session.isConnected());
+        session.closeNow();
     }
 
     @Override

@@ -76,10 +76,12 @@ public class SocketConfig {
         nioSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(textLineCodecFactory));
         nioSocketConnector.getFilterChain().addLast("ThreadPool",new ExecutorFilter(Executors.newCachedThreadPool()));
         nioSocketConnector.getSessionConfig().setReadBufferSize(2048 * 10);
-        nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 65*1000);
+        nioSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30*1000);
         // Create Session Configuration
         nioSocketConnector.getSessionConfig().setReuseAddress(true);
         nioSocketConnector.getSessionConfig().setKeepAlive(true);
+        //添加处理器
+        nioSocketConnector.setHandler(new ServerHandler());
         logger.info("Starting Client......" + "------ip----" + ip + "---port---" + port);
         //链接服务端
         // 设置默认访问地址
@@ -97,7 +99,7 @@ public class SocketConfig {
             } catch (RuntimeIoException e) {
                 logger.error("连接服务端" + ip + ":" + port + "失败" + ",,时间:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ", 连接服务异常,请检查服务端口、IP是否正确,服务是否启动,异常内容:" + e.getMessage(), e);
                 // 连接失败后,重连间隔2s
-                Thread.sleep(2*000);
+                Thread.sleep(2*1000);
             }
         }
     }
