@@ -1,12 +1,7 @@
 package com.rjxx.taxeasy.bizhandle.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.rjxx.utils.weixin.HttpClientUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -17,16 +12,6 @@ import java.util.Random;
  * @Version 1.0
  **/
 public class ShortUrlUtil {
-
-    public static String dwz(String longUrl) {
-        Map param = new HashMap<>();
-        param.put("longurl", longUrl);
-        param.put("api", "sina");
-        String result = HttpClientUtil.doGet("http://tools.aeink.com/tools/dwz/urldwz.php",param);
-        JSONObject jsonObject = JSON.parseObject(result);
-        String ae_url = jsonObject.getString("ae_url");
-        return ae_url;
-    }
 
     public static String shortUrl(String url) {
         // 可以自定义生成 MD5 加密字符传前的混合 KEY
