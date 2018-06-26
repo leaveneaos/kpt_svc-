@@ -14,6 +14,8 @@ import com.rjxx.taxeasy.dao.bo.*;
 import com.rjxx.taxeasy.dao.dto.*;
 import com.rjxx.taxeasy.dao.dto.adapter.*;
 import com.rjxx.taxeasy.dao.orm.KpspmxJpaDao;
+import com.rjxx.taxeasy.dao.orm.PpJpaDao;
+import com.rjxx.taxeasy.dao.orm.ShortLinkJpaDao;
 import com.rjxx.taxeasy.dao.orm.XfJpaDao;
 import com.rjxx.taxeasy.dao.vo.Fpcxvo;
 import com.rjxx.taxeasy.dao.vo.messageParams;
@@ -116,6 +118,12 @@ public class GeneratePdfService {
 
     @Autowired
     private XfJpaDao xfJpaDao;
+    @Autowired
+    private SkpService skpService;
+    @Autowired
+    private PpJpaDao ppJpaDao;
+    @Autowired
+    private ShortLinkJpaDao shortLinkJpaDao;
 
     @Value("${emailInfoUrl:}")
     private String emailInfoUrl;
@@ -428,7 +436,14 @@ public class GeneratePdfService {
                                             jylsService.updateDxbz(param3);
                                         }
                                     }else{
-                                        saveMsg.saveMessage(jyls.getGsdm(), djh, sjhm, rep, "SMS_34725005", "泰易电子发票");
+                                        Cszb dxmb = cszbService.getSpbmbbh(jyls.getGsdm(), jyls.getXfid(), jyls.getSkpid(), "sms_code");
+                                        String mbdm="SMS_34725005";
+                                        if(dxmb!=null&&dxmb.getCsz()!=null){
+                                            mbdm=dxmb.getCsz();
+                                            rep = shortParam(jyls);
+                                        }
+                                        logger.info("----短信模板代码---"+mbdm+"短信内容："+JSON.toJSONString(rep));
+                                        saveMsg.saveMessage(jyls.getGsdm(), djh, sjhm, rep, mbdm, "泰易电子发票");
                                         Map param3 = new HashMap<>();
                                         param3.put("djh", djh);
                                         param3.put("dxzt", '1');
@@ -478,7 +493,51 @@ public class GeneratePdfService {
         }
     }
 
-
+    public Map shortParam(Jyls jyls){
+        Map parms=new HashMap();
+        Kpls ls = new Kpls();
+        ls.setDjh(jyls.getDjh());
+        List<Kpls> listkpls = kplsService.findAllByKpls(ls);
+        Map skpMap = new HashMap();
+        skpMap.put("kpdid",jyls.getSkpid());
+        skpMap.put("gsdm",jyls.getGsdm());
+        Skp skp = skpService.findOneByParams(skpMap);
+        Pp pp = null;
+        if(skp.getPid()!=null && skp.getPid()!=-1 &&skp.getPid()!=0){
+            pp = ppJpaDao.findOneById(skp.getPid());
+        }else{
+            pp = ppJpaDao.findOneByPpdm("rjxx");
+        }
+        //参数转为短链接
+        try {
+            parms.put("ppmc",pp.getPpmc());
+            parms.put("param",ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            ShortLink shortLink = new ShortLink();
+            shortLink.setShortLink(ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            shortLink.setNormalLink(listkpls.get(0).getSerialorder());
+            shortLink.setType("01");//开票
+            shortLink.setCreator("1");
+            shortLink.setCreateDate(new Date());
+            shortLink.setModifier("1");
+            shortLink.setModifyDate(new Date());
+            shortLinkJpaDao.save(shortLink);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("------短链接出现异常：---------");
+            parms.put("ppmc",pp.getPpmc());
+            parms.put("param",ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            ShortLink shortLink = new ShortLink();
+            shortLink.setShortLink(ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            shortLink.setNormalLink(listkpls.get(0).getSerialorder());
+            shortLink.setType("01");//开票
+            shortLink.setCreator("1");
+            shortLink.setCreateDate(new Date());
+            shortLink.setModifier("1");
+            shortLink.setModifyDate(new Date());
+            shortLinkJpaDao.save(shortLink);
+        }
+        return parms;
+    }
 
     public Map httpPostNoSign(String returnmessage, Kpls kpls) {
         Map parms=new HashMap();
