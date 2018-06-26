@@ -510,30 +510,34 @@ public class GeneratePdfService {
         }
         //参数转为短链接
         try {
+            String dlj=ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());//生成短链接
             parms.put("ppmc",pp.getPpmc());
-            parms.put("param",ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            parms.put("param",dlj);
             ShortLink shortLink = new ShortLink();
-            shortLink.setShortLink(ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            shortLink.setShortLink(dlj);
             shortLink.setNormalLink(listkpls.get(0).getSerialorder());
             shortLink.setType("01");//开票
             shortLink.setCreator("1");
             shortLink.setCreateDate(new Date());
             shortLink.setModifier("1");
             shortLink.setModifyDate(new Date());
+            shortLink.setUseMark("1");
             shortLinkJpaDao.save(shortLink);
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("------短链接出现异常：---------");
+            String dlj=ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());
             parms.put("ppmc",pp.getPpmc());
-            parms.put("param",ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            parms.put("param",dlj);
             ShortLink shortLink = new ShortLink();
-            shortLink.setShortLink(ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder()));
+            shortLink.setShortLink(dlj);
             shortLink.setNormalLink(listkpls.get(0).getSerialorder());
             shortLink.setType("01");//开票
             shortLink.setCreator("1");
             shortLink.setCreateDate(new Date());
             shortLink.setModifier("1");
             shortLink.setModifyDate(new Date());
+            shortLink.setUseMark("1");
             shortLinkJpaDao.save(shortLink);
         }
         return parms;
