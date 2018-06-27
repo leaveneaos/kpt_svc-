@@ -557,7 +557,7 @@ public class GeneratePdfService {
             ShortLink shortLink1 = shortLinkJpaDao.findOneByShortLink(dlj1);
             if(shortLink1!=null){
                 //查询到数据重新生成shortLink
-                dlj1 = ShortUrlUtil.shortUrl("q="+listkpls.get(0).getSerialorder());//生成短链接
+                dlj1 = "q="+ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());//生成短链接
                 logger.info("继续生成shortLink 2"+dlj1);
             }
             parms.put("ppmc",pp.getPpmc());
