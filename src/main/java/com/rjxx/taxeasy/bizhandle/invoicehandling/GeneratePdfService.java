@@ -555,12 +555,12 @@ public class GeneratePdfService {
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             logger.info("------短链接保存出现异常：---------");
-            String dlj1= com.rjxx.utils.dwz.ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());
+            String dlj1= ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());
             logger.info("重新生成shortLink 1"+dlj1);
             ShortLink shortLink1 = shortLinkJpaDao.findOneByShortLink(dlj1);
             if(shortLink1!=null){
                 //查询到数据重新生成shortLink
-                dlj1 = com.rjxx.utils.dwz.ShortUrlUtil.shortUrl("JY201806270933369972018062703zsq");//生成短链接
+                dlj1 = ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());//生成短链接
                 logger.info("继续生成shortLink 2"+dlj1);
             }
             parms.put("ppmc",pp.getPpmc());
