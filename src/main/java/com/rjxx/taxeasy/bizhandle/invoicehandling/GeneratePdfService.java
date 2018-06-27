@@ -536,7 +536,7 @@ public class GeneratePdfService {
         }
         //参数转为短链接
         try {
-            String dlj="q="+ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());//生成短链接
+            String dlj=ShortUrlUtil.shortUrl("q="+listkpls.get(0).getSerialorder());//生成短链接
             parms.put("ppmc",pp.getPpmc());
             parms.put("param",dlj);
             ShortLink shortLink = new ShortLink();
@@ -552,12 +552,12 @@ public class GeneratePdfService {
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             logger.info("------短链接保存出现异常：---------");
-            String dlj1= "q="+ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());
+            String dlj1= ShortUrlUtil.shortUrl("q="+listkpls.get(0).getSerialorder());
             logger.info("重新生成shortLink 1"+dlj1);
             ShortLink shortLink1 = shortLinkJpaDao.findOneByShortLink(dlj1);
             if(shortLink1!=null){
                 //查询到数据重新生成shortLink
-                dlj1 = "q="+ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());//生成短链接
+                dlj1 = ShortUrlUtil.shortUrl("q="+listkpls.get(0).getSerialorder());//生成短链接
                 logger.info("继续生成shortLink 2"+dlj1);
             }
             parms.put("ppmc",pp.getPpmc());
