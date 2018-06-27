@@ -1,6 +1,7 @@
 package com.rjxx.taxeasy.dao.orm;
 
 import com.rjxx.taxeasy.dao.bo.ShortLink;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.data.repository.CrudRepository;
  * @administrator
  */ 
 public interface ShortLinkJpaDao extends CrudRepository<ShortLink, Integer> {
-
+    @Query(nativeQuery = true, value = "select * from t_short_link where short_link=?1 and use_mark='1'")
+    ShortLink findOneByShortLink(String short_link);
 }
 

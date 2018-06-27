@@ -7,11 +7,37 @@ import com.rjxx.taxeasy.bizhandle.pdf.PdfDocumentGenerator;
 import com.rjxx.taxeasy.bizhandle.pdf.TwoDimensionCode;
 import com.rjxx.taxeasy.bizhandle.plugincard.ImputationCardUtil;
 import com.rjxx.taxeasy.bizhandle.utils.*;
+import com.rjxx.taxeasy.bizhandle.utils.ShortUrlUtil;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
 import com.rjxx.taxeasy.dal.*;
 import com.rjxx.taxeasy.dao.bo.*;
+import com.rjxx.taxeasy.dao.bo.Cszb;
+import com.rjxx.taxeasy.dao.bo.Fphxwsjl;
+import com.rjxx.taxeasy.dao.bo.Gsxx;
+import com.rjxx.taxeasy.dao.bo.Jyls;
+import com.rjxx.taxeasy.dao.bo.Jyxxsq;
+import com.rjxx.taxeasy.dao.bo.Kpls;
+import com.rjxx.taxeasy.dao.bo.Kpspmx;
+import com.rjxx.taxeasy.dao.bo.Pp;
+import com.rjxx.taxeasy.dao.bo.ShortLink;
+import com.rjxx.taxeasy.dao.bo.Skp;
+import com.rjxx.taxeasy.dao.bo.Xf;
+import com.rjxx.taxeasy.dao.bo.Yjmb;
 import com.rjxx.taxeasy.dao.dto.*;
+import com.rjxx.taxeasy.dao.dto.Buyer;
+import com.rjxx.taxeasy.dao.dto.InvoiceItem;
+import com.rjxx.taxeasy.dao.dto.InvoiceItem2;
+import com.rjxx.taxeasy.dao.dto.InvoiceItem3;
+import com.rjxx.taxeasy.dao.dto.InvoiceItems;
+import com.rjxx.taxeasy.dao.dto.InvoiceItems2;
+import com.rjxx.taxeasy.dao.dto.InvoiceItems3;
+import com.rjxx.taxeasy.dao.dto.OperationItem;
+import com.rjxx.taxeasy.dao.dto.OperationItem3;
+import com.rjxx.taxeasy.dao.dto.RetrunData2;
+import com.rjxx.taxeasy.dao.dto.ReturnData;
+import com.rjxx.taxeasy.dao.dto.ReturnData3;
+import com.rjxx.taxeasy.dao.dto.Seller;
 import com.rjxx.taxeasy.dao.dto.adapter.*;
 import com.rjxx.taxeasy.dao.orm.KpspmxJpaDao;
 import com.rjxx.taxeasy.dao.orm.PpJpaDao;
@@ -20,10 +46,12 @@ import com.rjxx.taxeasy.dao.orm.XfJpaDao;
 import com.rjxx.taxeasy.dao.vo.Fpcxvo;
 import com.rjxx.taxeasy.dao.vo.messageParams;
 import com.rjxx.taxeasy.dao.vo.smsEnvelopes;
+import com.rjxx.taxeasy.domains.*;
 import com.rjxx.utils.SFtpUtil;
 import com.rjxx.utils.SignUtils;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmlJaxbUtils;
+import com.rjxx.utils.dwz.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
@@ -42,6 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Encoder;
 
@@ -492,7 +521,7 @@ public class GeneratePdfService {
             throw new RuntimeException(e);
         }
     }
-
+    //生成短链接并保存
     public Map shortParam(Jyls jyls){
         Map parms=new HashMap();
         Kpls ls = new Kpls();
@@ -523,14 +552,21 @@ public class GeneratePdfService {
             shortLink.setModifyDate(new Date());
             shortLink.setUseMark("1");
             shortLinkJpaDao.save(shortLink);
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
-            logger.info("------短链接出现异常：---------");
-            String dlj=ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());
+            logger.info("------短链接保存出现异常：---------");
+            String dlj1= com.rjxx.utils.dwz.ShortUrlUtil.shortUrl(listkpls.get(0).getSerialorder());
+            logger.info("重新生成shortLink 1"+dlj1);
+            ShortLink shortLink1 = shortLinkJpaDao.findOneByShortLink(dlj1);
+            if(shortLink1!=null){
+                //查询到数据重新生成shortLink
+                dlj1 = com.rjxx.utils.dwz.ShortUrlUtil.shortUrl("JY201806270933369972018062703zsq");//生成短链接
+                logger.info("继续生成shortLink 2"+dlj1);
+            }
             parms.put("ppmc",pp.getPpmc());
-            parms.put("param",dlj);
+            parms.put("param",dlj1);
             ShortLink shortLink = new ShortLink();
-            shortLink.setShortLink(dlj);
+            shortLink.setShortLink(dlj1);
             shortLink.setNormalLink(listkpls.get(0).getSerialorder());
             shortLink.setType("01");//开票
             shortLink.setCreator("1");
