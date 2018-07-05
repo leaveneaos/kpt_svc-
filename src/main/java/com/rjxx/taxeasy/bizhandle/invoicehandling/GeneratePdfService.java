@@ -11,18 +11,7 @@ import com.rjxx.taxeasy.bizhandle.utils.ShortUrlUtil;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
 import com.rjxx.taxeasy.dal.*;
-import com.rjxx.taxeasy.dao.bo.Cszb;
-import com.rjxx.taxeasy.dao.bo.Fphxwsjl;
-import com.rjxx.taxeasy.dao.bo.Gsxx;
-import com.rjxx.taxeasy.dao.bo.Jyls;
-import com.rjxx.taxeasy.dao.bo.Jyxxsq;
-import com.rjxx.taxeasy.dao.bo.Kpls;
-import com.rjxx.taxeasy.dao.bo.Kpspmx;
-import com.rjxx.taxeasy.dao.bo.Pp;
-import com.rjxx.taxeasy.dao.bo.ShortLink;
-import com.rjxx.taxeasy.dao.bo.Skp;
-import com.rjxx.taxeasy.dao.bo.Xf;
-import com.rjxx.taxeasy.dao.bo.Yjmb;
+import com.rjxx.taxeasy.dao.bo.*;
 import com.rjxx.taxeasy.dao.dto.*;
 import com.rjxx.taxeasy.dao.dto.Buyer;
 import com.rjxx.taxeasy.dao.dto.InvoiceItem;
@@ -38,10 +27,7 @@ import com.rjxx.taxeasy.dao.dto.ReturnData;
 import com.rjxx.taxeasy.dao.dto.ReturnData3;
 import com.rjxx.taxeasy.dao.dto.Seller;
 import com.rjxx.taxeasy.dao.dto.adapter.*;
-import com.rjxx.taxeasy.dao.orm.KpspmxJpaDao;
-import com.rjxx.taxeasy.dao.orm.PpJpaDao;
-import com.rjxx.taxeasy.dao.orm.ShortLinkJpaDao;
-import com.rjxx.taxeasy.dao.orm.XfJpaDao;
+import com.rjxx.taxeasy.dao.orm.*;
 import com.rjxx.taxeasy.dao.vo.Fpcxvo;
 import com.rjxx.taxeasy.dao.vo.messageParams;
 import com.rjxx.taxeasy.dao.vo.smsEnvelopes;
@@ -150,6 +136,8 @@ public class GeneratePdfService {
     private PpJpaDao ppJpaDao;
     @Autowired
     private ShortLinkJpaDao shortLinkJpaDao;
+    @Autowired
+    private XsqdJpaDao xsqdJpaDao;
 
     @Value("${emailInfoUrl:}")
     private String emailInfoUrl;
@@ -444,22 +432,60 @@ public class GeneratePdfService {
                                     if(jyls.getGsdm().equals("fwk")){
                                         //提取码不为空-by：zsq
                                         if(StringUtils.isNotBlank(jyls.getTqm())) {
-                                            smsEnvelopes mb = new smsEnvelopes();
-                                            mb.setToPhoneNumber(jyls.getGfsjh());
-                                            messageParams messageParams = new messageParams();
-                                            messageParams.setExtractcode(jyls.getTqm());
-                                            mb.setMessageType("DigitalInvoiceCode");
-                                            mb.setMessageParams(messageParams);
-                                            List mblist = new ArrayList();
-                                            mblist.add(mb);
-                                            Map smsEnvelopesMap = new HashMap();
-                                            smsEnvelopesMap.put("smsEnvelopes", mblist);
-                                            logger.info("-----短信模板-------" + JSON.toJSONString(smsEnvelopesMap));
-                                            HttpUtils.HttpPost_Basic(gsxx.getMessageurl(), JSON.toJSONString(smsEnvelopesMap));
-                                            Map param3 = new HashMap<>();
-                                            param3.put("djh", djh);
-                                            param3.put("dxzt", '1');
-                                            jylsService.updateDxbz(param3);
+                                            String xsqd = jyxxsq.getXsqd();
+                                            logger.info("销售渠道："+xsqd);
+                                            String ddlx ="";//订单类型
+                                            String xspt ="";//销售平台
+                                            String fxqd ="";//分销 渠道
+                                            if(StringUtils.isNotBlank(xsqd)){
+                                                int i = xsqd.indexOf(",");
+                                                if(i>=0){
+                                                    String[] split = xsqd.split(",");
+                                                    ddlx = split[0];
+                                                    fxqd = split[1];
+                                                    xspt = split[2];
+                                                    if(fxqd.equals("Z1")){
+                                                        ddlx="全部";
+                                                        xspt="全部";
+                                                    }
+                                                    if(fxqd.equals("02")&&xspt.equals("商场")){
+                                                        ddlx="全部";
+                                                    }
+                                                    if(fxqd.equals("Z3")&&(xspt.equals("SA公司")||xspt.equals("SA个人")||xspt.equals("KA客户")||xspt.equals("Staff Sales")||xspt.equals("Demo Sales"))){
+                                                        ddlx="全部";
+                                                    }
+                                                    if(fxqd.equals("Z5")){
+                                                        ddlx="全部";
+                                                        xspt="全部";
+                                                    }
+                                                    if(fxqd.equals("01")&&(xspt.equals("天猫")||xspt.equals("京东"))){
+                                                        ddlx="全部";
+                                                    }
+                                                    logger.info("订单类型"+ddlx+"分销渠道"+fxqd+"销售平台"+xspt);
+                                                    Xsqd xsqd1 = xsqdJpaDao.findByOrderChannelPla(ddlx, fxqd, xspt);
+                                                    logger.info("---"+JSON.toJSONString(xsqd1));
+                                                    //特定的发送短信
+                                                    if(xsqd1!=null&&xsqd1.getIssend().equals("0")){
+                                                    }else {
+                                                        smsEnvelopes mb=new smsEnvelopes();
+                                                        mb.setToPhoneNumber(jyls.getGfsjh());
+                                                        messageParams messageParams=new messageParams();
+                                                        messageParams.setExtractcode(jyls.getTqm());
+                                                        mb.setMessageType("DigitalInvoiceCode");
+                                                        mb.setMessageParams(messageParams);
+                                                        List mblist=new ArrayList();
+                                                        mblist.add(mb);
+                                                        Map smsEnvelopesMap=new HashMap();
+                                                        smsEnvelopesMap.put("smsEnvelopes",mblist);
+                                                        logger.info("-----短信模板-------"+JSON.toJSONString(smsEnvelopesMap));
+                                                        HttpUtils.HttpPost_Basic(gsxx.getMessageurl(),JSON.toJSONString(smsEnvelopesMap));
+                                                        Map param3 = new HashMap<>();
+                                                        param3.put("djh", djh);
+                                                        param3.put("dxzt", '1');
+                                                        jylsService.updateDxbz(param3);
+                                                    }
+                                                }
+                                            }
                                         }
                                     }else{
                                         Cszb dxmb = cszbService.getSpbmbbh(jyls.getGsdm(), jyls.getXfid(), jyls.getSkpid(), "sms_code");
