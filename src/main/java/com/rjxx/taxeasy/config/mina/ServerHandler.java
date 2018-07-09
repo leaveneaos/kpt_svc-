@@ -601,17 +601,19 @@ public class ServerHandler extends IoHandlerAdapter {
             FpclService fpclService = ApplicationContextUtils.getBean(FpclService.class);
             CrestvbusinessService crestvbusinessService = ApplicationContextUtils.getBean(CrestvbusinessService.class);
             Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
-            Skp skp=skpService.findOne(kpls.getSkpid());
-            Map parmsMap=new HashMap(1);
-            parmsMap.put("kplsh",kpls.getKplsh());
-            Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
-            if(null!=crestvbusiness){
-                crestvbusinessService.delete(crestvbusiness);
-            }
+            //Skp skp=skpService.findOne(kpls.getSkpid());
+
             String result= data;
             Map resultMap=XmltoJson.strJson2Map(result);
             String Code=resultMap.get("Code").toString();
             String Msg=resultMap.get("Msg").toString();
+
+            Map parmsMap=new HashMap(1);
+            parmsMap.put("kplsh",kpls.getKplsh());
+            Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
+            if(null!=crestvbusiness && !Code.equals("1")){
+                crestvbusinessService.delete(crestvbusiness);
+            }
             if("0".equals(Code)){
                 if(resultMap.get("InvoiceList")!=null){
                     List<Map> InvoiceList=(List)resultMap.get("InvoiceList");
@@ -655,10 +657,17 @@ public class ServerHandler extends IoHandlerAdapter {
                 kpMap.put("RETURNMSG", Msg);
                 if(Msg.contains("相同请求处理中")){
                     kpls.setFpztdm("14");
+                    kpls.setErrorReason("相同请求处理中");
                     kplsService.save(kpls);
+                }else if(Code.equals("1")){
+                    kpls.setFpztdm("14");
+                    kpls.setErrorReason("请求已接收");
+                    kplsService.save(kpls);
+                }else{
+                    kpMap.put("KPLSH", kpls.getKplsh());
+                    fpclService.updateKpls(kpMap);
                 }
-                kpMap.put("KPLSH", kpls.getKplsh());
-                fpclService.updateKpls(kpMap);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
