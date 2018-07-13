@@ -78,6 +78,16 @@ public class ShortLink  implements Serializable {
 @Column(name="use_mark")
 	protected String useMark;
 
+@Column(name="count")
+	protected Integer count;
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 
 	public Integer getId(){
 		return id;
