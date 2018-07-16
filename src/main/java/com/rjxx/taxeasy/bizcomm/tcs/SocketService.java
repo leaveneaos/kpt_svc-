@@ -872,13 +872,14 @@ public class SocketService {
             }
             Seqnumber  seqnumberOld=null;
             if(null!=kpls.getFpztdm()&&!"00".equals(kpls.getFpztdm())){
-                if(null!=kpls.getErrorReason()&&!"".contains(kpls.getErrorReason())){
+                //20180716调整重发时，重新生成seqNumber问题，导致重复开票。
+                /*if(null!=kpls.getErrorReason()&&!"".contains(kpls.getErrorReason())){
                     if(kpls.getErrorReason().contains("发票领购信息失败")||kpls.getErrorReason().contains("税控设备不在线")||kpls.getErrorReason().contains("税控设备未初始化")||kpls.getErrorReason().contains("离线开票上传限定")){
                         seqnumberOld=null;
                     }
-                }else{
+                }else{*/
                     seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
-                }
+                //}
             }
             if(null==seqnumberOld){
                 Seqnumber  seqnumber=new Seqnumber();
