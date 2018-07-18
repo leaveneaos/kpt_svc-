@@ -860,16 +860,6 @@ public class SocketService {
             Map parmsMap=new HashMap(1);
             parmsMap.put("kplsh",kpls.getKplsh());
             Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
-            if(null==crestvbusiness){
-                if("04".equals(kpls.getFpztdm())){
-                    crestvbusiness=new Crestvbusiness();
-                    crestvbusiness.setKplsh(kpls.getKplsh().toString());
-                    crestvbusiness.setLrsj(new Date());
-                    crestvbusiness.setXgsj(new Date());
-                    crestvbusiness.setMqbz("0");
-                    crestvbusinessService.save(crestvbusiness);
-                }
-            }
             Seqnumber  seqnumberOld=null;
             if(null!=kpls.getFpztdm()&&!"00".equals(kpls.getFpztdm())){
                 //20180716调整重发时，重新生成seqNumber问题，导致重复开票。
@@ -878,8 +868,14 @@ public class SocketService {
                         seqnumberOld=null;
                     }
                 }else{*/
-                    seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+                    //seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
                 //}
+                //如果重发表中没有数据，则生成新的开票申请号。
+                if(null ==crestvbusiness){
+                    seqnumberOld=null;
+                }else{
+                    seqnumberOld=seqnumberService.findMaxSeqnumber(parmMap);
+                }
             }
             if(null==seqnumberOld){
                 Seqnumber  seqnumber=new Seqnumber();
@@ -893,6 +889,16 @@ public class SocketService {
                 seqnumberRequest=seqnumber.getSeqnumber().toString();
             }else{
                 seqnumberRequest=seqnumberOld.getSeqnumber().toString();
+            }
+            if(null==crestvbusiness){
+                if("04".equals(kpls.getFpztdm())){
+                    crestvbusiness=new Crestvbusiness();
+                    crestvbusiness.setKplsh(kpls.getKplsh().toString());
+                    crestvbusiness.setLrsj(new Date());
+                    crestvbusiness.setXgsj(new Date());
+                    crestvbusiness.setMqbz("0");
+                    crestvbusinessService.save(crestvbusiness);
+                }
             }
             Map params = new HashMap();
             params.put("kplsh", kpls.getKplsh());

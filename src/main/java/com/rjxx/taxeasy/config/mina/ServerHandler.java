@@ -5,14 +5,8 @@ import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqSend;
-import com.rjxx.taxeasy.dal.CrestvbusinessService;
-import com.rjxx.taxeasy.dal.KplsService;
-import com.rjxx.taxeasy.dal.SeqnumberService;
-import com.rjxx.taxeasy.dal.SkpService;
-import com.rjxx.taxeasy.dao.bo.Crestvbusiness;
-import com.rjxx.taxeasy.dao.bo.Kpls;
-import com.rjxx.taxeasy.dao.bo.Seqnumber;
-import com.rjxx.taxeasy.dao.bo.Skp;
+import com.rjxx.taxeasy.dal.*;
+import com.rjxx.taxeasy.dao.bo.*;
 import com.rjxx.taxeasy.dao.dto.InvoiceResponse;
 import com.rjxx.taxeasy.dao.dto.crestvinvoice.PacketBody;
 import com.rjxx.time.TimeUtil;
@@ -597,7 +591,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
         try {
             KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
-            SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+            //SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
             FpclService fpclService = ApplicationContextUtils.getBean(FpclService.class);
             CrestvbusinessService crestvbusinessService = ApplicationContextUtils.getBean(CrestvbusinessService.class);
             Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
@@ -611,7 +605,12 @@ public class ServerHandler extends IoHandlerAdapter {
             Map parmsMap=new HashMap(1);
             parmsMap.put("kplsh",kpls.getKplsh());
             Crestvbusiness crestvbusiness=crestvbusinessService.findOneByParams(parmsMap);
-            if(null!=crestvbusiness && !Code.equals("1")){
+            DmCrestvService dmCrestvService = ApplicationContextUtils.getBean(DmCrestvService.class);
+            Map crestvMap = new HashMap();
+            crestvMap.put("code",Code);
+            DmCrestv dmCrestv = dmCrestvService.findOneByParams(crestvMap);
+            //20180718重发数据表中有数据，且凯盈返回代码查询代码表中repeatSend的值不为1时，删除重发表数据.
+            if(null!=crestvbusiness && null != dmCrestv && !dmCrestv.getRepeatSend().equals("1")){
                 crestvbusinessService.delete(crestvbusiness);
             }
             if("0".equals(Code)){
