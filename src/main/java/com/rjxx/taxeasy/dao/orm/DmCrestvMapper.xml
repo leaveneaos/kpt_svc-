@@ -4,7 +4,7 @@
 <mapper namespace="com.rjxx.taxeasy.dao.orm.DmCrestvMapper">
 
     <select id="findOneByParams" parameterType="map" resultType="dmCrestv">
-        select * from t_dm_crestv where yxbz = '1'
+        select * from t_dm_crestv where 1 = 1
         <if test="code != null and code != ''">
             and code = #{code}
         </if>
@@ -18,14 +18,14 @@
     </select>
 
     <select id="findAllByParams" parameterType="map" resultType="dmCrestv">
-        select * from t_dm_crestv where yxbz = '1'
+        select * from t_dm_crestv where 1 = 1
         <if test="orderBy != null">
             order by ${orderBy}
         </if>
     </select>
 
     <select id="findByPage" parameterType="pagination" resultType="dmCrestv">
-        select * from t_dm_crestv where yxbz = '1'
+        select * from t_dm_crestv where 1 = 1
         <if test="params.orderBy != null">
             order by ${params.orderBy}
         </if>
