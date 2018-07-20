@@ -610,7 +610,7 @@ public class ServerHandler extends IoHandlerAdapter {
             crestvMap.put("code",Code);
             DmCrestv dmCrestv = dmCrestvService.findOneByParams(crestvMap);
             //20180718重发数据表中有数据，且凯盈返回代码查询代码表中repeatSend的值不为1时，删除重发表数据.
-            if(null!=crestvbusiness && null != dmCrestv && !dmCrestv.getRepeatSend().equals("1")){
+            if(null!=crestvbusiness && (null == dmCrestv || (null != dmCrestv && !dmCrestv.getRepeatSend().equals("1")))){
                 crestvbusinessService.delete(crestvbusiness);
             }
             if("0".equals(Code)){
