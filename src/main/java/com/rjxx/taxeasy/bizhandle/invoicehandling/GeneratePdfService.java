@@ -252,7 +252,7 @@ public class GeneratePdfService {
                                 String ss = this.netWebService(url, "CallBack", returnmessage, gsxx.getAppKey(), gsxx.getSecretKey());
                                 String fwkReturnMessageStr = fwkReturnMessage(kpls);
                                 logger.info("----------sap回写报文----------" + fwkReturnMessageStr);
-                                String Data = HttpUtils.doPostSoap1_2(gsxx.getSapcallbackurl(), fwkReturnMessageStr, null, "Wendy", "Welcome9");
+                                String Data = HttpUtils.doPostSoap1_2(gsxx.getSapcallbackurl(), fwkReturnMessageStr, null, "Deepak", "Welcome0");
                                 logger.info("----------fwk平台回写返回报文--------" + ss);
                                 logger.info("----------sap回写返回报文----------" + Data);
                                 if(StringUtils.isBlank(ss) || StringUtils.isBlank(Data)){
@@ -327,6 +327,9 @@ public class GeneratePdfService {
                                         logger.info("回写返回为空，放入mq---"+kpls.getKplsh() + "_1");
                                         Fphxwsjl fphxwsjl = new Fphxwsjl();
                                         fphxwsjl.setGsdm(kpls.getGsdm());
+                                        fphxwsjl.setKplsh(kplsh);
+                                        fphxwsjl.setXfid(kpls.getXfid());
+                                        fphxwsjl.setSkpid(kpls.getSkpid());
                                         fphxwsjl.setEnddate(new Date());
                                         fphxwsjl.setReturncode("9999");
                                         fphxwsjl.setStartdate(new Date());
@@ -346,6 +349,9 @@ public class GeneratePdfService {
                                         }
                                         Fphxwsjl fphxwsjl = new Fphxwsjl();
                                         fphxwsjl.setGsdm(kpls.getGsdm());
+                                        fphxwsjl.setKplsh(kplsh);
+                                        fphxwsjl.setXfid(kpls.getXfid());
+                                        fphxwsjl.setSkpid(kpls.getSkpid());
                                         fphxwsjl.setEnddate(new Date());
                                         if(StringUtils.isBlank(returnCode)|| !"0000".equals(returnCode) || !"0".equals(returnCode)){
                                             fphxwsjl.setReturncode("9999");
