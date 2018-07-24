@@ -7,6 +7,7 @@ import com.rjxx.taxeasy.bizhandle.pdf.PdfDocumentGenerator;
 import com.rjxx.taxeasy.bizhandle.pdf.TwoDimensionCode;
 import com.rjxx.taxeasy.bizhandle.plugincard.ImputationCardUtil;
 import com.rjxx.taxeasy.bizhandle.utils.*;
+import com.rjxx.taxeasy.bizhandle.utils.HttpUtils;
 import com.rjxx.taxeasy.bizhandle.utils.ShortUrlUtil;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqUtils;
@@ -31,10 +32,7 @@ import com.rjxx.taxeasy.dao.orm.*;
 import com.rjxx.taxeasy.dao.vo.Fpcxvo;
 import com.rjxx.taxeasy.dao.vo.messageParams;
 import com.rjxx.taxeasy.dao.vo.smsEnvelopes;
-import com.rjxx.utils.SFtpUtil;
-import com.rjxx.utils.SignUtils;
-import com.rjxx.utils.StringUtils;
-import com.rjxx.utils.XmlJaxbUtils;
+import com.rjxx.utils.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
@@ -282,6 +280,24 @@ public class GeneratePdfService {
                                         logger.info("fwk--回写返回不成功，放入mq---");
                                         rabbitmqSend.sendMsg("ErrorException_Callback", kpls.getFpzldm(), kpls.getKplsh() + "_1");
                                     }
+                                    //解析sap返回值
+                                    String note = "";
+                                    try {
+                                        String jsonString= XmltoJson.xml2json(Data);
+                                        Map dataMap=XmltoJson.strJson2Map(jsonString);
+                                        Map Envelope=(Map)dataMap.get("env:Envelope");
+                                        Map Body=(Map)Envelope.get("env:Body");
+                                        Map GoldenTaxGoldenTaxCreateConfirmation_sync=(Map)Body.get("n0:GoldenTaxGoldenTaxCreateConfirmation_sync");
+                                        Map Log=(Map)GoldenTaxGoldenTaxCreateConfirmation_sync.get("Log");
+                                        Map item = (Map)Log.get("Item");
+                                        note = (String) item.get("Note");
+                                    } catch (Exception e) {
+                                        logger.info("解析sap失败");
+                                    }
+                                    if(StringUtils.isBlank(note)|| !"Create operation was successful".equals(note)){
+                                        logger.info("sap--回写返回不成功，放入mq---");
+                                        rabbitmqSend.sendMsg("ErrorException_Callback", kpls.getFpzldm(), kpls.getKplsh() + "_1");
+                                    }
                                     Fphxwsjl fphxwsjl = new Fphxwsjl();
                                     fphxwsjl.setGsdm("fwk");
                                     fphxwsjl.setXfid(kpls.getXfid());
@@ -289,7 +305,7 @@ public class GeneratePdfService {
                                     fphxwsjl.setKplsh(kplsh);
                                     fphxwsjl.setDdh(jyls.getDdh());
                                     fphxwsjl.setEnddate(new Date());
-                                    if(StringUtils.isBlank(returnCode)|| !"0000".equals(returnCode)){
+                                    if((StringUtils.isBlank(returnCode)|| !"0000".equals(returnCode)) || (StringUtils.isBlank(note)||!"Create operation was successful".equals(note))){
                                         fphxwsjl.setReturncode("9999");
                                     }else {
                                         fphxwsjl.setReturncode("0000");
