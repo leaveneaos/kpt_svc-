@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.bizhandle.invoicehandling;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.rjxx.taxeasy.bizhandle.utils.ShortUrlUtil;
 import com.rjxx.taxeasy.dal.KplsService;
 import com.rjxx.taxeasy.dal.SkpService;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
