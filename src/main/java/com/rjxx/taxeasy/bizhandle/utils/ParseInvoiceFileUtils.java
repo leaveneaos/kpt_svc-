@@ -47,6 +47,9 @@ public class ParseInvoiceFileUtils {
     @Autowired
     private GsxxService gsxxService;
 
+    @Autowired
+    private FphxUtil fphxUtil;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 解析纸质票批量导入结果的文本<br>
@@ -172,15 +175,15 @@ public class ParseInvoiceFileUtils {
             if(!("").equals(url)&&url!=null){
                 String returnmessage=null;
                 if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                    returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
                     //输出调用结果
                     logger.info("回写报文" + returnmessage);
                     if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = generatePdfService.httpPost(returnmessage, kpls);
+                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
                         logger.info("返回报文" + JSON.toJSONString(returnMap));
                     }
                 }else if(kpls.getGsdm().equals("fwk")){
-                    returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
                     logger.info("回写报文" + returnmessage);
                     if (returnmessage != null && !"".equals(returnmessage)) {
                         String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
@@ -213,15 +216,15 @@ public class ParseInvoiceFileUtils {
             if(!("").equals(url)&&url!=null){
                 String returnmessage=null;
                 if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                    returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
                     //输出调用结果
                     logger.info("回写报文" + returnmessage);
                     if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = generatePdfService.httpPost(returnmessage, kpls);
+                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
                         logger.info("返回报文" + JSON.toJSONString(returnMap));
                     }
                 }else if(kpls.getGsdm().equals("fwk")){
-                    returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
                     logger.info("回写报文" + returnmessage);
                     if (returnmessage != null && !"".equals(returnmessage)) {
                         String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
