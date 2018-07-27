@@ -468,12 +468,15 @@ public class SocketService {
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
                     kpls.getJylsh(),2);
             fpclService.updateKpls(resultMap);
+            String returncode = resultMap.get("RETURNCODE").toString();
+            invoiceResponse.setReturnCode(returncode);
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
             try {
                 kpls.setFpztdm("04");
                 kpls.setErrorReason(e.getMessage());
                 kplsService.save(kpls);
+                invoiceResponse.setReturnCode("9999");
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
