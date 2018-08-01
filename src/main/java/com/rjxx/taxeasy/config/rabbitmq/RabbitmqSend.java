@@ -100,6 +100,7 @@ public class RabbitmqSend implements RabbitTemplate.ConfirmCallback{
     public void sendbox(Object message) {
 
         //执行保存
+        logger.info("发送凯盈开票队列，kplsh="+message);
         String uuid = UUID.randomUUID().toString();
         CorrelationData correlationId = new CorrelationData(uuid);
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, "queue_box",message ,correlationId);
