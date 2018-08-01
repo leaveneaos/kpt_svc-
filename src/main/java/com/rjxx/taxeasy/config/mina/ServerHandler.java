@@ -156,8 +156,9 @@ public class ServerHandler extends IoHandlerAdapter {
             logger.info("客户端连接IO异常信息:" + cause.getMessage());
             if(session.getAttribute("lsh")!=null){
                 String lsh=session.getAttribute("lsh").toString();
-                logger.info("----发送异常流水号----"+lsh);
+                //logger.info("----发送异常流水号----"+lsh);
                 RabbitmqSend rabbitmqSend = ApplicationContextUtils.getBean(RabbitmqSend.class);
+                logger.info("ServerHandler.exceptionCaught,捕捉socket通道异常，重新放入凯盈开票队列，kplsh="+lsh);
                 rabbitmqSend.sendbox(lsh + "");
             }
             session.closeNow();

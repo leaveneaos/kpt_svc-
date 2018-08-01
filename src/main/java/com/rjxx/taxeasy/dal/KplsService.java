@@ -11,6 +11,8 @@ import com.rjxx.taxeasy.dao.vo.Fpcxvo;
 import com.rjxx.taxeasy.dao.vo.FptjVo;
 import com.rjxx.taxeasy.dao.vo.KpcxjgVo;
 import com.rjxx.taxeasy.dao.vo.KplsVO3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,9 @@ public class KplsService {
 
     @Autowired
     private CszbService cszbService;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     public Kpls findOne(int id) {
         return kplsJpaDao.findOne(id);
@@ -83,6 +88,7 @@ public class KplsService {
                  * 凯盈开票放队列
                  */
                 try {
+                    logger.info("KplsService.save，kpt-svc更新或保存开票流水放入凯盈队列，kplsh="+kpls.getKplsh());
                     rabbitmqSend.sendbox(kpls.getKplsh() + "");
                 } catch (Exception e) {
                     e.printStackTrace();

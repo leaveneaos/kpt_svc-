@@ -970,6 +970,7 @@ public class SocketService {
             taskExecutor.execute(invoiceTask);*/
             String result= ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
             if(null!=result&&result.equals("连接断开")){
+                logger.info("SocketService.skBoxKP,socket连接断开，放入凯盈开票队列，kplsh="+kpls.getKplsh());
                 rabbitmqSend.sendbox(kpls.getKplsh() + "");
             }
         }catch (Exception e){
