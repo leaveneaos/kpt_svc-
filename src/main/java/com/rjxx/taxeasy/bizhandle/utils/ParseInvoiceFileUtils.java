@@ -2,10 +2,8 @@ package com.rjxx.taxeasy.bizhandle.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.GeneratePdfService;
-import com.rjxx.taxeasy.dal.GsxxService;
-import com.rjxx.taxeasy.dal.JylsService;
-import com.rjxx.taxeasy.dal.KplsService;
-import com.rjxx.taxeasy.dal.KpspmxService;
+import com.rjxx.taxeasy.dal.*;
+import com.rjxx.taxeasy.dao.bo.Cszb;
 import com.rjxx.taxeasy.dao.bo.Gsxx;
 import com.rjxx.taxeasy.dao.bo.Jyls;
 import com.rjxx.taxeasy.dao.bo.Kpls;
@@ -42,7 +40,7 @@ public class ParseInvoiceFileUtils {
     private GeneratePdfService generatePdfService;
 
     @Autowired
-    private ClientDesUtils clientDesUtils;
+    private CszbService cszbService;
 
     @Autowired
     private GsxxService gsxxService;
@@ -145,6 +143,14 @@ public class ParseInvoiceFileUtils {
             } else {
                 kpls.setErrorReason(null);
             }
+
+            Cszb cszb1 = cszbService.getSpbmbbh(kpls.getGsdm(),kpls.getXfid(),kpls.getSkpid(),"zpsfscpdf");
+            if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                kpls.setJym("10497438135598948527");
+                kpls.setSksbm("499000134531");
+                kpls.setMwq("03*6<7-4937->9/1-544>0*1<76-</+0<<**87>-+>6+462+4145-1<+86*6<7-4937->9/1-538/0*>>687-44/8>4/*>010/17196-70/2>*81");
+            }
+
             kplsService.save(kpls);
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("91");
@@ -167,11 +173,18 @@ public class ParseInvoiceFileUtils {
                     }
                 }
             }
-            Map parms=new HashMap();
-            parms.put("gsdm",kpls.getGsdm());
-            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            
             //回写
-            fphxUtil.fphx(kpls,jyls,gsxx);
+            if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                generatePdfService.generatePdf(kplsh);
+            }else {
+                //回写
+                Map parms=new HashMap();
+                parms.put("gsdm",kpls.getGsdm());
+                Gsxx gsxx=gsxxService.findOneByParams(parms);
+                //Jyls jyls = jylsService.findOne(kpls.getDjh());
+                fphxUtil.fphx(kpls,jyls,gsxx);
+            }
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
 //            String url=gsxx.getCallbackurl();
 //            if(!("").equals(url)&&url!=null){
