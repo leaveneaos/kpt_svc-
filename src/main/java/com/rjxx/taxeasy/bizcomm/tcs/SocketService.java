@@ -472,14 +472,14 @@ public class SocketService {
             invoiceResponse.setReturnCode(returncode);
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
-            try {
+            /*try {
                 kpls.setFpztdm("04");
                 kpls.setErrorReason(e.getMessage());
-                kplsService.save(kpls);
+                kplsService.save(kpls);*/
                 invoiceResponse.setReturnCode("9999");
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+            //} catch (Exception e1) {
+               // e1.printStackTrace();
+            //}
             e.printStackTrace();
         }
         return invoiceResponse;
