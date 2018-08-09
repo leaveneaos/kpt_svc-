@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ public class KplsService {
 
     @Transactional(rollbackFor = Exception.class)
     public void save(Kpls kpls) throws Exception{
-        Timestamp allTime = TimeUtil.getNowDate();
+        //Timestamp allTime = TimeUtil.getNowDate();
         kplsJpaDao.save(kpls);
         Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "kpfs");
 
@@ -89,16 +90,18 @@ public class KplsService {
                 try {
                     Kpcf kpcf = kpcfService.findOne(kpls.getKplsh());
                     if (null == kpcf){
+                        Kpcf kpcf1 = new Kpcf();
+                        kpcf1.setLrsj(new Date());
+                        kpcf1.setKplsh(kpls.getKplsh());
+                        kpcf1.setKpcfcs(1);
+                        kpcfService.save(kpcf1);
                         rabbitmqSend.send(kpls.getKplsh() + "");
-                        kpcf.setKplsh(kpls.getKplsh());
-                        kpcf.setLrsj(allTime);
-                        kpcf.setKpcfcs(1);
                     }else if (kpcf.getKpcfcs() <=3){
-                        rabbitmqSend.send(kpls.getKplsh() + "");
                         kpcf.setKpcfcs(kpcf.getKpcfcs()+1);
-                        kpcf.setXgsj(allTime);
+                        kpcf.setXgsj(new Date());
+                        kpcfService.save(kpcf);
+                        rabbitmqSend.send(kpls.getKplsh() + "");
                     }
-                    kpcfService.save(kpcf);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

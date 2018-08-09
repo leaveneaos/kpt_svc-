@@ -1344,7 +1344,9 @@ public class FpclService {
                 resultMap = DzfphttpPost(result2, url, kplsVO5.getDjh() + "$" + kplsVO5.getKplsh(), kplsVO5.getXfsh(),
                         kplsVO5.getJylsh(), j);
             }
-            String serialorder = this.updateKpls(resultMap);
+            if(null !=resultMap){
+                String serialorder = this.updateKpls(resultMap);
+            }
             logger.debug("封装传开票通的返回报文" + JSONObject.toJSONString(resultMap));
             return "1";
         } catch (Exception e) {
