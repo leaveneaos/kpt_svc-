@@ -28,7 +28,7 @@ public class GenEntityMysql {
     /**
      * 表名
      */
-    private String tablename = "t_xsqd";
+    private String tablename = "t_kpcf";
     /**
      * 表注释
      */

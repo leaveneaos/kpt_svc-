@@ -1254,6 +1254,12 @@ public class FpclService {
                 jylsService.save(jyls);
             }
         } catch (Exception e) {
+            try {
+                kpls.setFpztdm("05");
+                kplsService.save(kpls);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
         return kpls.getSerialorder();
@@ -1344,8 +1350,13 @@ public class FpclService {
                 resultMap = DzfphttpPost(result2, url, kplsVO5.getDjh() + "$" + kplsVO5.getKplsh(), kplsVO5.getXfsh(),
                         kplsVO5.getJylsh(), j);
             }
-            String serialorder = this.updateKpls(resultMap);
             logger.debug("封装传开票通的返回报文" + JSONObject.toJSONString(resultMap));
+            if(null !=resultMap){
+                String serialorder = this.updateKpls(resultMap);
+            }else{
+                return "0";
+            }
+
             return "1";
         } catch (Exception e) {
             // TODO Auto-generated catch block

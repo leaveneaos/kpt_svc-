@@ -436,8 +436,12 @@ public class SocketService {
     public InvoiceResponse skServerKP(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
         try{
-            fpclService.skServerKP(kplsh);
-            invoiceResponse.setReturnCode("0000");
+            String result =  fpclService.skServerKP(kplsh);
+            if(result.equals("1")){
+                invoiceResponse.setReturnCode("0000");
+            }else{
+                invoiceResponse.setReturnCode("9999");
+            }
         }catch (Exception e){
             invoiceResponse.setReturnCode("9999");
             invoiceResponse.setReturnMessage(e.getMessage());
@@ -466,20 +470,23 @@ public class SocketService {
                     + "</REQUEST_COMMON_FPCX>"
                     + "</business>";
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
-                    kpls.getJylsh(),2);
-            fpclService.updateKpls(resultMap);
-            String returncode = resultMap.get("RETURNCODE").toString();
-            invoiceResponse.setReturnCode(returncode);
+                    kpls.getJylsh(),1);
+            if(null !=resultMap && !resultMap.isEmpty()){
+                fpclService.updateKpls(resultMap);
+                String returncode = resultMap.get("RETURNCODE").toString();
+                invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
+                invoiceResponse.setReturnCode(returncode);
+            }
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
-            try {
+            /*try {
                 kpls.setFpztdm("04");
                 kpls.setErrorReason(e.getMessage());
-                kplsService.save(kpls);
+                kplsService.save(kpls);*/
                 invoiceResponse.setReturnCode("9999");
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+            //} catch (Exception e1) {
+               // e1.printStackTrace();
+            //}
             e.printStackTrace();
         }
         return invoiceResponse;
