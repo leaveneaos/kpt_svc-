@@ -472,8 +472,10 @@ public class SocketService {
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
                     kpls.getJylsh(),1);
             if(null !=resultMap && !resultMap.isEmpty()){
-                fpclService.updateKpls(resultMap);
                 String returncode = resultMap.get("RETURNCODE").toString();
+                if(returncode.equals("0000")){
+                    fpclService.updateKpls(resultMap);
+                }
                 invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
                 invoiceResponse.setReturnCode(returncode);
             }
