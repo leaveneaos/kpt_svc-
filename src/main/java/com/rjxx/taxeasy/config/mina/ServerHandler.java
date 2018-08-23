@@ -499,6 +499,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 invoiceResponse.setReturnCode("9999");
                 invoiceResponse.setReturnMessage(ResultMsg);
             }
+            if(!ResultCode.equals("1"))
             setSocketRequest(String.valueOf(seqNumber), XmlJaxbUtils.toXml(invoiceResponse));
         }catch (Exception e){
             e.printStackTrace();
