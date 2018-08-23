@@ -279,6 +279,11 @@ public class Packet {
          *  商品明细项
          */
         public List ItemList;
+
+        /**
+         * 纸票是否立即打印,0不打印，1打印
+         */
+        public String PrintOnIssued;
     }
 
     /**

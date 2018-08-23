@@ -44,14 +44,14 @@ public class PacketBody {
         return PacketBody.SingletonPacketBody.INSTANCE;
     }
 
-    public String Packet_Invoice_Json(Kpls kpls, Jyls jyls, List<Kpspmxvo>kpspmxList, Skp skp,String spbmbbh)throws Exception{
-        Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList,spbmbbh);
+    public String Packet_Invoice_Json(Kpls kpls, Jyls jyls, List<Kpspmxvo>kpspmxList, Skp skp,String spbmbbh,String printOnIssued)throws Exception{
+        Packet.NewInvoice newInvoice=Packet_NewInvoice(kpls,jyls,kpspmxList,spbmbbh,printOnIssued);
         String Invoice_Json= JSON.toJSONString(newInvoice);
         logger.info("------发送开票数据------"+Invoice_Json);
         return AESUtils.aesEncrypt(Invoice_Json,skp.getDevicekey());
     }
 
-    public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmxvo>kpspmxList,String spbmbbh){
+    public  Packet.NewInvoice Packet_NewInvoice(Kpls kpls, Jyls jyls,List<Kpspmxvo>kpspmxList,String spbmbbh,String printOnIssued){
 
         Packet.NewInvoice newInvoice=new Packet().new NewInvoice();
         newInvoice.MerchantAddress=kpls.getXfdz();
