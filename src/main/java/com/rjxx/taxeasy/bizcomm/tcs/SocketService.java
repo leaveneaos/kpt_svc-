@@ -979,7 +979,7 @@ public class SocketService {
                 result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
            }else{
                 result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh,"NewInvoice");
-                logger.info("test------盒子紙票返回="+result);
+                //logger.info("test------盒子紙票返回="+result);
            }
             if(null!=result&&result.equals("连接断开")){
                 logger.info("SocketService.skBoxKP,socket连接断开，放入凯盈开票队列，kplsh="+kpls.getKplsh());
@@ -1475,19 +1475,55 @@ public class SocketService {
         String fplxdm =NumberUtil.invoiceType(fpzldm);
         Seqnumber  seqnumber=new Seqnumber();
         seqnumber.setJylsh(String.valueOf(skpid));
-        String commandId = "GetInvoicesToPrint"+ UUID.randomUUID().toString().replace("-", "");
-        seqnumber.setOptype(commandId);
+        //String commandId = "GetInvoicesToPrint"+ UUID.randomUUID().toString().replace("-", "");
+        seqnumber.setOptype("GetInvoicesToPrint");
         seqnumber.setOptypemc("获取未打印发票列表");
         seqnumber.setXgsj(new Date());
         seqnumber.setLrsj(new Date());
         seqnumber.setYxbz(1);
         seqnumberService.save(seqnumber);
         Map map1 = new HashMap();
-        map.put("fplxdm",fplxdm);
+        map1.put("fplxdm",fplxdm);
         String  GetInvoicesToPrint= PacketBody.getInstance().Packet_GetInvoicesToPrint(skp,map1);
         String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetInvoicesToPrint",GetInvoicesToPrint,skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-        String result=ServerHandler.sendMessage(commandId,Ruquest,true, 60000,skpid);
+        String result=ServerHandler.sendMessage(String.valueOf(seqnumber.getSeqnumber()),Ruquest,true, 60000,skpid);
         return result ;
+    }
+
+    /**
+     * 凯盈纸票打印
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    public String PrintInvoice(String p) throws Exception{
+        if (StringUtils.isBlank(p)) {
+            throw new Exception("参数不能为空");
+        }
+        String params = skService.decryptSkServerParameter(p);
+        Map<String, String> map = HtmlUtils.parseQueryString(params);
+        Integer skpid = Integer.valueOf(map.get("skpid"));
+        String fpzldm = map.get("fpzldm");
+        Skp skp=skpService.findOne(Integer.valueOf(skpid));
+        String fplxdm =NumberUtil.invoiceType(fpzldm);
+        Seqnumber  seqnumber=new Seqnumber();
+        seqnumber.setJylsh(String.valueOf(skpid));
+        seqnumber.setOptype("PrintInvoice");
+        seqnumber.setOptypemc("发票打印");
+        seqnumber.setXgsj(new Date());
+        seqnumber.setLrsj(new Date());
+        seqnumber.setYxbz(1);
+        seqnumberService.save(seqnumber);
+        Map map1 = new HashMap();
+        map1.put("fplxdm",fplxdm);
+        map1.put("fpdm",map.get("fpdm"));
+        map1.put("fphm",map.get("fphm"));
+        map1.put("isRepeat",map.get("isRepeat"));
+        String  PrintInvoice= PacketBody.getInstance().Packet_PrintInvoice(skp,map1);
+        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"PrintInvoice",PrintInvoice,skp,PasswordConfig.AppKey);
+        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+        String result=ServerHandler.sendMessage(String.valueOf(seqnumber.getSeqnumber()),Ruquest,true, 60000,skpid);
+        return  result;
     }
 }

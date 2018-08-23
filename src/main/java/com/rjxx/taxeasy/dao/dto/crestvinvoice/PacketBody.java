@@ -374,6 +374,15 @@ public class PacketBody {
         return AESUtils.aesEncrypt(JSON.toJSONString(getInvoicesToPrint),skp.getDevicekey());
     }
 
+    public String Packet_PrintInvoice(Skp skp,Map map) throws Exception{
+        Packet.PrintInvoice printInvoice=new Packet().new PrintInvoice();
+        printInvoice.InvoiceType = String.valueOf(map.get("fplxdm"));
+        printInvoice.InvoiceCode = String.valueOf(map.get("fpdm"));
+        printInvoice.InvoiceNum = String.valueOf(map.get("fphm"));
+        printInvoice.IsEnableRepeat = String.valueOf(map.get("isRepeat"));
+        return AESUtils.aesEncrypt(JSON.toJSONString(printInvoice),skp.getDevicekey());
+    }
+
     /***
      * 解压GZip
      *
