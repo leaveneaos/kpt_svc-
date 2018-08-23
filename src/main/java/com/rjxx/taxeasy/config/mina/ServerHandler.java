@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -91,10 +92,12 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param message
      */
     public static void sendMessage(IoSession session, Object message,int lsh,String commandId) throws Exception{
-        if("NewInvoice".equals(commandId)){
+        /*if("NewInvoice".equals(commandId)){
+            session.setAttribute("lsh",lsh);
+        }*/
+        if(commandId.contains("NewInvoice")){
             session.setAttribute("lsh",lsh);
         }
-
         WriteFuture writeFuture = session.write(message);
         writeFuture.addListener(new IoFutureListener<WriteFuture>() {
             @Override
@@ -220,7 +223,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
 
     public static void setSocketRequest(String reqType,String reqData){
-        logger.info("test----------------------reqData="+reqData);
+        //logger.info("test----------------------reqData="+reqData);
         if (StringUtils.isNotBlank(reqType)) {
             SocketRequest socketRequest = cachedRequestMap.remove(reqType);
             if (socketRequest != null) {
@@ -320,7 +323,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 OnReceive_InvoiceControlInfo(Data,OpType,skp.getId().toString());
                 break;
             case "GetCurrentInvoiceInfo":
-                OnReceive_GetCurrentInvoiceInfo(Data,OpType,skp.getId().toString());
+                OnReceive_GetCurrentInvoiceInfo(Data,OpType,skp.getId().toString(),Integer.valueOf(SeqNumber));
                 break;
             case "GetAllInvoiceSections":
                 OnReceive_GetAllInvoiceSections(Data,OpType,skp.getId().toString());
@@ -435,13 +438,15 @@ public class ServerHandler extends IoHandlerAdapter {
         }
     }
 
-    private static void OnReceive_GetCurrentInvoiceInfo(String data, String opType, String s) {
+    private static void OnReceive_GetCurrentInvoiceInfo(String data, String opType, String s,int seqNumber) {
         String ResultCode=null;
         Map GetCurrentInvoiceInfoMap=null;
         try {
             logger.info("凯盈盒子获取当前发票号码返回："+data);
             GetCurrentInvoiceInfoMap=XmltoJson.strJson2Map(data);
             ResultCode=GetCurrentInvoiceInfoMap.get("Code").toString();
+            SeqnumberService seqnumberService = ApplicationContextUtils.getBean(SeqnumberService.class);
+            Seqnumber seqnumber =seqnumberService.findOne(seqNumber);
             InvoiceResponse invoiceResponse=new InvoiceResponse();
             if("0".equals(ResultCode)){
                 String ResultMsg=GetCurrentInvoiceInfoMap.get("Msg").toString();
@@ -462,7 +467,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 invoiceResponse.setReturnCode("9999");
                 invoiceResponse.setReturnMessage(ResultMsg);
             }
-            setSocketRequest(opType, XmlJaxbUtils.toXml(invoiceResponse));
+            setSocketRequest(seqnumber.getOptype(), XmlJaxbUtils.toXml(invoiceResponse));
         }catch (Exception e){
             e.printStackTrace();
         }
