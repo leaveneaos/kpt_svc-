@@ -31,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -1290,16 +1287,18 @@ public class SocketService {
             Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
             Seqnumber  seqnumber=new Seqnumber();
             seqnumber.setJylsh(String.valueOf(kpdid));
-            seqnumber.setOptype("GetCurrentInvoiceInfo");
+            //seqnumber.setOptype("GetCurrentInvoiceInfo");
             seqnumber.setOptypemc("获取当前发票信息");
             seqnumber.setXgsj(new Date());
             seqnumber.setLrsj(new Date());
             seqnumber.setYxbz(1);
+            String commandId = "GetCurrentInvoiceInfo_"+ UUID.randomUUID().toString().replace("-", "");
+            seqnumber.setOptype(commandId);
             seqnumberService.save(seqnumber);
             String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(fplxdm,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 15000,skp.getId());
+            String  result=ServerHandler.sendMessage(commandId,Ruquest,true, 15000,skp.getId());
             logger.info("凯盈盒子获取当前发票号码,封装给平台返回："+result);
             return  result;
         }catch (Exception e){
