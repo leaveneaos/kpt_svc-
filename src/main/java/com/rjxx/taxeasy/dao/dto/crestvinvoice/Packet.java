@@ -530,4 +530,26 @@ public class Packet {
          */
         public String InvoiceType;
     }
+
+    /**
+     * 凯盈纸票打印
+     */
+    public  class  PrintInvoice{
+        /**
+         * 发票种类
+         */
+        public String InvoiceType;
+        /**
+         * 发票代码
+         */
+        public String InvoiceCode;
+        /**
+         * 发票号码
+         */
+        public String InvoiceNum;
+        /**
+         * 是否允许重打
+         */
+        public String IsEnableRepeat;
+    }
 }

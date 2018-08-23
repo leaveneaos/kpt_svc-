@@ -375,6 +375,12 @@ public class ServerHandler extends IoHandlerAdapter {
             case "FactoryReset":
                 OnReceive_FactoryReset(Data,OpType,skp.getId().toString());
                 break;
+            case "GetInvoicesToPrint":
+                OnReceive_GetInvoicesToPrint(Data,OpType,skp.getId().toString());
+                break;
+            case "PrintInvoice":
+                OnReceive_PrintInvoice(Data,OpType,skp.getId().toString());
+                break;
             default:
                 break;
         }
@@ -388,6 +394,36 @@ public class ServerHandler extends IoHandlerAdapter {
             ResultCode=FactoryResetMap.get("Code").toString();
             if("0".equals(ResultCode)){
                 String ResultMsg=FactoryResetMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_GetInvoicesToPrint(String data, String opType, String s) {
+        String ResultCode=null;
+        Map GetInvoicesToPrintMap=null;
+        try {
+            GetInvoicesToPrintMap=XmltoJson.strJson2Map(data);
+            ResultCode=GetInvoicesToPrintMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=GetInvoicesToPrintMap.get("Msg").toString();
+            }
+            setSocketRequest(opType,data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void OnReceive_PrintInvoice(String data, String opType, String s) {
+        String ResultCode=null;
+        Map PrintInvoiceMap=null;
+        try {
+            PrintInvoiceMap=XmltoJson.strJson2Map(data);
+            ResultCode=PrintInvoiceMap.get("Code").toString();
+            if("0".equals(ResultCode)){
+                String ResultMsg=PrintInvoiceMap.get("Msg").toString();
             }
             setSocketRequest(opType,data);
         }catch (Exception e){
