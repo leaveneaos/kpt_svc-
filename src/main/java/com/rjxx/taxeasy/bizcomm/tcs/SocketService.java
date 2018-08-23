@@ -1300,7 +1300,7 @@ public class SocketService {
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 15000,skp.getId());
-            //logger.info("凯盈盒子获取当前发票号码返回："+result);
+            logger.info("凯盈盒子获取当前发票号码,封装给平台返回："+result);
             return  result;
         }catch (Exception e){
             e.printStackTrace();
