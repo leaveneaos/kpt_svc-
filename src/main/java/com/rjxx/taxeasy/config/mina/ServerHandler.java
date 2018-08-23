@@ -67,7 +67,7 @@ public class ServerHandler extends IoHandlerAdapter {
             return "连接断开";
         }
         if (wait && timeout > 0) {
-            logger.info("####ServerHandler sendMessage waiting for timeout !!####");
+            logger.info("####ServerHandler sendMessage waiting for timeout !!####,commandId="+commandId);
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);
             cachedRequestMap.put(commandId, socketRequest);
@@ -108,7 +108,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 if(!flag){
                     logger.info("################Mina send message failed!!!");
                 }else{
-                    System.out.println("----发送数据成功！------");
+                    logger.info("----发送数据成功！------kplsh="+lsh);
                 }
             }
         });
