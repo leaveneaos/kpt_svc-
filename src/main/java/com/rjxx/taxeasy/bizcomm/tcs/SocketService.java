@@ -979,7 +979,7 @@ public class SocketService {
                 result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
            }else{
                 result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh,"NewInvoice");
-                logger.info("test------盒子紙票返回="+result);
+                //logger.info("test------盒子紙票返回="+result);
            }
             if(null!=result&&result.equals("连接断开")){
                 logger.info("SocketService.skBoxKP,socket连接断开，放入凯盈开票队列，kplsh="+kpls.getKplsh());
