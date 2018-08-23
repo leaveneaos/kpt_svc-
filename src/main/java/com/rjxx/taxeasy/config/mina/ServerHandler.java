@@ -108,7 +108,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 if(!flag){
                     logger.info("################Mina send message failed!!!");
                 }else{
-                    logger.info("----发送数据成功！------kplsh="+lsh);
+                    logger.info("----发送数据成功！------key="+lsh);
                 }
             }
         });
