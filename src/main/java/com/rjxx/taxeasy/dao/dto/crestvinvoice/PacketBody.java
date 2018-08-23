@@ -368,6 +368,12 @@ public class PacketBody {
         return AESUtils.aesEncrypt(JSON.toJSONString(factoryReset),skp.getDevicekey());
     }
 
+    public String Packet_GetInvoicesToPrint(Skp skp,Map map) throws Exception{
+        Packet.GetInvoicesToPrint getInvoicesToPrint=new Packet().new GetInvoicesToPrint();
+        getInvoicesToPrint.InvoiceType = String.valueOf(map.get("fplxdm"));
+        return AESUtils.aesEncrypt(JSON.toJSONString(getInvoicesToPrint),skp.getDevicekey());
+    }
+
     /***
      * 解压GZip
      *

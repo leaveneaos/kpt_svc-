@@ -6,10 +6,9 @@ import com.rjxx.taxeasy.bizhandle.invoicehandling.FpclService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.GeneratePdfService;
 import com.rjxx.taxeasy.bizhandle.invoicehandling.SkService;
 import com.rjxx.taxeasy.bizhandle.maindata.command.SendCommand;
+import com.rjxx.taxeasy.bizhandle.utils.*;
 import com.rjxx.taxeasy.bizhandle.utils.AESUtils;
 import com.rjxx.taxeasy.bizhandle.utils.HttpUtils;
-import com.rjxx.taxeasy.bizhandle.utils.InvoiceResponseUtils;
-import com.rjxx.taxeasy.bizhandle.utils.SeperateInvoiceUtils;
 import com.rjxx.taxeasy.config.mina.ServerHandler;
 import com.rjxx.taxeasy.config.password.PasswordConfig;
 import com.rjxx.taxeasy.config.rabbitmq.RabbitmqSend;
@@ -1287,18 +1286,18 @@ public class SocketService {
             Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
             Seqnumber  seqnumber=new Seqnumber();
             seqnumber.setJylsh(String.valueOf(kpdid));
-            //seqnumber.setOptype("GetCurrentInvoiceInfo");
+            seqnumber.setOptype("GetCurrentInvoiceInfo");
             seqnumber.setOptypemc("获取当前发票信息");
             seqnumber.setXgsj(new Date());
             seqnumber.setLrsj(new Date());
             seqnumber.setYxbz(1);
-            String commandId = "GetCurrentInvoiceInfo_"+ UUID.randomUUID().toString().replace("-", "");
-            seqnumber.setOptype(commandId);
+            //String commandId = "GetCurrentInvoiceInfo_"+ UUID.randomUUID().toString().replace("-", "");
+            //seqnumber.setOptype(commandId);
             seqnumberService.save(seqnumber);
             String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(fplxdm,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
-            String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage(commandId,Ruquest,true, 15000,skp.getId());
+            String  Request= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+            String  result=ServerHandler.sendMessage(String.valueOf(seqnumber.getSeqnumber()),Request,true, 15000,skp.getId(),seqnumber.getOptype());
             //logger.info("凯盈盒子获取当前发票号码,封装给平台返回："+result);
             return  result;
         }catch (Exception e){
@@ -1459,12 +1458,35 @@ public class SocketService {
 
     /**
      * 凯盈获取未打印发票列表
-     * @param fpzldm
+     * @param p
      * @return
      * @throws Exception
      */
-    public String GetInvoicesToPrint(String fpzldm){
-
-        return null ;
+    public String GetInvoicesToPrint(String p)  throws Exception{
+        if (StringUtils.isBlank(p)) {
+            throw new Exception("参数不能为空");
+        }
+        String params = skService.decryptSkServerParameter(p);
+        Map<String, String> map = HtmlUtils.parseQueryString(params);
+        String fpzldm = map.get("fpzldm");
+        Integer skpid = Integer.valueOf(map.get("skpid"));
+        Skp skp=skpService.findOne(Integer.valueOf(skpid));
+        String fplxdm =NumberUtil.invoiceType(fpzldm);
+        Seqnumber  seqnumber=new Seqnumber();
+        seqnumber.setJylsh(String.valueOf(skpid));
+        String commandId = "GetInvoicesToPrint"+ UUID.randomUUID().toString().replace("-", "");
+        seqnumber.setOptype(commandId);
+        seqnumber.setOptypemc("获取未打印发票列表");
+        seqnumber.setXgsj(new Date());
+        seqnumber.setLrsj(new Date());
+        seqnumber.setYxbz(1);
+        seqnumberService.save(seqnumber);
+        Map map1 = new HashMap();
+        map.put("fplxdm",fplxdm);
+        String  GetInvoicesToPrint= PacketBody.getInstance().Packet_GetInvoicesToPrint(skp,map1);
+        String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetInvoicesToPrint",GetInvoicesToPrint,skp,PasswordConfig.AppKey);
+        String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
+        String result=ServerHandler.sendMessage(commandId,Ruquest,true, 60000,skpid);
+        return result ;
     }
 }

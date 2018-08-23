@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.dao.dto.crestvinvoice;
 
+import java.security.PublicKey;
 import java.util.List;
 
 /**
@@ -513,5 +514,15 @@ public class Packet {
          * 恢复类型
          */
         public String Type;
+    }
+
+    /**
+     * 凯盈获取未打印发票列表
+    */
+    public  class  GetInvoicesToPrint{
+        /**
+         * 发票种类
+         */
+        public String InvoiceType;
     }
 }
