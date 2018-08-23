@@ -1299,7 +1299,7 @@ public class SocketService {
             String  GetCurrentInvoiceInfo= PacketBody.getInstance().Packet_GetCurrentInvoiceInfo(fplxdm,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"GetCurrentInvoiceInfo",GetCurrentInvoiceInfo,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 60000,skp.getId());
+            String  result=ServerHandler.sendMessage("GetCurrentInvoiceInfo",Ruquest,true, 15000,skp.getId());
             return  result;
         }catch (Exception e){
             e.printStackTrace();
