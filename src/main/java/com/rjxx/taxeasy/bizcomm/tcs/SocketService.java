@@ -894,7 +894,7 @@ public class SocketService {
      * @throws Exception
      */
     public String skBoxKP(String p) throws Exception{
-
+        String result= "";
         try {
             if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
@@ -960,24 +960,30 @@ public class SocketService {
                 kpspmxvo.setSpfljc(spbm.getSpbmjc());
             }
             Skp skp=skpService.findOne(kpls.getSkpid());
-            Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
+            //Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
             String spbmbbh = "";
             String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumberRequest,"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
-            InvoiceTask invoiceTask=new InvoiceTask();
+            /*InvoiceTask invoiceTask=new InvoiceTask();
             invoiceTask.setCommandId("NewInvoice");
             invoiceTask.setMessage(Ruquest);
             invoiceTask.setTimeout(0);
             invoiceTask.setWait(false);
-            invoiceTask.setKplsh(kplsh);
+            invoiceTask.setKplsh(kplsh);*/
             kpls.setFpztdm("14");
             kplsService.save(kpls);
            /* if (taskExecutor == null) {
                 taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
             }
             taskExecutor.execute(invoiceTask);*/
-            String result= ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
+
+            //判断是否为纸质发票，如果为纸质发票则等待返回，超时时间为30秒
+            if(kpls.getFpzldm().equals(12)){
+                result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
+           }else{
+                result = ServerHandler.sendMessage("NewInvoice",Ruquest,true,30000,kplsh);
+           }
             if(null!=result&&result.equals("连接断开")){
                 logger.info("SocketService.skBoxKP,socket连接断开，放入凯盈开票队列，kplsh="+kpls.getKplsh());
                 rabbitmqSend.sendbox(kpls.getKplsh() + "");
@@ -985,7 +991,7 @@ public class SocketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
     /**
@@ -1449,5 +1455,16 @@ public class SocketService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 凯盈获取未打印发票列表
+     * @param fpzldm
+     * @return
+     * @throws Exception
+     */
+    public String GetInvoicesToPrint(String fpzldm){
+
+        return null ;
     }
 }
