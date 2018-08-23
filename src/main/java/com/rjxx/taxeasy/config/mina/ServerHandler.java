@@ -454,6 +454,10 @@ public class ServerHandler extends IoHandlerAdapter {
                     invoiceResponse.setReturnCode("0000");
                     invoiceResponse.setReturnMessage("获取号码成功");
                 }
+            }else{
+                String ResultMsg=GetCurrentInvoiceInfoMap.get("Msg").toString();
+                invoiceResponse.setReturnCode("9999");
+                invoiceResponse.setReturnMessage(ResultMsg);
             }
             setSocketRequest(opType, XmlJaxbUtils.toXml(invoiceResponse));
         }catch (Exception e){
