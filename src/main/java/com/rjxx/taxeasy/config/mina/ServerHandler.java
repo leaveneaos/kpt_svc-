@@ -436,6 +436,7 @@ public class ServerHandler extends IoHandlerAdapter {
         String ResultCode=null;
         Map GetCurrentInvoiceInfoMap=null;
         try {
+            logger.info("凯盈盒子获取当前发票号码返回："+data);
             GetCurrentInvoiceInfoMap=XmltoJson.strJson2Map(data);
             ResultCode=GetCurrentInvoiceInfoMap.get("Code").toString();
             InvoiceResponse invoiceResponse=new InvoiceResponse();
