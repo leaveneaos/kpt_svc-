@@ -958,7 +958,7 @@ public class SocketService {
             Skp skp=skpService.findOne(kpls.getSkpid());
             //Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "spbmbbh");
             String spbmbbh = "";
-            String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh);
+            String  newInvoice= PacketBody.getInstance().Packet_Invoice_Json(kpls,jyls,kpspmxList,skp,spbmbbh,"1");
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(seqnumberRequest,"NewInvoice",newInvoice,skp,PasswordConfig.AppKey);
             String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
             /*InvoiceTask invoiceTask=new InvoiceTask();
@@ -978,7 +978,7 @@ public class SocketService {
             if(kpls.getFpzldm().equals(12)){
                 result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
            }else{
-                result = ServerHandler.sendMessage("NewInvoice",Ruquest,true,30000,kplsh);
+                result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh);
            }
             if(null!=result&&result.equals("连接断开")){
                 logger.info("SocketService.skBoxKP,socket连接断开，放入凯盈开票队列，kplsh="+kpls.getKplsh());
