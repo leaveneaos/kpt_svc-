@@ -99,7 +99,7 @@ public class ServerHandler extends IoHandlerAdapter {
             session.setAttribute("lsh",lsh);
         }
         WriteFuture writeFuture = session.write(message);
-        writeFuture.addListener(new IoFutureListener<WriteFuture>() {
+        /*writeFuture.addListener(new IoFutureListener<WriteFuture>() {
             @Override
             public void operationComplete(WriteFuture future) {
                 try {
@@ -114,7 +114,7 @@ public class ServerHandler extends IoHandlerAdapter {
                     logger.info("----发送数据成功！------key="+lsh);
                 }
             }
-        });
+        });*/
     }
 
     @Override
