@@ -978,7 +978,7 @@ public class SocketService {
             if(kpls.getFpzldm().equals(12)){
                 result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
            }else{
-                result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh);
+                result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh,"NewInvoice");
                 logger.info("test------盒子紙票返回="+result);
            }
             if(null!=result&&result.equals("连接断开")){

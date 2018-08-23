@@ -724,6 +724,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
             }
             if(!Code.equals("1") && !kpls.getFpzldm().equals("12")){
+                logger.info("test -----凯盈返回并写回socket通道："+XmlJaxbUtils.toXml(invoiceResponse));
                 setSocketRequest(String.valueOf(seqNumber), XmlJaxbUtils.toXml(invoiceResponse));
             }
         } catch (Exception e) {
