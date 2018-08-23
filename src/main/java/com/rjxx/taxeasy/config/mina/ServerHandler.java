@@ -67,7 +67,6 @@ public class ServerHandler extends IoHandlerAdapter {
             return "连接断开";
         }
         if (wait && timeout > 0) {
-            logger.info("####ServerHandler sendMessage waiting for timeout !!####,commandId="+commandId);
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);
             cachedRequestMap.put(commandId, socketRequest);
@@ -77,6 +76,7 @@ public class ServerHandler extends IoHandlerAdapter {
             if (socketRequest.getException() != null) {
                 throw socketRequest.getException();
             }
+            logger.info("####ServerHandler sendMessage waiting for timeout !!####,commandId="+commandId+",socketReturn="+socketRequest.getReturnMessage());
             return socketRequest.getReturnMessage();
         }
         return null;
@@ -217,7 +217,10 @@ public class ServerHandler extends IoHandlerAdapter {
             this.session = session;
         }
     }
+
+
     public static void setSocketRequest(String reqType,String reqData){
+        logger.info("test----------------------reqData="+reqData);
         if (StringUtils.isNotBlank(reqType)) {
             SocketRequest socketRequest = cachedRequestMap.remove(reqType);
             if (socketRequest != null) {
