@@ -660,6 +660,7 @@ public class ServerHandler extends IoHandlerAdapter {
             if(null!=crestvbusiness && (null == dmCrestv || (null != dmCrestv && !dmCrestv.getRepeatSend().equals("1")))){
                 crestvbusinessService.delete(crestvbusiness);
             }
+            InvoiceResponse invoiceResponse = new InvoiceResponse();
             if("0".equals(Code)){
                 if(resultMap.get("InvoiceList")!=null){
                     List<Map> InvoiceList=(List)resultMap.get("InvoiceList");
@@ -694,6 +695,11 @@ public class ServerHandler extends IoHandlerAdapter {
                         }
                         kpMap.put("RETURNMSG", Msg);
                         kpMap.put("KPLSH", kpls.getKplsh());
+                        invoiceResponse.setFpdm(InvoiceCode);
+                        invoiceResponse.setFphm(InvoiceNum);
+                        invoiceResponse.setKprq(InvoiceTime);
+                        invoiceResponse.setReturnCode("0000");
+                        invoiceResponse.setReturnMessage("成功");
                         fpclService.updateKpls(kpMap);
                     }
                 }
@@ -701,6 +707,8 @@ public class ServerHandler extends IoHandlerAdapter {
                 Map kpMap=new HashMap(2);
                 kpMap.put("RETURNCODE", Code);
                 kpMap.put("RETURNMSG", Msg);
+                invoiceResponse.setReturnCode(Code);
+                invoiceResponse.setReturnMessage(Msg);
                 if(Msg.contains("相同请求处理中")){
                     kpls.setFpztdm("14");
                     kpls.setErrorReason("相同请求处理中");
@@ -714,6 +722,9 @@ public class ServerHandler extends IoHandlerAdapter {
                     fpclService.updateKpls(kpMap);
                 }
 
+            }
+            if(!Code.equals("1") && !kpls.getFpzldm().equals("12")){
+                setSocketRequest(String.valueOf(seqNumber), XmlJaxbUtils.toXml(invoiceResponse));
             }
         } catch (Exception e) {
             e.printStackTrace();
