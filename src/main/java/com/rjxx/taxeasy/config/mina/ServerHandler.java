@@ -84,6 +84,38 @@ public class ServerHandler extends IoHandlerAdapter {
     }
 
 
+    /**
+     * 发送消息
+     * @param commandId
+     * @param message
+     * @param wait
+     * @param timeout
+     * @param lsh
+     */
+    public static String sendMessage(String commandId, Object message,boolean wait, long timeout,int lsh,String opType)throws Exception {
+        IoSession session=SocketSession.getInstance().getSession();
+        if(session.isConnected()){
+            sendMessage(session,message,lsh,opType);
+        }else{
+            logger.info("##########The socket connection has been disconnected.#####");
+            return "连接断开";
+        }
+        if (wait && timeout > 0) {
+            SocketRequest socketRequest = new SocketRequest();
+            socketRequest.setCommandId(commandId);
+            cachedRequestMap.put(commandId, socketRequest);
+            synchronized (socketRequest) {
+                socketRequest.wait(timeout);
+            }
+            if (socketRequest.getException() != null) {
+                throw socketRequest.getException();
+            }
+            logger.info("####ServerHandler sendMessage waiting for timeout !!####,commandId="+commandId+",socketReturn="+socketRequest.getReturnMessage());
+            return socketRequest.getReturnMessage();
+        }
+        return null;
+    }
+
 
     /**
      * 发送消息
@@ -445,8 +477,8 @@ public class ServerHandler extends IoHandlerAdapter {
             logger.info("凯盈盒子获取当前发票号码返回："+data);
             GetCurrentInvoiceInfoMap=XmltoJson.strJson2Map(data);
             ResultCode=GetCurrentInvoiceInfoMap.get("Code").toString();
-            SeqnumberService seqnumberService = ApplicationContextUtils.getBean(SeqnumberService.class);
-            Seqnumber seqnumber =seqnumberService.findOne(seqNumber);
+            //SeqnumberService seqnumberService = ApplicationContextUtils.getBean(SeqnumberService.class);
+            //Seqnumber seqnumber =seqnumberService.findOne(seqNumber);
             InvoiceResponse invoiceResponse=new InvoiceResponse();
             if("0".equals(ResultCode)){
                 String ResultMsg=GetCurrentInvoiceInfoMap.get("Msg").toString();
@@ -467,7 +499,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 invoiceResponse.setReturnCode("9999");
                 invoiceResponse.setReturnMessage(ResultMsg);
             }
-            setSocketRequest(seqnumber.getOptype(), XmlJaxbUtils.toXml(invoiceResponse));
+            setSocketRequest(String.valueOf(seqNumber), XmlJaxbUtils.toXml(invoiceResponse));
         }catch (Exception e){
             e.printStackTrace();
         }
