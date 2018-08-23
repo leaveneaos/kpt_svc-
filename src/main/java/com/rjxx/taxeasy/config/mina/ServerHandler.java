@@ -328,7 +328,7 @@ public class ServerHandler extends IoHandlerAdapter {
         }
         switch (OpType){
             case "NewInvoice":
-                OnReceive_NewInvoice(Data,OpType,kpls.getKplsh().toString());
+                OnReceive_NewInvoice(Data,OpType,kpls.getKplsh().toString(),SeqNumber);
                 break;
             case "InputUDiskPassword":
                 OnReceive_InputUDiskPassword(Data,OpType,skp.getId().toString());
@@ -634,14 +634,14 @@ public class ServerHandler extends IoHandlerAdapter {
         }
     }
 
-    private static void OnReceive_NewInvoice(String data, String opType, String seqNumber) {
+    private static void OnReceive_NewInvoice(String data, String opType, String kplsh,String seqNumber) {
 
         try {
             KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
             //SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
             FpclService fpclService = ApplicationContextUtils.getBean(FpclService.class);
             CrestvbusinessService crestvbusinessService = ApplicationContextUtils.getBean(CrestvbusinessService.class);
-            Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
+            Kpls kpls=kplsService.findOne(Integer.valueOf(kplsh));
             //Skp skp=skpService.findOne(kpls.getSkpid());
 
             String result= data;
