@@ -400,17 +400,17 @@ public class PdfDocumentGenerator {
             if(!file1.exists()){
                 if(!flag){
                     result.put("flag","false");
-                    result.put("msg","销方监制章、省份监制章不存在");
+                    result.put("msg","生成pdf失败,销方监制章、省份监制章不存在");
                     return  result;
                 }else{
                     result.put("flag","false");
-                    result.put("msg","省份监制章不存在");
+                    result.put("msg","生成pdf失败,省份监制章不存在");
                     return  result;
                 }
             }else{
                 if(!flag){
                     result.put("flag","false");
-                    result.put("msg","销方监制章不存在");
+                    result.put("msg","生成pdf失败,销方监制章不存在");
                     return  result;
                 }
             }
