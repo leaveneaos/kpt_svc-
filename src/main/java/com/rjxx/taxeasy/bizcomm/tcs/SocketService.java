@@ -975,7 +975,7 @@ public class SocketService {
             taskExecutor.execute(invoiceTask);*/
 
             //判断是否为纸质发票，如果为纸质发票则等待返回，超时时间为30秒
-            if(kpls.getFpzldm().equals(12)){
+            if(kpls.getFpzldm().equals("12")){
                 result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
            }else{
                 result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh,"NewInvoice");
