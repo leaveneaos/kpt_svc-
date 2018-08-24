@@ -890,8 +890,8 @@ public class SocketService {
      * @throws Exception
      */
     public String skBoxKP(String p) throws Exception{
-        logger.info("qwertyuiopoiuyrewetuioiuyrewetu开始调用盒子开票:"+new Date());
-        String result= "";
+        //.info("qwertyuiopoiuyrewetuioiuyrewetu开始调用盒子开票:"+new Date());
+        String result= null;
         try {
             if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
@@ -977,7 +977,7 @@ public class SocketService {
 
             //判断是否为纸质发票，如果为纸质发票则等待返回，超时时间为30秒
             if(kpls.getFpzldm().equals("12")){
-                result = ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
+                ServerHandler.sendMessage("NewInvoice",Ruquest,false,0,kplsh);
            }else{
                 result = ServerHandler.sendMessage(seqnumberRequest,Ruquest,true,30000,kplsh,"NewInvoice");
                 //logger.info("test------盒子紙票返回="+result);
