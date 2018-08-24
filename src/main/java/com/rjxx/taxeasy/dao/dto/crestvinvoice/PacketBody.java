@@ -70,6 +70,7 @@ public class PacketBody {
         newInvoice.PurchaserAddr=kpls.getGfdh();
         newInvoice.PurchaserBank=kpls.getGfyh();
         newInvoice.PurchaserAccount=kpls.getGfyhzh();
+        newInvoice.PrintOnIssued = printOnIssued;
         newInvoice.Drawee=kpls.getKpr();
         String fpzldm="";
         if("01".equals(kpls.getFpzldm())){
