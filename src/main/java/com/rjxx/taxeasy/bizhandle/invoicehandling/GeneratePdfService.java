@@ -217,6 +217,7 @@ public class GeneratePdfService {
             map.put("EWM", kpls.getFpEwm());
             //生成pdf
             Map resultMap = pdg.GeneratPDF(map, jyls, kpls);
+            logger.info("12345678999999999999,"+resultMap.get("flag"));
             if ("true"==resultMap.get("flag") || resultMap.get("flag").equals("true")) {
                 logger.info("----生成PDF方法名----generatePdf---"+kplsh);
                 /**
