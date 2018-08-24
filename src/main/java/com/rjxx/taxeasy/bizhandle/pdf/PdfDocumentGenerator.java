@@ -399,17 +399,17 @@ public class PdfDocumentGenerator {
             File file1 = new File(imagePath+"/"+in_request.getSfmc()+".png");
             if(!file1.exists()){
                 if(!flag){
-                    result.put("flag",false);
+                    result.put("flag","false");
                     result.put("msg","销方监制章、省份监制章不存在");
                     return  result;
                 }else{
-                    result.put("flag",false);
+                    result.put("flag","false");
                     result.put("msg","省份监制章不存在");
                     return  result;
                 }
             }else{
                 if(!flag){
-                    result.put("flag",false);
+                    result.put("flag","false");
                     result.put("msg","销方监制章不存在");
                     return  result;
                 }
@@ -643,14 +643,14 @@ public class PdfDocumentGenerator {
             logger.info("------pdf路径-------"+serverUrl + outputFile_AbsolutePath);
             map.put("signData", signData);
             map.put("BaseFilePath",outputFile);
-            result.put("flag",true);
+            result.put("flag","true");
             result.put("msg","成功");
             //return true;
             return result;
         }catch (Exception e){
             logger.error("生成pdf出现异常：" + kpls.getKplsh(), e);
             //return false;
-            result.put("flag",false);
+            result.put("flag","false");
             result.put("msg","失败");
             return result;
         }

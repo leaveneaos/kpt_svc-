@@ -217,8 +217,7 @@ public class GeneratePdfService {
             map.put("EWM", kpls.getFpEwm());
             //生成pdf
             Map resultMap = pdg.GeneratPDF(map, jyls, kpls);
-            logger.info("12345678999999999999,"+resultMap.get("flag"));
-            if ("true"==resultMap.get("flag") || resultMap.get("flag").equals("true")) {
+            if ("true"==resultMap.get("flag").toString() || resultMap.get("flag").toString().equals("true")) {
                 logger.info("----生成PDF方法名----generatePdf---"+kplsh);
                 /**
                  * 生成pdf的路径更新入库
@@ -514,7 +513,7 @@ public class GeneratePdfService {
 
                 dc.saveLog(djh, "21", "1", "PdfDocumentGenerator：GeneratPDF", "生成pdf失败,服务异常",
                         1, jyls.getXfsh(), jyls.getJylsh());
-                dc.updateKplsFpzt(kpls, "开具成功"+resultMap.get("msg"), "05");
+                dc.updateKplsFpzt(kpls, "开具成功,"+resultMap.get("msg"), "05");
             }
         } catch (Exception e) {
             dc.updateFlag(jyls, "92");
