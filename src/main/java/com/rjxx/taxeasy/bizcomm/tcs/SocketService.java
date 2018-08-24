@@ -890,6 +890,7 @@ public class SocketService {
      * @throws Exception
      */
     public String skBoxKP(String p) throws Exception{
+        logger.info("qwertyuiopoiuyrewetuioiuyrewetu开始调用盒子开票:"+new Date());
         String result= "";
         try {
             if (StringUtils.isBlank(p)) {
