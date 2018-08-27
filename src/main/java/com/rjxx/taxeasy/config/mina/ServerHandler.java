@@ -422,9 +422,11 @@ public class ServerHandler extends IoHandlerAdapter {
         try {
             PrintInvoiceMap=XmltoJson.strJson2Map(data);
             ResultCode=PrintInvoiceMap.get("Code").toString();
-            if("0".equals(ResultCode)){
+            String ResultMsg=PrintInvoiceMap.get("Msg").toString();
+            logger.info("接收凯盈发票重打返回：resultCode="+ResultCode+",ResultMsg="+ResultMsg);
+            /*if("0".equals(ResultCode)){
                 String ResultMsg=PrintInvoiceMap.get("Msg").toString();
-            }
+            }*/
             setSocketRequest(opType,data);
         }catch (Exception e){
             e.printStackTrace();

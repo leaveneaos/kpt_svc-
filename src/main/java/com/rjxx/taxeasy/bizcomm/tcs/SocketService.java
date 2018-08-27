@@ -1520,7 +1520,8 @@ public class SocketService {
         map1.put("fplxdm",fplxdm);
         map1.put("fpdm",map.get("fpdm"));
         map1.put("fphm",map.get("fphm"));
-        map1.put("isRepeat",map.get("isRepeat"));
+        //map1.put("isRepeat",map.get("isRepeat"));
+        map1.put("isRepeat","1");//允许重打
         String  PrintInvoice= PacketBody.getInstance().Packet_PrintInvoice(skp,map1);
         String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"PrintInvoice",PrintInvoice,skp,PasswordConfig.AppKey);
         String  Ruquest= PacketBody.getInstance().Packet_Ruquest(PasswordConfig.AppID,"DeviceCmd",DeviceCmd);
