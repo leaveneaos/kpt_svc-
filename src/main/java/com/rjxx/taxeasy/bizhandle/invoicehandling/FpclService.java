@@ -798,10 +798,10 @@ public class FpclService {
                 System.out.println("传入开票流水号:" + key);
             }
             System.out.println("request url=" + url + ", exception, msg=" + e.getMessage());
-            Kpls kpls=kplsService.findOne(Integer.parseInt(key));
+            /*Kpls kpls=kplsService.findOne(Integer.parseInt(key));
             kpls.setFpztdm("04");
             kpls.setErrorReason(e.getMessage());
-            kplsService.save(kpls);
+            kplsService.save(kpls);*/
         } finally {
             if (response != null) {
                 try {
@@ -1351,9 +1351,12 @@ public class FpclService {
                         kplsVO5.getJylsh(), j);
             }
             logger.debug("封装传开票通的返回报文" + JSONObject.toJSONString(resultMap));
-            if(null !=resultMap){
+            if(null !=resultMap && !resultMap.isEmpty()){
                 String serialorder = this.updateKpls(resultMap);
             }else{
+                kpls.setFpztdm("04");
+                kpls.setErrorReason("服务器连接超时！");
+                kplsService.save(kpls);
                 return "0";
             }
 
