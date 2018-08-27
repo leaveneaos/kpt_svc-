@@ -639,7 +639,7 @@ public class ServerHandler extends IoHandlerAdapter {
             InvalidateInvoiceMap=XmltoJson.strJson2Map(data);
             ResultCode=InvalidateInvoiceMap.get("Code").toString();
             String ResultMsg=InvalidateInvoiceMap.get("Msg").toString();
-            logger.info("接收凯盈发票作废返回：resultCode="+ResultCode);
+            logger.info("接收凯盈发票作废返回：resultCode="+ResultCode+",ResultMsg="+ResultMsg);
             if("0".equals(ResultCode)){
                 String InvoiceType=InvalidateInvoiceMap.get("InvoiceType").toString();
                 String InvoiceCode=InvalidateInvoiceMap.get("InvoiceCode").toString();
