@@ -1105,7 +1105,7 @@ public class SocketService {
             seqnumber.setYxbz(1);
             seqnumberService.save(seqnumber);
             Kpls kpls=kplsService.findOne(kplsh);
-            Jyls jyls=jylsService.findOne(kpls.getDjh());
+            //Jyls jyls=jylsService.findOne(kpls.getDjh());
             Skp skp=skpService.findOne(kpls.getSkpid());
             String  InvalidateInvoice= PacketBody.getInstance().Packet_InvalidateInvoice(kpls,skp);
             String  DeviceCmd=PacketBody.getInstance().Packet_DeviceCmd(String.valueOf(seqnumber.getSeqnumber()),"InvalidateInvoice",InvalidateInvoice,skp,PasswordConfig.AppKey);

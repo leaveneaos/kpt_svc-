@@ -252,7 +252,7 @@ public class PacketBody {
         Packet.InvalidateInvoice invalidateInvoice=new Packet().new InvalidateInvoice();
         invalidateInvoice.InvalidateType="1";
         String fpzldm="";
-        if("01".equals(kpls.getFpczlxdm())){
+        if("01".equals(kpls.getFpzldm())){
             fpzldm="1";
         }else if("02".equals(kpls.getFpzldm())){
             fpzldm="2";
@@ -264,11 +264,7 @@ public class PacketBody {
         invalidateInvoice.InvoiceType=fpzldm;
         invalidateInvoice.InvoiceCode=kpls.getFpdm();
         invalidateInvoice.InvoiceNum=kpls.getFphm();
-        String zfr="";
-        if(null==kpls.getZfr()){
-               zfr=kpls.getKpr();
-        }
-        invalidateInvoice.Operator=zfr;
+        invalidateInvoice.Operator=kpls.getKpr();
         return AESUtils.aesEncrypt(JSON.toJSONString(invalidateInvoice),skp.getDevicekey());
     }
 

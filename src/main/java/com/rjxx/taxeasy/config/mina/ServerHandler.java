@@ -651,6 +651,12 @@ public class ServerHandler extends IoHandlerAdapter {
                 kpls.setZfr(kpls.getKpr());
                 kpls.setFpztdm("08");
                 kplsService.save(kpls);
+            }else if(!"0".equals(ResultCode) && !"1".equals(ResultCode)){
+                KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
+                Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
+                kpls.setFpztdm("05");
+                kpls.setErrorReason(ResultMsg);
+                kplsService.save(kpls);
             }
             setSocketRequest(opType,data);
         }catch (Exception e){
