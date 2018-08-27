@@ -90,9 +90,6 @@ public class GeneratePdfService {
     private DataOperate dc;
 
     @Autowired
-    private SendalEmail se;
-
-    @Autowired
     private MailService mailService;
 
     @Autowired
@@ -108,32 +105,14 @@ public class GeneratePdfService {
     private JyxxsqService jyxxsqService;
 
     @Autowired
-    private FphxwsjlService fphxwsjlService;
-
-    @Autowired
     private ImputationCardUtil imputationCardUtil;
 
     @Autowired
     private InvoiceQueryUtil invoiceQueryUtil;
 
-
-    @Autowired
-    private RabbitmqUtils rabbitmqSend;
-
     @Autowired
     private SaveGfxxUtil saveGfxxUtil;
 
-    @Autowired
-    private KpspmxJpaDao kpspmxJpaDao;
-
-    @Autowired
-    private XfJpaDao xfJpaDao;
-    @Autowired
-    private SkpService skpService;
-    @Autowired
-    private PpJpaDao ppJpaDao;
-    @Autowired
-    private ShortLinkJpaDao shortLinkJpaDao;
     @Autowired
     private XsqdJpaDao xsqdJpaDao;
     @Autowired
