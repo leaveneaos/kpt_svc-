@@ -454,6 +454,7 @@ public class SocketService {
      */
     public InvoiceResponse skServerQuery(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
+        invoiceResponse.setReturnCode("0000");
         Kpls kpls = kplsService.findOne(kplsh);
         Cszb cszb2 = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "skurl");
         String url = cszb2.getCsz();
@@ -472,8 +473,11 @@ public class SocketService {
                 if(returncode.equals("0000")){
                     fpclService.updateKpls(resultMap);
                 }
-                invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
+                //invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
                 invoiceResponse.setReturnCode(returncode);
+            }else{
+                //查询服务器超时
+                invoiceResponse.setReturnCode("9990");
             }
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
