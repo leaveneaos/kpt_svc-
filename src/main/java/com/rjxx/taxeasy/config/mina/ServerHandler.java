@@ -639,6 +639,7 @@ public class ServerHandler extends IoHandlerAdapter {
             InvalidateInvoiceMap=XmltoJson.strJson2Map(data);
             ResultCode=InvalidateInvoiceMap.get("Code").toString();
             String ResultMsg=InvalidateInvoiceMap.get("Msg").toString();
+            logger.info("接收凯盈发票作废返回：resultCode="+ResultCode);
             if("0".equals(ResultCode)){
                 String InvoiceType=InvalidateInvoiceMap.get("InvoiceType").toString();
                 String InvoiceCode=InvalidateInvoiceMap.get("InvoiceCode").toString();
@@ -647,6 +648,8 @@ public class ServerHandler extends IoHandlerAdapter {
                 KplsService kplsService = ApplicationContextUtils.getBean(KplsService.class);
                 Kpls kpls=kplsService.findOne(Integer.valueOf(seqNumber));
                 kpls.setZfrq(TimeUtil.getSysDateInDate(InvalidateTime, null));
+                kpls.setZfr(kpls.getKpr());
+                kpls.setFpztdm("08");
                 kplsService.save(kpls);
             }
             setSocketRequest(opType,data);
