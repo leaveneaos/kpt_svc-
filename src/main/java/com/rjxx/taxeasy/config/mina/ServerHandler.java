@@ -708,7 +708,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 crestvbusinessService.delete(crestvbusiness);
             }
             InvoiceResponse invoiceResponse = new InvoiceResponse();
-            if("0".equals(Code)){
+            if("0".equals(Code) || "INVIF004105".equals(Code)){
                 if(resultMap.get("InvoiceList")!=null){
                     List<Map> InvoiceList=(List)resultMap.get("InvoiceList");
                     logger.info("-----开票数据-----"+result);
@@ -739,6 +739,10 @@ public class ServerHandler extends IoHandlerAdapter {
                         kpMap.put("KPRQ", InvoiceTime);
                         if("0".equals(Code)){
                             kpMap.put("RETURNCODE", "0000");
+                            invoiceResponse.setReturnMessage("成功");
+                        }else{
+                            kpMap.put("RETURNCODE",Code);
+                            invoiceResponse.setReturnMessage(Msg);
                         }
                         kpMap.put("RETURNMSG", Msg);
                         kpMap.put("KPLSH", kpls.getKplsh());
@@ -746,7 +750,6 @@ public class ServerHandler extends IoHandlerAdapter {
                         invoiceResponse.setFphm(InvoiceNum);
                         invoiceResponse.setKprq(InvoiceTime);
                         invoiceResponse.setReturnCode("0000");
-                        invoiceResponse.setReturnMessage("成功");
                         fpclService.updateKpls(kpMap);
                     }
                 }
