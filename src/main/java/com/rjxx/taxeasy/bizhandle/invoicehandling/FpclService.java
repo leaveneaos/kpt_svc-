@@ -1176,7 +1176,7 @@ public class FpclService {
         try {
             String returncode = resultMap.get("RETURNCODE").toString();
             String returnmsg = resultMap.get("RETURNMSG").toString();
-            if (returncode.equals("0000")) {
+            if (returncode.equals("0000") || returncode.equals("INVIF004105")) {
                 String fpdm = resultMap.get("FP_DM").toString();
                 String fphm = resultMap.get("FP_HM").toString();
                 String kprq = resultMap.get("KPRQ").toString();
@@ -1191,7 +1191,13 @@ public class FpclService {
                 logger.info("-------税控服务器返回报文----------"+JSON.toJSONString(resultMap));
                 kpls.setFpdm(fpdm);
                 kpls.setFphm(fphm);
-                kpls.setFpztdm("00");
+                //开票成功打印失败，保存状态代码为18
+                if(returncode.equals("0000")){
+                    kpls.setFpztdm("00");
+                }else{
+                    kpls.setFpztdm("18");
+                }
+
                 kpls.setErrorReason(null);
                 kpls.setKprq(TimeUtil.getSysDateInDate(kprq, null));
                 kpls.setXgsj(new Date());
